@@ -1,0 +1,164 @@
+combat-tag-time: 10
+
+events:
+
+  # You MUST have Vault and an economy plugin if you want this plugin to work.
+
+  money:
+    # Should players get money if they win an event?
+    enabled: true
+
+    # How much money should the player get when he/she wins?
+    amount: 100
+
+  # How long to wait for players to join. (Must be an integer).
+  # The plugin will start counting down from 60 and then 45, 30, etc.
+  time-to-start: 45
+
+  # What will come up when you use /event
+  starting:
+  - '&b&kO&7*****> &bEVENT&7 <*****&b&kO'
+  - ' '
+  - '&b&kO &7Event: &b{EVENT}'
+  - '&b&kO &7Prize: &b{PRIZE}'
+  - '&b&kO &7Host: &b{PLAYER}'
+  - '&b&kO &7Type &b/join &7to join!'
+  - ' '
+  - '&b&kO&7*****> &bEVENT&7 <*****&b&kO'
+
+  # The item that has the ability to shoot paintballs:
+
+  # The item's ID:
+  paintball-item: 293
+
+  # The item's name:
+  paintball-item-name: "&6Paint Ball Gun"
+
+  # The item's lore:
+  paintball-item-lore: "&7Right-click to throw paintballs!"
+
+  # How much damage one paintball will do:
+  paintball-damage: 2
+
+  # Duration (MINUTES) of OITC.
+  oitc-time: 1
+
+  # How long (seconds) a player needs to be on top of the KOTH platform to win.
+  koth-wait: 100
+
+messages:
+
+  # You can configure all the messages that will be displayed to the players here:
+
+  # ** LMS **
+  lms-spawn-not-set: '&cThe spawn point for LMS has not yet been set. Use /lms'
+  lms-before: '&cYou have 5 seconds of invincibility until LMS starts.'
+  lms-invins-over: '&cYou are no longer invincible.'
+  lms-set: '&7Set spawn point for LMS.'
+  lms-usage: '&cPlease use /lms (setspawn|setinv|delinv)'
+  joined-event: '&bYou joined the event! Players in the event: &a{0}'
+  player-won-lms: '&b{PLAYER} &7just won &bLMS!'
+
+  # ** SPLEEF **
+  spleef-before: '&cYou cannot break blocks for 5 seconds.'
+  player-won-spleef: '&b{PLAYER} &7just won &bSpleef!'
+  spleef-invins-over: '&cYou can now break blocks.'
+  spleef-spawn-not-set: '&cThe spawn point for Spleef has not yet been set. Use /spleef'
+  spleef-set: '&7Set spawn point for spleef.'
+  spleef-usage: '&cPlease use /spleef (setspawn|setinv|delinv)'
+
+  # ** KO **
+  ko-before: "&7You are invincible for 5 seconds."
+  ko-spawn-not-set: '&cKO''s spawn is not set. Do /ko'
+  ko-invins-over: '&cYou are no longer invincible.'
+  player-won-ko: '&b{PLAYER} &7just won &bKO!'
+  ko-usage: '&cPlease use /ko (setspawn|setinv|delinv)'
+  ko-set: '&7Set spawn point for KO!'
+
+  # ** BOW **
+  bow-before: "&7You are invincible for 5 seconds."
+  bow-invins-over: '&cYou are no longer invincible.'
+  bow-spawn-not-set: '&cBow Fight''s spawn has not been set. Use /bow'
+  bow-usage: '&cPlease use /bow (setspawn|setinv|delinv)'
+  bow-set: '&7Set spawn point for Bow Fight.'
+  player-won-bow: '&b{PLAYER} &7just won &bBow Fight!'
+
+  # ** TNT **
+  tnt-spawn-not-set: "&cTNT Run's spawn has not yet been set."
+  tnt-invins-over: "&cYou will now turn the TNT under your feet to air."
+  tnt-before: "&7The TNT under your feet will turn into air in 5 seconds."
+  player-won-tnt: "&b{PLAYER} &7just won &bTNT Run!"
+  tnt-set: "&7Set spawn point for TNT Run."
+  tnt-usage: "&cPlease use /tntrun (setspawn|setinv|delinv)"
+
+  # ** PAINT **
+  paint-spawn-not-set: "&cThe spawn point for Paint Ball has not yet been set. Use /paint"
+  player-won-paint: "&b{PLAYER} &7just won &bPaint Ball!"
+  paint-invins-over: "&cYou are no longer invincible."
+  paint-before: "&7You are invincible for 5 seconds."
+  paint-set: "&7Set Paint Ball's spawn."
+  paint-usage: "&cPlease use /paint (setspawn|setinv|delinv)"
+
+  # ** KOTH **
+  player-won-koth: "&b{PLAYER} &7just won &bKOTH!"
+  koth-teleport: "&7You will be teleported to KOTH in &b5 &7seconds."
+  koth-spawn-not-set: "&cThe spawn point for KOTH has not yet been set. Use /koth"
+  koth-top-not-set: "&cThe top point for KOTH has not yet been set. Use /koth"
+  koth-usage: '&cPlease use /koth (setspawn|settop|setinv|delinv)'
+  koth-set: "&7Set the spawn point for KOTH."
+  koth-set-top: "&7Set the top point for KOTH."
+  koth-announce: "&6{0} &7is at &6{1}% &7in KOTH!"
+  koth-invins-over: "&cYou are no longer invincible."
+  koth-before: "&7You are invincible for 5 seconds."
+  koth-announce-player: "&aYou &7are at &a{0}% &7in KOTH!"
+
+  # ** PARKOUR **
+  parkour-spawn-not-set: "&cThe spawn point for parkour has not yet been set."
+  parkour-top-not-set: "&cThe top point for Parkour has not yet been set."
+  parkour-set: "&7Set the spawn point for Parkour."
+  parkour-set-top: "&7Set the top point for Parkour."
+  parkour-usage: "&cPlease use /parkour (setspawn|settop|setinv|delinv)"
+  player-won-parkour: "&b{PLAYER} &7just won &bParkour!"
+
+
+  # ** OITC **
+  oitc-deleted-spawn: "&7Deleted spawn point &b{0}&7."
+  oitc-null-spawn: "&cCould not find spawn point {0}."
+  oitc-added-spawn: "&aAdded a spawn point &b{0} &ato OITC."
+  oitc-time-left-minute: "&6OITC &aends in &6{0} &aminutes."
+  oitc-time-left: "&6OITC &aends in &6{0} &aseconds."
+  oitc-died: "&cYou were killed by &6{1}&c. Current score: &6{0}&c."
+  oitc-hit: "&b+1. &aYou killed &6{1}&a! Current score: &6{0}&a."
+  oitc-spawn-not-set: "&cThe spawn point for OITC has not yet been set. Use /oitc"
+  oitc-usage: '&cPlease use /oitc (setspawn|addspawn <number>|delspawn <number>|setinv|delinv)'
+  oitc-set: "&7Set the main spawn point for OITC."
+  oitc-set-top: "&7Set the top point for OITC."
+  oitc-invins-over: "&cYou are no longer invincible."
+  oitc-before: "&7You are invincible for 5 seconds."
+  player-won-oitc: "&b{PLAYER} &3just won OITC with &b{1} &3kills!"
+
+  # ** OTHER **
+  tagged-out: "&cYou were kicked out of the event because you are still in combat tag."
+  no-permission: "&cYou do not have permission."
+  deleted-inv: "&7Deleted inventory loadout for {0}."
+  saved-inv: "&7Saved inventory loadout for {0}."
+  got-money: "&aYou received &b${0} &afor winning the event!"
+  player-left: '&8{0} &7left.'
+  reloaded-config: "&7Reloaded MiniEvent's config."
+  set-quit: '&7Set quit point for all events.'
+  quit-not-set: '&cThe quit point has not been set. Do /setquit'
+  no-events-to-end: '&cThere are no events to end.'
+  ended-event: '&cAny event in progress was ended.'
+  event-no-commands: '&cYou cannot use any commands in an event.'
+  player-won-event: "&b{PLAYER} &7won the event!"
+  event-not-enough-players: '&cNot enough players to start an event.'
+  event-started: '&c{EVENT} has started!'
+  event-countdown: '&6{EVENT} &7will start in &6{TIME} &7seconds! &7Type &6/join &7to join.'
+  already-in-event: '&cYou are already in the event.'
+  no-events: '&cThere are no events to join.'
+  event-in-progress: '&cThere is already an event in progress.'
+  event-usage: '&cUsage: &7/event &6[&7LMS&6, &7Spleef&6, &7KO&6, &7Bow&6, &7TNT&6, &7Paint&6, &7KOTH&6, &7Parkour&6, &7OITC&6, &7End&6, &7Reload&6]'
+  player-joined-event: "&b{0} &7joined the event. Players in the event: &b{1}&7."
+
+
+

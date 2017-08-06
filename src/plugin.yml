@@ -1,0 +1,6 @@
+name: MiniEvents
+author: brainsynder
+main: events.brainsynder.managers.GamePlugin
+softdepend: [Vault]
+depends: [SimpleAPI]
+version: 2.0
