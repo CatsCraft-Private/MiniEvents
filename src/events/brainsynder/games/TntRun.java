@@ -2,8 +2,6 @@ package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
-import events.brainsynder.libs.BlockChangerAPI;
-import events.brainsynder.libs.ParticleMaker;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -13,16 +11,17 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import simple.brainsynder.api.BlockChangerAPI;
+import simple.brainsynder.api.ParticleMaker;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TntRun extends GameMaker {
-    public static List<BlockChangerAPI> block = new ArrayList<>();
+    private static List<BlockChangerAPI> block = new ArrayList<>();
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
@@ -118,7 +117,7 @@ public class TntRun extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }
@@ -142,7 +141,7 @@ public class TntRun extends GameMaker {
     }
     
     @Override public void equipDefaultPlayer(Player player) {
-        player.getInventory().setArmorContents((ItemStack[]) null);
+        player.getInventory().setArmorContents(null);
         player.getInventory().clear();
     }
     

@@ -4,7 +4,7 @@ import org.bukkit.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class GameMaker implements Game {
-    boolean started = false;
+    private boolean started = false;
     protected boolean endTask = false;
     
     @Override public void onEnd() {
@@ -38,7 +38,7 @@ public abstract class GameMaker implements Game {
         plugin.getEventMain().eventstarting = false;
         plugin.getEventMain().eventstarted = true;
         plugin.getEventMain().waiting = null;
-        players.stream().forEach(player ->
+        players.forEach(player ->
                 player.getPlayer().setGameMode(GameMode.ADVENTURE));
         new BukkitRunnable() {
             @Override public void run() {

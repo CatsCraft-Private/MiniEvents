@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,7 +22,7 @@ import java.util.*;
 
 public class BlitzTag extends GameMaker {
     private IGamePlayer tagged = null;
-    int countDown = 15;
+    private int countDown = 15;
     
     @Override public String getName() {
         return "BlitzTag";
@@ -33,14 +32,14 @@ public class BlitzTag extends GameMaker {
         super.onWin(gamePlayer);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = plugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
             if (r.transactionSuccess()) {
                 gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
         }
     }
     
-    void runTagged(IGamePlayer target, boolean lastRound) {
+    private void runTagged(IGamePlayer target, boolean lastRound) {
         new BukkitRunnable() {
             @Override public void run() {
                 if (!target.getPlayer().getName().equals(tagged.getPlayer().getName())) {
@@ -63,7 +62,7 @@ public class BlitzTag extends GameMaker {
                         }
                         return;
                     }
-                    if (!lastRound) countDown = 15;
+                    countDown = 15;
                     lost(target);
                     for (IGamePlayer gamePlayer : players) {
                         if (deadPlayers.contains(gamePlayer)) continue;
@@ -166,7 +165,7 @@ public class BlitzTag extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }
@@ -191,7 +190,7 @@ public class BlitzTag extends GameMaker {
     
     @Override public void equipDefaultPlayer(Player player) {
         player.getInventory().clear();
-        player.getInventory().setArmorContents((ItemStack[]) null);
+        player.getInventory().setArmorContents(null);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5));
     }
     

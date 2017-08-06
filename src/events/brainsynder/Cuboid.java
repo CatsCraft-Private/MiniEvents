@@ -6,6 +6,9 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
+/**
+ * This was planned to be used for the TntRun and Spleef Events... but I never got around to adding it XD
+ */
 public class Cuboid implements Iterable<Block>, Cloneable {
     protected final String worldName;
     protected final int x1, y1, z1;

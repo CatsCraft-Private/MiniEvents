@@ -90,7 +90,7 @@ public class StoredData {
         return this;
     }
     
-    public StoredData restoreData() {
+    public void restoreData() {
         Player player = getPlayer();
         if (stored) {
             player.getInventory().clear();
@@ -134,7 +134,6 @@ public class StoredData {
             stored = false;
             storedEffects = null;
         }
-        return this;
     }
     
     public boolean isStored() {

@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class KOTH extends GameMaker {
-    private HashMap<UUID, Integer> points = new HashMap();
-    private HashMap<UUID, Integer> per10 = new HashMap();
+    private HashMap<UUID, Integer> points = new HashMap<>();
     private Location topLocation = null;
     private int per20 = 0;
     
@@ -39,7 +38,6 @@ public class KOTH extends GameMaker {
     @Override public void onEnd() {
         super.onEnd();
         points.clear();
-        per10.clear();
     }
     
     @Override public void perTick() {
@@ -175,7 +173,7 @@ public class KOTH extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }

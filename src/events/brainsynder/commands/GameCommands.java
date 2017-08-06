@@ -20,8 +20,8 @@ import simple.brainsynder.utils.Reflection;
 import java.util.Arrays;
 
 public class GameCommands implements CommandListener {
-    GamePlugin plugin = GamePlugin.instance;
-    SettingsManager settings = plugin.getSettings();
+    private GamePlugin plugin = GamePlugin.instance;
+    private SettingsManager settings = plugin.getSettings();
     
     public void end() {
         plugin.getEventMain().waiting = null;
@@ -98,7 +98,7 @@ public class GameCommands implements CommandListener {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere is no event by that name."));
                 return;
             }
-            settings.getData().set("setup." + game.getName(), (Object) null);
+            settings.getData().set("setup." + game.getName(), null);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Deleted inventory loadout for {0}.".replace("{0}", game.getName())));
         }
     }
@@ -190,12 +190,10 @@ public class GameCommands implements CommandListener {
                 
                 plugin.reloadConfig();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Reloaded MiniEvent's config."));
-                return;
             } else if (args[0].equalsIgnoreCase("end")) {
                 
                 if (!player.hasPermission("event.end") && !player.hasPermission("event.*") && !player.isOp()) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not have permission."));
-                    return;
                 } else {
                     for (Player o : Bukkit.getOnlinePlayers()) {
                         IGamePlayer gamePlayer = GameManager.getPlayer(o);
@@ -228,7 +226,7 @@ public class GameCommands implements CommandListener {
                 if (!game.getPlayer().isEmpty())
                     game.getPlayer().clear();
                 plugin.getEventMain().waiting = game;
-                plugin.getMethod().EventWait(game);
+                plugin.getMethod().start(game);
                 for (String e : GamePlugin.starting) {
                     if (e.contains("[HERE]")) {
                         String[] var = e.split("(?:\\[HERE\\])");
@@ -240,7 +238,7 @@ public class GameCommands implements CommandListener {
                             raw.tooltip("§7There is no description", "§7for this Event");
                         }
                         raw.then(var[1]);
-                        Bukkit.getOnlinePlayers().stream().forEach(raw::send);
+                        Bukkit.getOnlinePlayers().forEach(raw::send);
                         continue;
                     }
                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', e).replace("{EVENT}", game.getName()).replace("{PLAYER}", player.getName()).replace("{PRIZE}", Double.toString(i)));
@@ -249,10 +247,8 @@ public class GameCommands implements CommandListener {
         }
     }
     
-    void sendUssage(Player player) {
+    private void sendUssage(Player player) {
         ITellraw raw = Reflection.getTellraw("§7/event §c[§7end§c, §7reload");
-        int i = 1;
-        boolean first = true;
         for (Game game : GameManager.getGames()) {
             if (game.isSetup()) {
                 raw.then(", ").color(ChatColor.RED);
@@ -262,9 +258,7 @@ public class GameCommands implements CommandListener {
                 } else {
                     raw.tooltip("§7There is no description", "§7for this Event");
                 }
-                first = false;
             }
-            i++;
         }
         raw.then("]").color(ChatColor.RED);
         raw.send(player);

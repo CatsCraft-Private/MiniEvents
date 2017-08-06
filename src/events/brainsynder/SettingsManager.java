@@ -11,9 +11,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import java.io.File;
 
 public class SettingsManager {
-    static SettingsManager instance = new SettingsManager();
-    Plugin p;
-    DataFile data;
+    private static SettingsManager instance = new SettingsManager();
+    private Plugin p;
+    private DataFile data;
     File dfile;
 
     public static SettingsManager getInstance() {

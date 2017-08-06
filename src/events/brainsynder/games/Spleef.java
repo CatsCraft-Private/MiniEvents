@@ -2,7 +2,6 @@ package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
-import events.brainsynder.libs.BlockChangerAPI;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -17,12 +16,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import simple.brainsynder.api.BlockChangerAPI;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Spleef extends GameMaker {
-    public List<BlockChangerAPI> block = new ArrayList<>();
+    private List<BlockChangerAPI> block = new ArrayList<>();
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
@@ -113,7 +113,7 @@ public class Spleef extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }
@@ -142,7 +142,7 @@ public class Spleef extends GameMaker {
         dspade.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
         dspade.addUnsafeEnchantment(Enchantment.DIG_SPEED, 5);
         player.getInventory().clear();
-        player.getInventory().setArmorContents((ItemStack[])null);
+        player.getInventory().setArmorContents(null);
         player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 3));
         inventory.setItem(0, dspade);
     }

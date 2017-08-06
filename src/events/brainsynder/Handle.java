@@ -15,6 +15,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
 
+/**
+ * Handles all the Events in the plugin. (Well... Most of them XD)
+ */
 public class Handle implements Listener {
     
     @EventHandler (ignoreCancelled = true, priority = EventPriority.HIGHEST)

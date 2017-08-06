@@ -13,7 +13,6 @@ import static org.bukkit.ChatColor.*;
 
 public class CommandManager {
 
-    // Constant
     private static final String
             wildcardSymbol = "*",
             numberWildcardSymbol = "**",
@@ -23,7 +22,6 @@ public class CommandManager {
             playerErrorDefault = errorPrefix + "You must be a player to access this command.",
             argumentsErrorDefault = errorPrefix + "Invalid Arguments, Please try again!";
 
-    // Get all of the name and methods of this listeners.
     public static void register(CommandListener... listeners){
 
         for(CommandListener listener: listeners){
@@ -43,13 +41,9 @@ public class CommandManager {
                     Command command = method.getAnnotation(Command.class);
 
                     if(command.name().trim().contains(" ")){
-
-                        // Multiple names ( Command annotation )
                         names.addAll(new ArrayList<>(Arrays.asList(command.name().trim().split(" "))));
 
                     }else{
-
-                        // Single name ( Command annotation )
                         names.add(command.name());
 
                     }
@@ -59,21 +53,14 @@ public class CommandManager {
                     CommandClass command = _class.getAnnotation(CommandClass.class);
 
                     if(command.name().trim().contains(" ")){
-
-                        // Multiple names ( Class annotation )
                         names.addAll(new ArrayList<>(Arrays.asList(command.name().trim().split(" "))));
 
                     }else{
-
-                        // Single name ( Class annotation )
                         names.add(command.name());
 
                     }
                 }else{
-
-                    // Method name
                     names.add(method.getName());
-
                 }
 
                 for(String name: names){
@@ -192,7 +179,6 @@ public class CommandManager {
     private static void run(Method method, String arguments, String[] args, CommandListener listener, CommandSender sender, boolean player){
         try {
 
-            //This way sucks, I know, I don't have time to make this better so this will do.
             int parameters = method.getParameterTypes().length;
 
             if (parameters == 0)
@@ -244,31 +230,25 @@ public class CommandManager {
 
     private static boolean argumentsCheck(String arguments, String[] args) {
 
-        // Check if there is anything to check. Then splitting the wildcards.
         if (arguments.isEmpty()) return true;
         String[] wildcards = arguments.split(" ");
 
-        // Check for the length, this will prevent NPE's.
         if (wildcards.length != args.length) return false;
 
         for (int i = 0; i < wildcards.length; i++) {
 
-            // Wildcard would override.
             if (wildcards[i].equals(wildcardSymbol))
                 continue;
 
-            // Check if multiple values work for this argument. Example: "group|player" matches both group and player.
             if (wildcards[i].contains(eitherSymbol))
                 for (String o :  wildcards[i].split("\\|"))
                     if (!o.equalsIgnoreCase(args[i]))
                         return false;
 
-            //Check if the argument is a number.
             if(wildcards[i].contains(numberWildcardSymbol))
                 if(!isNumber(wildcards[i]))
                     return false;
 
-            // Check if the static argument matches the desired argument.
             if (!wildcards[i].toLowerCase().equals(args[i].toLowerCase()))
                 return false;
 
@@ -279,17 +259,14 @@ public class CommandManager {
 
     private static String[] getArgs(String arguments, String[] args) {
 
-        // Splits the wildcards
         String[] wildcards = arguments.split(" ");
         List<String> list = new ArrayList<>();
 
-        // Add every wildcarded argument to the list.
         for (int i = 0; i < wildcards.length; i++) {
             if (wildcards[i].equals(wildcardSymbol) || wildcards[i].contains(eitherSymbol) || wildcards[i].equals(numberWildcardSymbol))
                 list.add(args[i]);
         }
 
-        // Return the list.
         String[] array = new String[list.size()];
         array = list.toArray(array);
 
@@ -297,12 +274,9 @@ public class CommandManager {
     }
 
     private static boolean isNumber(String string){
-
-        //Not my code. Open to suggestions.
         return string.matches("-?\\d+(\\.\\d+)?");
     }
 
-    // Bukkit reflection stuff and shit.
     abstract static class CustomCommand extends BukkitCommand {
 
         CustomCommand(String name) {

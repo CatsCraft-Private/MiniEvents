@@ -98,7 +98,7 @@ public class KO extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }

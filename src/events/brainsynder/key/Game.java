@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Game extends Listener, CommandListener {
-    final List<IGamePlayer> players = new ArrayList<>();
-    final List<IGamePlayer> deadPlayers = new ArrayList<>();
-    final GamePlugin plugin = GamePlugin.instance;
-    final SettingsManager settings = plugin.getSettings();
+    List<IGamePlayer> players = new ArrayList<>();
+    List<IGamePlayer> deadPlayers = new ArrayList<>();
+    GamePlugin plugin = GamePlugin.instance;
+    SettingsManager settings = plugin.getSettings();
     
     /**
      * Run on Game end

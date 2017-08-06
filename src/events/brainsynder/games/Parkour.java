@@ -8,7 +8,6 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -82,7 +81,7 @@ public class Parkour extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }
@@ -106,7 +105,7 @@ public class Parkour extends GameMaker {
     }
     
     @Override public void equipDefaultPlayer(Player player) {
-        player.getInventory().setArmorContents((ItemStack[]) null);
+        player.getInventory().setArmorContents(null);
         player.getInventory().clear();
     }
     

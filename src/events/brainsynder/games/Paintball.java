@@ -3,6 +3,7 @@ package events.brainsynder.games;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
+import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -21,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.api.ParticleMaker;
 import simple.brainsynder.sound.SoundMaker;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 public class Paintball extends GameMaker {
@@ -30,7 +31,7 @@ public class Paintball extends GameMaker {
         super.onWin(gamePlayer);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = plugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
             if (r.transactionSuccess()) {
                 gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
@@ -71,7 +72,7 @@ public class Paintball extends GameMaker {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) null);
+                player.getInventory().setArmorContents(null);
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }
@@ -94,7 +95,7 @@ public class Paintball extends GameMaker {
         }
     }
     
-    public void runThis(final Item item, final Player player) {
+    private void runThis(final Item item, final Player player) {
         item.setVelocity(player.getLocation().getDirection().multiply(3.0D));
         item.setPickupDelay(2147483647);
         SoundMaker.ENTITY_CHICKEN_EGG.playSound(item.getLocation(), 1.0F, 1.0F);
@@ -115,7 +116,7 @@ public class Paintball extends GameMaker {
             }
         }.runTaskTimer(plugin, 0, 1);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            if (item != null && item.isValid())
+            if (item.isValid())
             item.remove();
         }, 15);
     }
@@ -125,7 +126,7 @@ public class Paintball extends GameMaker {
         ItemStack stick = new ItemStack(Material.DIAMOND_HOE);
         ItemMeta sstick = stick.getItemMeta();
         sstick.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("events.paintball-item-name")));
-        sstick.setLore(Arrays.asList(new String[]{ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("events.paintball-item-lore"))}));
+        sstick.setLore(Collections.singletonList(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("events.paintball-item-lore"))));
         stick.setItemMeta(sstick);
         ItemStack bhelmet = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta abhelmet = (LeatherArmorMeta) bhelmet.getItemMeta();

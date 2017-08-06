@@ -21,8 +21,8 @@ import java.util.List;
 
 public class GamePlugin extends JavaPlugin {
     private SettingsManager settings = SettingsManager.getInstance();
-    EventsMain eventsmain = new EventsMain(this);
-    Methods method;
+    private EventsMain eventsmain = new EventsMain(this);
+    private CountDown method;
     public static Economy econ = null;
     public static GamePlugin instance = null;
     public static List<String> starting = Arrays.asList(
@@ -42,7 +42,7 @@ public class GamePlugin extends JavaPlugin {
         GameManager.initiate();
         settings.setup(this);
         saveResource("config.yml", false);
-        method = new Methods(this);
+        method = new CountDown(this);
         Bukkit.getServer().getPluginManager().registerEvents(new Handle(), this);
         CommandManager.register(new GameCommands());
         if (!setupEconomy()) {
@@ -58,7 +58,7 @@ public class GamePlugin extends JavaPlugin {
             if (rsp == null) {
                 return false;
             } else {
-                econ = (Economy) rsp.getProvider();
+                econ = rsp.getProvider();
                 return econ != null;
             }
         }
@@ -73,13 +73,13 @@ public class GamePlugin extends JavaPlugin {
                     current.onEnd();
                 }
             }
-        }catch (Exception e){}
+        }catch (Exception ignored){}
     
         eventsmain.end();
         saveConfig();
     }
     
-    public Methods getMethod() {
+    public CountDown getMethod() {
         return method;
     }
     
