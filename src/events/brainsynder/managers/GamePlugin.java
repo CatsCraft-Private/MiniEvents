@@ -5,12 +5,11 @@
 
 package events.brainsynder.managers;
 
-import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.*;
 import events.brainsynder.commands.GameCommands;
+import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
-import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GamePlugin extends JavaPlugin {
-    @Getter private SettingsManager settings = SettingsManager.getInstance();
+    private SettingsManager settings = SettingsManager.getInstance();
     EventsMain eventsmain = new EventsMain(this);
     Methods method;
     public static Economy econ = null;
@@ -86,5 +85,9 @@ public class GamePlugin extends JavaPlugin {
     
     public EventsMain getEventMain() {
         return eventsmain;
+    }
+    
+    public SettingsManager getSettings() {
+        return this.settings;
     }
 }

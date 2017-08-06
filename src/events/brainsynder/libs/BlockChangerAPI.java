@@ -1,15 +1,13 @@
 package events.brainsynder.libs;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 public class BlockChangerAPI {
-    @Getter @Setter private Material material;
-    @Getter @Setter private byte data;
-    @Getter private Material oldMaterial;
-    @Getter private byte oldData;
+    private Material material;
+    private byte data;
+    private Material oldMaterial;
+    private byte oldData;
     private Block block;
 
     public BlockChangerAPI(Block block) {
@@ -29,5 +27,29 @@ public class BlockChangerAPI {
         this.block.getState().getData().toItemStack().setDurability(oldData);
         this.block.setType(oldMaterial);
 
+    }
+    
+    public Material getMaterial() {
+        return this.material;
+    }
+    
+    public byte getData() {
+        return this.data;
+    }
+    
+    public Material getOldMaterial() {
+        return this.oldMaterial;
+    }
+    
+    public byte getOldData() {
+        return this.oldData;
+    }
+    
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
+    
+    public void setData(byte data) {
+        this.data = data;
     }
 }

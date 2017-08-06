@@ -1,8 +1,8 @@
 package events.brainsynder.key;
 
+import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.CommandListener;
 import events.brainsynder.managers.GamePlugin;
-import events.brainsynder.SettingsManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;

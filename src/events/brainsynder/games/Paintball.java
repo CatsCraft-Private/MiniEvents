@@ -5,7 +5,6 @@ import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

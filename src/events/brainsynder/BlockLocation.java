@@ -1,13 +1,11 @@
 package events.brainsynder;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.*;
 import simple.brainsynder.utils.Valid;
 
 public class BlockLocation {
-    @Getter @Setter private World world;
-    @Getter @Setter private int x,y,z;
+    private World world;
+    private int x,y,z;
     
     public BlockLocation(World world, int x, int y, int z) {
         this.world = world;
@@ -48,5 +46,37 @@ public class BlockLocation {
         }catch (Exception e){
             return null;
         }
+    }
+    
+    public World getWorld() {
+        return this.world;
+    }
+    
+    public int getX() {
+        return this.x;
+    }
+    
+    public int getY() {
+        return this.y;
+    }
+    
+    public int getZ() {
+        return this.z;
+    }
+    
+    public void setWorld(World world) {
+        this.world = world;
+    }
+    
+    public void setX(int x) {
+        this.x = x;
+    }
+    
+    public void setY(int y) {
+        this.y = y;
+    }
+    
+    public void setZ(int z) {
+        this.z = z;
     }
 }

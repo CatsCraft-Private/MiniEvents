@@ -3,20 +3,14 @@ package events.brainsynder.games;
 import events.brainsynder.BlockLocation;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
-import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.HashMap;
 
 public class Parkour extends GameMaker {
     private BlockLocation topLocation = null;

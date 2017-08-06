@@ -4,17 +4,17 @@ import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.games.*;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import simple.brainsynder.storage.ExpireHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class GameManager {
-    @Getter private static List<Game> games = new ArrayList<>();
+    private static List<Game> games = new ArrayList<>();
     private static ExpireHashMap<String, IGamePlayer> gamePlayerMap = new ExpireHashMap();
     
     public static IGamePlayer getPlayer (Player player) {
@@ -71,5 +71,9 @@ public class GameManager {
             }
         }
         return null;
+    }
+    
+    public static List<Game> getGames() {
+        return GameManager.games;
     }
 }

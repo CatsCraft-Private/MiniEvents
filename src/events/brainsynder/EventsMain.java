@@ -6,17 +6,7 @@
 package events.brainsynder;
 
 import events.brainsynder.key.Game;
-import events.brainsynder.key.IGamePlayer;
-import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public class EventsMain {
     SettingsManager settings = SettingsManager.getInstance();

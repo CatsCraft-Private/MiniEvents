@@ -1,6 +1,7 @@
 package events.brainsynder.games;
 
-import events.brainsynder.key.*;
+import events.brainsynder.key.GameMaker;
+import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.libs.BlockChangerAPI;
 import events.brainsynder.libs.ParticleMaker;
 import events.brainsynder.managers.GameManager;
@@ -17,7 +18,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TntRun extends GameMaker {
     public static List<BlockChangerAPI> block = new ArrayList<>();

@@ -14,8 +14,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import simple.brainsynder.nms.IActionMessage;
-import simple.brainsynder.utils.Reflection;
 
 import java.util.HashMap;
 import java.util.UUID;

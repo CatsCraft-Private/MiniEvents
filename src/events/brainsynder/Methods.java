@@ -15,8 +15,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.ITellraw;
 import simple.brainsynder.utils.Reflection;
 
-import java.util.List;
-
 public class Methods implements Listener {
     SettingsManager settings = SettingsManager.getInstance();
     public GamePlugin plugin;

@@ -1,6 +1,5 @@
 package events.brainsynder.managers.data;
 
-import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +27,6 @@ public class StoredData {
     private float storedWalkSpeed;
     private boolean storedAllowFlight;
     private boolean storedFlying;
-    @Getter
     private boolean stored = false;
     
     public StoredData(UUID uuid) {
@@ -137,5 +135,9 @@ public class StoredData {
             storedEffects = null;
         }
         return this;
+    }
+    
+    public boolean isStored() {
+        return this.stored;
     }
 }
