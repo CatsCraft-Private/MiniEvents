@@ -4,7 +4,9 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+
 import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -23,7 +25,7 @@ public class BowBattle extends GameMaker {
         super.onWin(gamePlayer);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
             if (r.transactionSuccess()) {
                 gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
@@ -157,4 +159,9 @@ public class BowBattle extends GameMaker {
                 "§eJust good ol' fashion Bow and Arrows..."
         };
     }
+    @Override
+    public void onEnd() {
+        super.onEnd();
+    }
 }
+
