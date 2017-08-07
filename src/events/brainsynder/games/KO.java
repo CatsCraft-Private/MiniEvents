@@ -4,10 +4,11 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
-
 import net.milkbowl.vault.economy.EconomyResponse;
-
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -55,7 +56,6 @@ public class KO extends GameMaker {
                         if (o.getPlayer().getUniqueId().equals(player.getUniqueId())) continue;
                         if (deadPlayers.contains(o)) continue;
                         onWin(o);
-                        onEnd();
                         plugin.getEventMain().end();
                         break;
                     }

@@ -4,9 +4,7 @@ import events.brainsynder.BlockLocation;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GamePlugin;
-
 import net.milkbowl.vault.economy.EconomyResponse;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -41,7 +39,6 @@ public class Parkour extends GameMaker {
             if (topLocation.atLocation(loc)) {
                 endTask = true;
                 onWin(player);
-                onEnd();
                 plugin.getEventMain().end();
             }
         }

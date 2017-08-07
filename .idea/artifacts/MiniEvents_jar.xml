@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MiniEvents:jar">
+    <output-path>$USER_HOME$/Desktop/Java SCR Code/,outut</output-path>
+    <root id="archive" name="MiniEvents.jar">
+      <element id="module-output" name="MiniEvents" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/config.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/plugin.yml" />
+    </root>
+  </artifact>
+</component>

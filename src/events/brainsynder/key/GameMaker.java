@@ -1,13 +1,16 @@
 package events.brainsynder.key;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class GameMaker implements Game {
     private boolean started = false;
     protected boolean endTask = false;
-    
-    @Override public void onEnd() {
+
+    @Override
+    public void onEnd() {
         started = false;
         unregisterListeners();
         plugin.getEventMain().end();
@@ -20,20 +23,24 @@ public abstract class GameMaker implements Game {
         deadPlayers.clear();
         players.clear();
     }
-    
-    @Override public void onWin(IGamePlayer gamePlayer) {
+
+    @Override
+    public void onWin(IGamePlayer gamePlayer) {
+        onEnd();
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
     }
-    
-    @Override public void lost(IGamePlayer player) {
+
+    @Override
+    public void lost(IGamePlayer player) {
         if (player.getPlayerData().isStored())
             player.getPlayerData().restoreData();
         player.setGame(null);
         deadPlayers.add(player);
         //players.remove(player);
     }
-    
-    @Override public void onStart() {
+
+    @Override
+    public void onStart() {
         started = true;
         plugin.getEventMain().eventstarting = false;
         plugin.getEventMain().eventstarted = true;
@@ -41,7 +48,8 @@ public abstract class GameMaker implements Game {
         players.forEach(player ->
                 player.getPlayer().setGameMode(GameMode.ADVENTURE));
         new BukkitRunnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 if (!plugin.getEventMain().eventstarted) {
                     cancel();
                     return;
@@ -50,34 +58,38 @@ public abstract class GameMaker implements Game {
                     cancel();
                     return;
                 }
-                
+
                 if (players.size() <= 1) {
                     cancel();
                     return;
                 }
-                
+
                 if (endTask) {
                     cancel();
                     return;
                 }
-                
+
                 perTick();
             }
         }.runTaskTimer(plugin, 0, 1);
     }
-    
-    @Override public void perTick() {
+
+    @Override
+    public void perTick() {
     }
-    
-    @Override public boolean hasStarted() {
+
+    @Override
+    public boolean hasStarted() {
         return started;
     }
-    
-    @Override public void setStarted(boolean started) {
+
+    @Override
+    public void setStarted(boolean started) {
         this.started = started;
     }
-    
-    @Override public boolean isSetup() {
+
+    @Override
+    public boolean isSetup() {
         return (settings.getData().isSet("setup." + getName() + ".world"));
     }
 }

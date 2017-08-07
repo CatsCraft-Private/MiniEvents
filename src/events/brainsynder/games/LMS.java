@@ -4,10 +4,10 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
-
 import net.milkbowl.vault.economy.EconomyResponse;
-
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -133,7 +133,6 @@ public class LMS extends GameMaker {
                             if (o.getPlayer().getUniqueId().equals(p.getUniqueId())) continue;
                             if (deadPlayers.contains(o)) continue;
                             onWin(o);
-                            onEnd();
                             plugin.getEventMain().end();
                             break;
                         }

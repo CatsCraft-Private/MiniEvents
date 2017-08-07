@@ -4,9 +4,7 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
-
 import net.milkbowl.vault.economy.EconomyResponse;
-
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -94,7 +92,6 @@ public class KOTH extends GameMaker {
                         }
                     } else {
                         onWin(gamePlayer);
-                        onEnd();
                         plugin.getEventMain().end();
                         break;
                     }
