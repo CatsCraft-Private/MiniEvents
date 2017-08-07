@@ -4,7 +4,9 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+
 import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -28,7 +30,7 @@ public class KO extends GameMaker {
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(o.getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(o, i);
             if (r.transactionSuccess()) {
                 o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
@@ -179,4 +181,9 @@ public class KO extends GameMaker {
                 "§ewatch out, they are doing the same to you..."
         };
     }
+    @Override
+    public void onEnd() {
+        super.onEnd();
+    }
 }
+

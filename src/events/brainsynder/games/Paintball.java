@@ -4,7 +4,9 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+
 import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,6 +21,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import simple.brainsynder.api.ParticleMaker;
 import simple.brainsynder.sound.SoundMaker;
 
@@ -31,7 +34,7 @@ public class Paintball extends GameMaker {
         super.onWin(gamePlayer);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
             if (r.transactionSuccess()) {
                 gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
@@ -238,5 +241,9 @@ public class Paintball extends GameMaker {
                 "§eyou shoot players with 'Paint'",
                 "in order to kill them."
         };
+    }
+    @Override
+    public void onEnd() {
+        super.onEnd();
     }
 }

@@ -4,7 +4,9 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+
 import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,6 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.api.ParticleMaker;
+
 import simple.brainsynder.nms.ITitleMessage;
 import simple.brainsynder.sound.SoundMaker;
 import simple.brainsynder.utils.Reflection;
@@ -32,7 +35,7 @@ public class BlitzTag extends GameMaker {
         super.onWin(gamePlayer);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer().getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
             if (r.transactionSuccess()) {
                 gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
@@ -56,7 +59,7 @@ public class BlitzTag extends GameMaker {
                             if (o.getPlayer().getUniqueId().equals(target.getPlayer().getUniqueId())) continue;
                             if (deadPlayers.contains(o)) continue;
                             onWin(o);
-                            onEnd();
+                            target.getGame().onEnd();
                             plugin.getEventMain().end();
                             break;
                         }
@@ -68,7 +71,7 @@ public class BlitzTag extends GameMaker {
                         if (deadPlayers.contains(gamePlayer)) continue;
                         Player o = gamePlayer.getPlayer();
                         if (!o.getName().equals(target.getPlayer().getName())) {
-                            o.sendMessage(ChatColor.AQUA + target.getPlayer().getName() + " §7has been Disqualified.");
+                            o.sendMessage(ChatColor.AQUA + target.getPlayer().getName() + " §7has been disqualified.");
                         }
                     }
                     ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.CLOUD, 0.5, 15, 0.5);
@@ -79,7 +82,7 @@ public class BlitzTag extends GameMaker {
                     return;
                 }
                 ITitleMessage message = Reflection.getTitleMessage();
-                message.sendMessage(target.getPlayer(), "§3§lTag another Player...", "§3§lTime till disqualification: " + getColor() + countDown);
+                message.sendMessage(target.getPlayer(), "§3§lTag another player...", "§3§lTime till disqualification: " + getColor() + countDown);
                 countDown--;
             }
         }.runTaskTimer(GamePlugin.instance, 0, 16);
@@ -117,6 +120,7 @@ public class BlitzTag extends GameMaker {
             onWin(alive.get(0));
             onEnd();
             plugin.getEventMain().end();
+            // Return?
         }
             int a = r.nextInt(alive.size());
             IGamePlayer target = alive.get(a);
@@ -217,7 +221,7 @@ public class BlitzTag extends GameMaker {
                 
                 if (tagged.getPlayer().getName().equals(event.getDamager().getName())) {
                     tagged = player;
-                    if (aliveCount() > 2) {
+                    if (aliveCount() > 0) {
                         countDown = 15;
                     }
                     players.stream()
@@ -243,4 +247,10 @@ public class BlitzTag extends GameMaker {
                 "§eYou will be Disqualified, and a new tagger will be selected"
         };
     }
+
+    @Override public void onEnd() {
+        super.onEnd();
+        tagged = null;
+    }
 }
+
