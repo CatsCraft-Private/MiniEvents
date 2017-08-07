@@ -4,7 +4,12 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+
+import simple.brainsynder.api.ParticleMaker;
+import simple.brainsynder.api.BlockChangerAPI;
+
 import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,8 +19,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import simple.brainsynder.api.BlockChangerAPI;
-import simple.brainsynder.api.ParticleMaker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,7 @@ public class TntRun extends GameMaker {
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(o.getName(), i);
+            EconomyResponse r = GamePlugin.econ.depositPlayer(o, i);
             if (r.transactionSuccess()) {
                 o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
@@ -51,7 +54,7 @@ public class TntRun extends GameMaker {
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);
             
-            player.teleport(getSpawn());
+            player.teleport(spawn);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
