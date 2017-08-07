@@ -28,6 +28,11 @@ public class TntRun extends GameMaker {
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
+        for (BlockChangerAPI changerAPI : block) {
+            changerAPI.placeOldBlock();
+        }
+
+        block.clear();
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
@@ -36,15 +41,6 @@ public class TntRun extends GameMaker {
                 o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
         }
-    }
-    
-    @Override public void onEnd() {
-        for (BlockChangerAPI changerAPI : block) {
-            changerAPI.placeOldBlock();
-        }
-        
-        block.clear();
-        super.onEnd();
     }
     
     @Override public void onStart() {

@@ -15,7 +15,8 @@ public class Parkour extends GameMaker {
     private BlockLocation topLocation = null;
     
     @Override public void onWin(IGamePlayer gamePlayer) {
-        super.onWin(gamePlayer);
+        onEnd();
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");

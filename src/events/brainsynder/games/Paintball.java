@@ -33,7 +33,8 @@ import java.util.Random;
 public class Paintball extends GameMaker {
     
     @Override public void onWin(IGamePlayer gamePlayer) {
-        super.onWin(gamePlayer);
+        onEnd();
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
             EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);

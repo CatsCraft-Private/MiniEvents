@@ -29,6 +29,11 @@ public class Spleef extends GameMaker {
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
+        for (BlockChangerAPI changerAPI : block) {
+            changerAPI.placeOldBlock();
+        }
+
+        block.clear();
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");

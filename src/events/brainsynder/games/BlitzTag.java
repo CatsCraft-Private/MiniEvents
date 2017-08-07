@@ -47,6 +47,11 @@ public class BlitzTag extends GameMaker {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if ((tagged == null) || (target == null)) {
+                    cancel();
+                    return;
+                }
+
                 if (!target.getPlayer().getName().equals(tagged.getPlayer().getName())) {
                     ITitleMessage message = Reflection.getTitleMessage();
                     message.sendMessage(target.getPlayer(), " ", " ");
