@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Random;
 
 public class Paintball extends GameMaker {
-    
     @Override public void onWin(IGamePlayer gamePlayer) {
         onEnd();
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
@@ -43,29 +42,29 @@ public class Paintball extends GameMaker {
             }
         }
     }
-    
+
     @Override public String getName() {
         return "Paintball";
     }
-    
+
     @Override public void onStart() {
         for (IGamePlayer gamePlayer : players) {
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);
             player.teleport(getSpawn());
-    
+
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 if (players.size() != 0) {
                     super.onStart();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
                 }
-                
+
             }, 120L);
         }
     }
-    
+
     @Override public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
@@ -82,7 +81,7 @@ public class Paintball extends GameMaker {
                 for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
                     player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
                 }
-            
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -100,7 +99,7 @@ public class Paintball extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
+
     private void runThis(final Item item, final Player player) {
         item.setVelocity(player.getLocation().getDirection().multiply(3.0D));
         item.setPickupDelay(2147483647);
@@ -123,10 +122,10 @@ public class Paintball extends GameMaker {
         }.runTaskTimer(plugin, 0, 1);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if (item.isValid())
-            item.remove();
+                item.remove();
         }, 15);
     }
-    
+
     @Override public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack stick = new ItemStack(Material.DIAMOND_HOE);
@@ -157,11 +156,11 @@ public class Paintball extends GameMaker {
         player.getInventory().clear();
         inventory.setItem(0, stick);
     }
-    
+
     @Override public boolean allowsPVP() {
         return true;
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onHit(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -191,7 +190,7 @@ public class Paintball extends GameMaker {
             }
         }
     }
-    
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -203,7 +202,7 @@ public class Paintball extends GameMaker {
                 if (!plugin.getEventMain().eventstarted) {
                     return;
                 }
-    
+
                 int i = plugin.getConfig().getInt("events.paintball-item");
                 if ((blockId == i
                         && event.getAction().equals(Action.RIGHT_CLICK_AIR)
@@ -235,7 +234,7 @@ public class Paintball extends GameMaker {
             }
         }
     }
-    
+
     @Override public String[] description() {
         return new String[] {
                 "§6What is Paintball?",
