@@ -99,31 +99,33 @@ public class Paintball extends GameMaker {
         }
     }
 
-    private void runThis(final Item item, final Player player) {
-        item.setVelocity(player.getLocation().getDirection().multiply(3.0D));
-        item.setPickupDelay(2147483647);
-        SoundMaker.ENTITY_CHICKEN_EGG.playSound(item.getLocation(), 1.0F, 1.0F);
-        new BukkitRunnable() {
-            public void run() {
-                for (Entity entity : item.getNearbyEntities(0.8D, 0.8D, 0.8D)) {
-                    if (entity instanceof Player) {
-                        Player ent = (Player) entity;
-                        if (!ent.getUniqueId().equals(player.getUniqueId())) {
-                            ent.damage(plugin.getConfig().getDouble("events.paintball-damage"), player);
-                            ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.SMOKE_LARGE, 20, 0.5);
-                            maker.sendToLocation(entity.getLocation());
-                            item.remove();
-                        }
-                    }
-                }
-                cancel();
-            }
-        }.runTaskTimer(plugin, 0, 1);
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            if (item.isValid())
-                item.remove();
-        }, 15);
-    }
+	private void runThis(final Item item, final Player player) {
+		item.setVelocity(player.getLocation().getDirection().multiply(3.0D));
+		item.setPickupDelay(2147483647);
+		SoundMaker.ENTITY_CHICKEN_EGG.playSound(item.getLocation(), 1.0F, 1.0F);
+		new BukkitRunnable() {
+			public void run() {
+				if (item.isDead() || item.isOnGround() || !item.isValid()) {
+					this.cancel();
+				}
+				for (Entity entity : item.getNearbyEntities(0.8D, 0.8D, 0.8D)) {
+					if (entity instanceof Player) {
+						Player ent = (Player) entity;
+						if (!ent.getUniqueId().equals(player.getUniqueId())) {
+							ent.damage(plugin.getConfig().getDouble("events.paintball-damage"), player);
+							ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.SMOKE_LARGE, 20, 0.5);
+							maker.sendToLocation(entity.getLocation());
+							item.remove();
+						}
+					}
+				}
+			}
+		}.runTaskTimer(plugin, 0, 1);
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+			if (item.isValid())
+				item.remove();
+		}, 15);
+	}
 
     @Override public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
