@@ -158,6 +158,10 @@ public class Spleef extends GameMaker {
                     return;
                 }
                 storage.addBlock(b);
+                if (!hasStarted() && !plugin.getEventMain().eventstarted && !plugin.getEventMain().eventstarting) {
+                    e.setCancelled(true);
+                    return;
+                }
                 b.setType(Material.AIR);
             }
         }

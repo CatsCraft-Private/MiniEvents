@@ -79,6 +79,9 @@ public class TntRun extends GameMaker {
                             if (!plugin.getEventMain().eventstarted) return;
                             storage.addBlock(b);
                             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                                if (!hasStarted() && !plugin.getEventMain().eventstarted && !plugin.getEventMain().eventstarting) {
+                                    return;
+                                }
                                 ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.BLOCK_DUST, 30, 0.5);
                                 maker.setData(b.getType(), b.getState().getData().toItemStack().getDurability());
                                 maker.sendToLocation(b.getLocation());
@@ -181,6 +184,9 @@ public class TntRun extends GameMaker {
                     if (b.getType() != Material.TNT) return;
                     storage.addBlock(b);
                     Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        if (!hasStarted() && !plugin.getEventMain().eventstarted && !plugin.getEventMain().eventstarting) {
+                            return;
+                        }
                         ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.BLOCK_DUST, 50, 1.0);
                         maker.setData(b.getType(), b.getState().getData().toItemStack().getDurability());
                         maker.sendToLocation(b.getLocation());
