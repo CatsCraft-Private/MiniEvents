@@ -61,8 +61,7 @@ public class Handle implements Listener {
     public void blockBreakEvent(final BlockBreakEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
         if (gamePlayer.isPlaying()) {
-            if (GamePlugin.instance.getEventMain().eventstarted
-                    || GamePlugin.instance.getEventMain().eventstarting)
+            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
                 event.setCancelled(true);
         }
     }

@@ -7,6 +7,7 @@ import events.brainsynder.games.KOTH;
 import events.brainsynder.games.Parkour;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.key.IGamePlayer.State;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import events.brainsynder.utils.BlockLocation;
@@ -150,6 +151,7 @@ public class GameCommands implements CommandListener {
         }
         
         gamePlayer.getGame().removePlayer(gamePlayer);
+        gamePlayer.setState(State.NOT_PLAYING);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7left the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(plugin.getEventMain().waiting.getPlayer().size()))));
         for (IGamePlayer gamer : gamePlayer.getGame().getPlayer()) {
             gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7left the event. Players in the event: &b{1}&7.".replace("{0}", player.getName()).replace("{1}", Integer.toString((plugin.getEventMain().waiting.getPlayer().size())))));
