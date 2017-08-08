@@ -1,10 +1,14 @@
 package events.brainsynder.commands.api;
 
+import com.google.common.collect.ImmutableList;
+import events.brainsynder.key.Game;
+import events.brainsynder.managers.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -22,56 +26,56 @@ public class CommandManager {
             playerErrorDefault = errorPrefix + "You must be a player to access this command.",
             argumentsErrorDefault = errorPrefix + "Invalid Arguments, Please try again!";
 
-    public static void register(CommandListener... listeners){
+    public static void register(CommandListener... listeners) {
 
-        for(CommandListener listener: listeners){
+        for (CommandListener listener : listeners) {
 
             Class<?> _class = listener.getClass();
             Method[] classMethods = _class.getMethods();
 
             Map<String, Set<Method>> map = new HashMap<>();
 
-            for(Method method: classMethods){
+            for (Method method : classMethods) {
 
-                if(!method.isAnnotationPresent(Command.class)) continue;
+                if (!method.isAnnotationPresent(Command.class)) continue;
 
                 List<String> names = new ArrayList<>();
-                if(!method.getAnnotation(Command.class).name().isEmpty()){
+                if (!method.getAnnotation(Command.class).name().isEmpty()) {
 
                     Command command = method.getAnnotation(Command.class);
 
-                    if(command.name().trim().contains(" ")){
+                    if (command.name().trim().contains(" ")) {
                         names.addAll(new ArrayList<>(Arrays.asList(command.name().trim().split(" "))));
 
-                    }else{
+                    } else {
                         names.add(command.name());
 
                     }
 
-                }else if(_class.isAnnotationPresent(CommandClass.class) && !_class.getAnnotation(CommandClass.class).name().isEmpty()){
+                } else if (_class.isAnnotationPresent(CommandClass.class) && !_class.getAnnotation(CommandClass.class).name().isEmpty()) {
 
                     CommandClass command = _class.getAnnotation(CommandClass.class);
 
-                    if(command.name().trim().contains(" ")){
+                    if (command.name().trim().contains(" ")) {
                         names.addAll(new ArrayList<>(Arrays.asList(command.name().trim().split(" "))));
 
-                    }else{
+                    } else {
                         names.add(command.name());
 
                     }
-                }else{
+                } else {
                     names.add(method.getName());
                 }
 
-                for(String name: names){
+                for (String name : names) {
 
-                    if(!map.containsKey(name)){
+                    if (!map.containsKey(name)) {
 
                         Set<Method> methods = new HashSet<>();
                         methods.add(method);
                         map.put(name, methods);
 
-                    }else{
+                    } else {
 
                         map.get(name).add(method);
 
@@ -87,7 +91,7 @@ public class CommandManager {
 
     }
 
-    private static void registerCommands(CommandListener listener, Map<String, Set<Method>> map){
+    private static void registerCommands(CommandListener listener, Map<String, Set<Method>> map) {
         map.forEach((name, methods) -> new CustomCommand(name) {
 
             @Override
@@ -167,7 +171,7 @@ public class CommandManager {
 
                 }
 
-                if(!error.isEmpty())
+                if (!error.isEmpty())
                     sender.sendMessage(error);
 
                 return true;
@@ -176,7 +180,7 @@ public class CommandManager {
         });
     }
 
-    private static void run(Method method, String arguments, String[] args, CommandListener listener, CommandSender sender, boolean player){
+    private static void run(Method method, String arguments, String[] args, CommandListener listener, CommandSender sender, boolean player) {
         try {
 
             int parameters = method.getParameterTypes().length;
@@ -193,33 +197,33 @@ public class CommandManager {
                         method.invoke(listener, (Object) getArgs(arguments, args));
                 }
             } else if (parameters == 2) {
-                if(method.getParameterTypes()[0].equals(Player.class) || method.getParameterTypes()[0].equals(CommandSender.class)) {
+                if (method.getParameterTypes()[0].equals(Player.class) || method.getParameterTypes()[0].equals(CommandSender.class)) {
                     if (arguments.isEmpty())
                         method.invoke(listener, sender, args);
                     else
                         method.invoke(listener, sender, getArgs(arguments, args));
-                }else{
+                } else {
                     if (!arguments.isEmpty())
                         method.invoke(listener, getArgs(arguments, args), sender);
                     else
                         method.invoke(listener, args, sender);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static boolean permissionCheck(String permissions, CommandSender sender) {
-        if(sender.isOp() || permissions.isEmpty()) return true;
+        if (sender.isOp() || permissions.isEmpty()) return true;
 
-        if(permissions.trim().contains(" ")) {
+        if (permissions.trim().contains(" ")) {
             for (String permission : permissions.trim().split(" ")) {
                 if (!sender.hasPermission(permission))
                     return false;
             }
-        }else if(!sender.hasPermission(permissions))
-                return false;
+        } else if (!sender.hasPermission(permissions))
+            return false;
 
         return true;
     }
@@ -241,12 +245,12 @@ public class CommandManager {
                 continue;
 
             if (wildcards[i].contains(eitherSymbol))
-                for (String o :  wildcards[i].split("\\|"))
+                for (String o : wildcards[i].split("\\|"))
                     if (!o.equalsIgnoreCase(args[i]))
                         return false;
 
-            if(wildcards[i].contains(numberWildcardSymbol))
-                if(!isNumber(wildcards[i]))
+            if (wildcards[i].contains(numberWildcardSymbol))
+                if (!isNumber(wildcards[i]))
                     return false;
 
             if (!wildcards[i].toLowerCase().equals(args[i].toLowerCase()))
@@ -273,7 +277,7 @@ public class CommandManager {
         return array;
     }
 
-    private static boolean isNumber(String string){
+    private static boolean isNumber(String string) {
         return string.matches("-?\\d+(\\.\\d+)?");
     }
 
@@ -292,6 +296,26 @@ public class CommandManager {
             }
         }
 
+        @Override
+        public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+            if (!alias.equalsIgnoreCase("event")) return super.tabComplete(sender, alias, args);
+
+            if (args.length == 0) {
+                return ImmutableList.of();
+            } else {
+                List<String> complete = new ArrayList<>();
+                String lastWord = args[args.length - 1];
+                for (Game g : GameManager.getGames()) {
+                    if (g.isSetup()) {
+                        if (StringUtil.startsWithIgnoreCase(g.getName(), lastWord)) {
+                            complete.add(g.getName());
+                        }
+                    }
+                }
+                complete.sort(String.CASE_INSENSITIVE_ORDER);
+                return complete;
+            }
+        }
     }
 
 }
