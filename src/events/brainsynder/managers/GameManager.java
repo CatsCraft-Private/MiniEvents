@@ -30,7 +30,12 @@ public class GameManager {
      *                    Handle the Game classes
      * ==================================================================
      */
-    public static void register (Game game, Plugin plugin) {
+    public static void resetGames () {
+        games.clear();
+        initiate();
+    }
+
+    private static void register(Game game, Plugin plugin) {
         if (!games.contains(game)) {
             games.add(game);
             Bukkit.getServer().getPluginManager().registerEvents(game, plugin);

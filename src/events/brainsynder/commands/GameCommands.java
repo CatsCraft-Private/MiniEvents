@@ -190,7 +190,8 @@ public class GameCommands implements CommandListener {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not have permission."));
                     return;
                 }
-                
+
+                GameManager.resetGames();
                 plugin.reloadConfig();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Reloaded MiniEvent's config."));
             } else if (args[0].equalsIgnoreCase("end")) {
