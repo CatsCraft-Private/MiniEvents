@@ -43,6 +43,7 @@ public class GamePlugin extends JavaPlugin {
         method = new CountDown(this);
         Bukkit.getServer().getPluginManager().registerEvents(new Handle(), this);
         CommandManager.register(new GameCommands());
+        this.getCommand("event").setTabCompleter(new EventCommandTabManager());
         if (!setupEconomy()) {
             getLogger().info("Could not find Vault. Make sure you set money.enabled to false.");
         }
