@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -107,6 +108,7 @@ public class Paintball extends GameMaker {
 			public void run() {
 				if (item.isDead() || item.isOnGround() || !item.isValid()) {
 					this.cancel();
+					return;
 				}
 				for (Entity entity : item.getNearbyEntities(0.8D, 0.8D, 0.8D)) {
 					if (entity instanceof Player) {
@@ -126,6 +128,18 @@ public class Paintball extends GameMaker {
 				item.remove();
 		}, 15);
 	}
+
+	@EventHandler
+    public void onRegen (EntityRegainHealthEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        IGamePlayer player = GameManager.getPlayer((Player) e.getEntity());
+        if (player.isPlaying()) {
+            if (player.getGame() instanceof Paintball) {
+                if (plugin.getEventMain().eventstarted)
+                    e.setCancelled(true);
+            }
+        }
+    }
 
     @Override public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
