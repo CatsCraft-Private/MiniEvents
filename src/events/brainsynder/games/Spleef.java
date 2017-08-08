@@ -72,19 +72,21 @@ public class Spleef extends GameMaker {
             Location spawn = getSpawn();
             storage = new BlockStorage();
             for (IGamePlayer gamePlayer : players) {
+                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 equipPlayer(player);
                 player.teleport(spawn);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    if (players.size() != 0) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-invins-over")));
-                        super.onStart();
-                        player.setGameMode(GameMode.SURVIVAL);
-                    }
-                }, 120L);
             }
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                super.onStart();
+                players.forEach(gamePlayer -> {
+                    Player player = gamePlayer.getPlayer();
+                    player.setGameMode(GameMode.SURVIVAL);
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-invins-over")));
+                });
+            }, 120L);
         }
     }
     

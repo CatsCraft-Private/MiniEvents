@@ -108,7 +108,7 @@ public class GameCommands implements CommandListener {
     @Command(name = "join")
     public void join(Player player) {
         IGamePlayer gamePlayer = GameManager.getPlayer(player);
-        if (gamePlayer.isPlaying()) {
+        if (gamePlayer.isPlaying() || (gamePlayer.getState() == IGamePlayer.State.WAITING)) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are already in the event."));
             return;
         }
@@ -124,6 +124,7 @@ public class GameCommands implements CommandListener {
         }
         plugin.getEventMain().waiting.addPlayer(gamePlayer);
         gamePlayer.setGame(plugin.getEventMain().waiting);
+        gamePlayer.setState(IGamePlayer.State.WAITING);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(plugin.getEventMain().waiting.getPlayer().size()))));
         for (IGamePlayer gamer : plugin.getEventMain().waiting.getPlayer()) {
             if (!gamer.getPlayer().getName().equals(player.getName()))
@@ -134,7 +135,7 @@ public class GameCommands implements CommandListener {
     @Command(name = "leave")
     public void leave(Player player) {
         IGamePlayer gamePlayer = GameManager.getPlayer(player);
-        if (!gamePlayer.isPlaying()) {
+        if (!gamePlayer.isPlaying() && (gamePlayer.getState() != IGamePlayer.State.WAITING)) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are not in an event."));
             return;
         }

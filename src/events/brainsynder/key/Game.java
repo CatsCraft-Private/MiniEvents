@@ -3,7 +3,9 @@ package events.brainsynder.key;
 import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.CommandListener;
 import events.brainsynder.managers.GamePlugin;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -16,17 +18,19 @@ public interface Game extends Listener, CommandListener {
     List<IGamePlayer> deadPlayers = new ArrayList<>();
     GamePlugin plugin = GamePlugin.instance;
     SettingsManager settings = plugin.getSettings();
-    
+
     /**
      * Run on Game end
      */
-    void onEnd ();
-    
+    void onEnd();
+
     void lost(IGamePlayer player);
-    
-    default void onLeave (IGamePlayer player) {
-        player.getPlayerData().restoreData();
+
+    default void onLeave(IGamePlayer player) {
+        if (player.getPlayerData().isStored())
+            player.getPlayerData().restoreData();
         player.setGame(null);
+        player.setState(IGamePlayer.State.NOT_PLAYING);
         if (aliveCount() > 2) {
             lost(player);
             for (IGamePlayer gamePlayer : players) {
@@ -34,7 +38,7 @@ public interface Game extends Listener, CommandListener {
                 if (deadPlayers.contains(gamePlayer)) continue;
                 gamePlayer.getPlayer().sendMessage("§c" + player.getPlayer().getName() + " has left the event.");
             }
-        }else{
+        } else {
             lost(player);
             for (IGamePlayer o : players) {
                 if (o.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
@@ -47,93 +51,93 @@ public interface Game extends Listener, CommandListener {
         }
         players.remove(player);
     }
-    
-    default int aliveCount () {
+
+    default int aliveCount() {
         return (players.size() - deadPlayers.size());
     }
-    
-    default String getName () {
+
+    default String getName() {
         return getClass().getSimpleName();
     }
-    
-    void onWin (IGamePlayer gamePlayer);
-    
+
+    void onWin(IGamePlayer gamePlayer);
+
     /**
      * Run on Game Start
      */
-    void onStart ();
-    
+    void onStart();
+
     /**
      * Runs per tick
      */
-    void perTick ();
-    
+    void perTick();
+
     /**
      * Equips the items for the player, can be the custom inv setup.
      */
-    void equipPlayer (Player player);
-    
+    void equipPlayer(Player player);
+
     /**
      * The Default Items for the game.
      */
-    void equipDefaultPlayer (Player player);
-    
+    void equipDefaultPlayer(Player player);
+
     /**
      * Has the game started?
      */
-    boolean hasStarted ();
-    
+    boolean hasStarted();
+
     /**
      * Set if the game has started
      */
-    void setStarted (boolean val);
-    
+    void setStarted(boolean val);
+
     /**
      * the Players Currently in the Game
      */
-    default List<IGamePlayer> getPlayer () {
+    default List<IGamePlayer> getPlayer() {
         return players;
     }
-    
-    default void registerListeners () {
+
+    default void registerListeners() {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
-    
-    default void unregisterListeners () {
+
+    default void unregisterListeners() {
         HandlerList.unregisterAll(this);
     }
-    
+
     /**
      * Add a player to the Game
      */
-    default void addPlayer (IGamePlayer player) {
+    default void addPlayer(IGamePlayer player) {
         if (!players.contains(player)) {
             players.add(player);
         }
     }
-    
+
     /**
      * Remove a player to the Game
      */
-    default void removePlayer (IGamePlayer player) {
+    default void removePlayer(IGamePlayer player) {
         if (players.contains(player)) {
             players.remove(player);
         }
     }
-    
-    default boolean isSetup () {
+
+    default boolean isSetup() {
         return false;
     }
-    
-    default boolean allowsPVP () {
+
+    default boolean allowsPVP() {
         return false;
     }
-    
-    default String[] description () {
+
+    default String[] description() {
         return new String[0];
     }
-    
-    default Location getSpawn () {
+
+    default Location getSpawn() {
         World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".world"));
         double x = settings.getData().getDouble("setup." + getName() + ".x");
         double y = settings.getData().getDouble("setup." + getName() + ".y");

@@ -41,20 +41,21 @@ public class BowBattle extends GameMaker {
     @Override public void onStart() {
         Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
+            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);
             player.teleport(spawn);
     
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                if (players.size() != 0) {
-                    super.onStart();
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
-                }
-                
-            }, 120L);
         }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            super.onStart();
+            players.forEach(gamePlayer -> {
+                Player player = gamePlayer.getPlayer();
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
+            });
+        }, 120L);
     }
     
     @Override public void equipPlayer(Player player) {
@@ -123,14 +124,14 @@ public class BowBattle extends GameMaker {
     public void onHit(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && (!(event.getDamager() instanceof Projectile))) return;
         if (!(event.getEntity() instanceof Player)) return;
-        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            event.setCancelled(true);
-            return;
-        }
         IGamePlayer player = GameManager.getPlayer((Player) event.getEntity());
         if (player.isPlaying()) {
             if (player.getGame() instanceof BowBattle) {
                 if (!plugin.getEventMain().eventstarted) {
+                    event.setCancelled(true);
+                    return;
+                }
+                if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                     event.setCancelled(true);
                     return;
                 }

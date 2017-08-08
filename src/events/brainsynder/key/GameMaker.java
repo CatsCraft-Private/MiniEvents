@@ -12,13 +12,14 @@ public abstract class GameMaker implements Game {
     @Override
     public void onEnd() {
         started = false;
-        unregisterListeners();
+        //unregisterListeners();
         plugin.getEventMain().end();
         for (IGamePlayer player : players) {
             if (deadPlayers.contains(player)) continue;
             if (player.getPlayerData().isStored())
                 player.getPlayerData().restoreData();
             player.setGame(null);
+            player.setState(IGamePlayer.State.NOT_PLAYING);
         }
         deadPlayers.clear();
         players.clear();
@@ -41,12 +42,15 @@ public abstract class GameMaker implements Game {
 
     @Override
     public void onStart() {
+        //registerListeners();
         started = true;
         plugin.getEventMain().eventstarting = false;
         plugin.getEventMain().eventstarted = true;
         plugin.getEventMain().waiting = null;
-        players.forEach(player ->
-                player.getPlayer().setGameMode(GameMode.ADVENTURE));
+        players.forEach(player -> {
+            player.setState(IGamePlayer.State.IN_GAME);
+            player.getPlayer().setGameMode(GameMode.ADVENTURE);
+        });
         new BukkitRunnable() {
             @Override
             public void run() {

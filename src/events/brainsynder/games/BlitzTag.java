@@ -146,6 +146,7 @@ public class BlitzTag extends GameMaker {
     public void onStart() {
         Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
+            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);

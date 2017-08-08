@@ -123,18 +123,20 @@ public class KOTH extends GameMaker {
             topLocation = new Location(world, x, y, z, yaw, pitch);
             
             for (IGamePlayer gamePlayer : players) {
+                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 equipPlayer(player);
                 player.teleport(spawn);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    if (players.size() != 0) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
-                        super.onStart();
-                    }
-                }, 120L);
             }
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                super.onStart();
+                players.forEach(gamePlayer -> {
+                    Player player = gamePlayer.getPlayer();
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
+                });
+            }, 120L);
         }
     }
     

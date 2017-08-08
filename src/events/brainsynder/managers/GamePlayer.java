@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 class GamePlayer implements IGamePlayer {
     private Game game;
     private Player player;
+    private State state;
     private StoredData storedData;
     
     GamePlayer (Player player) {
@@ -22,7 +23,17 @@ class GamePlayer implements IGamePlayer {
     @Override public void setGame(Game game) {
         this.game = game;
     }
-    
+
+    @Override
+    public State getState() {
+        return state;
+    }
+
+    @Override
+    public void setState(State state) {
+        this.state = state;
+    }
+
     @Override public Player getPlayer() {
         return player;
     }
@@ -32,6 +43,6 @@ class GamePlayer implements IGamePlayer {
     }
     
     @Override public boolean isPlaying() {
-        return (game != null);
+        return ((game != null) && ((state == State.IN_GAME_ARENA) || (state == State.IN_GAME)));
     }
 }

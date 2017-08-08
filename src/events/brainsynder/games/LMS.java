@@ -40,20 +40,21 @@ public class LMS extends GameMaker {
     @Override public void onStart() {
         Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
+            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);
             player.teleport(spawn);
             
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                if (players.size() != 0) {
-                    super.onStart();
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
-                }
-                
-            }, 120L);
         }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            super.onStart();
+            players.forEach(gamePlayer -> {
+                Player player = gamePlayer.getPlayer();
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
+            });
+        }, 120L);
     }
     
     @Override public void equipPlayer(Player player) {

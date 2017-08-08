@@ -13,4 +13,15 @@ public interface IGamePlayer {
     StoredData getPlayerData();
     
     boolean isPlaying ();
+
+    State getState ();
+
+    void setState (State state);
+
+    enum State {
+        NOT_PLAYING,
+        IN_GAME,
+        IN_GAME_ARENA,
+        WAITING
+    }
 }
