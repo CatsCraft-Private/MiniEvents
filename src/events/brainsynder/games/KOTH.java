@@ -113,6 +113,7 @@ public class KOTH extends GameMaker {
                 plugin.getEventMain().end();
                 return;
             }
+            Location spawn = getSpawn();
             World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".top.world"));
             double x = settings.getData().getDouble("setup." + getName() + ".top.x");
             double y = settings.getData().getDouble("setup." + getName() + ".top.y");
@@ -125,7 +126,7 @@ public class KOTH extends GameMaker {
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 equipPlayer(player);
-                player.teleport(getSpawn());
+                player.teleport(spawn);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
                 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                     if (players.size() != 0) {

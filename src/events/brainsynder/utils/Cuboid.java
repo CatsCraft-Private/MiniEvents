@@ -1,10 +1,12 @@
-package events.brainsynder;
+package events.brainsynder.utils;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This was planned to be used for the TntRun and Spleef Events... but I never got around to adding it XD

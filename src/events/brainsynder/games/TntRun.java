@@ -4,6 +4,7 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import events.brainsynder.utils.BlockStorage;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,22 +18,15 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import simple.brainsynder.api.BlockChangerAPI;
 import simple.brainsynder.api.ParticleMaker;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TntRun extends GameMaker {
-    private static List<BlockChangerAPI> block = new ArrayList<>();
+    private static BlockStorage storage = null;
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
-        for (BlockChangerAPI changerAPI : block) {
-            changerAPI.placeOldBlock();
-        }
+        storage.reset();
 
-        block.clear();
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
@@ -41,6 +35,7 @@ public class TntRun extends GameMaker {
                 o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
         }
+        storage = null;
     }
     
     @Override public void onStart() {
@@ -53,6 +48,7 @@ public class TntRun extends GameMaker {
             player.teleport(spawn);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
         }
+        storage = new BlockStorage();
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if (players.size() != 0) {
                 super.onStart();
@@ -81,14 +77,12 @@ public class TntRun extends GameMaker {
                             if (b == null) return;
                             if (b.getType() != Material.TNT) return;
                             if (!plugin.getEventMain().eventstarted) return;
-                            BlockChangerAPI changerAPI = new BlockChangerAPI(b);
-                            changerAPI.setMaterial(Material.AIR);
-                            block.add(changerAPI);
+                            storage.addBlock(b);
                             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                                 ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.BLOCK_DUST, 30, 0.5);
                                 maker.setData(b.getType(), b.getState().getData().toItemStack().getDurability());
                                 maker.sendToLocation(b.getLocation());
-                                changerAPI.placeNewBlock();
+                                b.setType(Material.AIR);
                             }, 5L);
                         }
                     }.runTaskTimer(plugin, 0, 10);
@@ -185,14 +179,12 @@ public class TntRun extends GameMaker {
                     final Block b = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
                     if (b == null) return;
                     if (b.getType() != Material.TNT) return;
-                    BlockChangerAPI changerAPI = new BlockChangerAPI(b);
-                    changerAPI.setMaterial(Material.AIR);
-                    block.add(changerAPI);
+                    storage.addBlock(b);
                     Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                         ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.BLOCK_DUST, 50, 1.0);
                         maker.setData(b.getType(), b.getState().getData().toItemStack().getDurability());
                         maker.sendToLocation(b.getLocation());
-                        changerAPI.placeNewBlock();
+                        b.setType(Material.AIR);
                     }, 5L);
                 }
             }

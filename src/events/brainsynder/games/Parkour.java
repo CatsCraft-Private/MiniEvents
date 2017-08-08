@@ -1,12 +1,13 @@
 package events.brainsynder.games;
 
-import events.brainsynder.BlockLocation;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GamePlugin;
+import events.brainsynder.utils.BlockLocation;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -55,13 +56,14 @@ public class Parkour extends GameMaker {
                 plugin.getEventMain().end();
                 return;
             }
+            Location spawn = getSpawn();
             topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ".winLocation"));
             
             for (IGamePlayer gamePlayer : players) {
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 equipPlayer(player);
-                player.teleport(getSpawn());
+                player.teleport(spawn);
             }
             super.onStart();
         }

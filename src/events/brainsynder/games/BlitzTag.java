@@ -7,6 +7,7 @@ import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -143,11 +144,12 @@ public class BlitzTag extends GameMaker {
 
     @Override
     public void onStart() {
+        Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);
-            player.teleport(getSpawn());
+            player.teleport(spawn);
 
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 2 seconds to spread out..."));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -253,11 +255,11 @@ public class BlitzTag extends GameMaker {
     @Override
     public String[] description() {
         return new String[]{
-                "§7BlitzTag§e is an event made",
-                "§eto be fast paced and exhilarating",
-                "§eSimply be the last person to not get tagged.",
-                "§eIf you do not tag a player within the time",
-                "§eYou will be Disqualified, and a new tagger will be selected"
+                "§cBlitzTag§8 is an event made",
+                "§8to be fast paced and exhilarating",
+                "§8Simply be the last person to not get tagged.",
+                "§8If you do not tag a player within the time",
+                "§8You will be Disqualified, and a new tagger will be selected"
         };
     }
 

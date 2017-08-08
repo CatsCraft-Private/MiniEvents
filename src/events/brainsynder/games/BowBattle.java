@@ -7,6 +7,7 @@ import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -38,11 +39,12 @@ public class BowBattle extends GameMaker {
     }
     
     @Override public void onStart() {
+        Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             equipPlayer(player);
-            player.teleport(getSpawn());
+            player.teleport(spawn);
     
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {

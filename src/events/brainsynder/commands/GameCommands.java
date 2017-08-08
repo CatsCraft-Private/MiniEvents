@@ -1,6 +1,5 @@
 package events.brainsynder.commands;
 
-import events.brainsynder.BlockLocation;
 import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.Command;
 import events.brainsynder.commands.api.CommandListener;
@@ -10,7 +9,10 @@ import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
-import org.bukkit.*;
+import events.brainsynder.utils.BlockLocation;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;

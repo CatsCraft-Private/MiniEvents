@@ -1,6 +1,8 @@
-package events.brainsynder;
+package events.brainsynder.utils;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import simple.brainsynder.utils.Valid;
 
 public class BlockLocation {
@@ -19,6 +21,10 @@ public class BlockLocation {
 
     public String toDataString() {
         return "BlockLocation:[world=" + world.getName() + ",x=" + x + ",y=" + y + ",z=" + z + ']';
+    }
+
+    public Location toLocation () {
+        return new Location(world, x, y, z);
     }
     
     public boolean atLocation (BlockLocation location) {

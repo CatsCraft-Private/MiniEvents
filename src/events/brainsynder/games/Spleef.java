@@ -4,11 +4,9 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import events.brainsynder.utils.BlockStorage;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -19,21 +17,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import simple.brainsynder.api.BlockChangerAPI;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Spleef extends GameMaker {
-    private List<BlockChangerAPI> block = new ArrayList<>();
+    private static BlockStorage storage = null;
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
-        for (BlockChangerAPI changerAPI : block) {
-            changerAPI.placeOldBlock();
-        }
-
-        block.clear();
+        storage.reset();
         Player o = gamePlayer.getPlayer();
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
@@ -42,6 +32,7 @@ public class Spleef extends GameMaker {
                 o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
             }
         }
+        storage = null;
     }
     
     @Override public void perTick() {
@@ -73,27 +64,18 @@ public class Spleef extends GameMaker {
         }
     }
     
-    @Override public void onEnd() {
-        if (!block.isEmpty()) {
-            for (BlockChangerAPI changerAPI : block) {
-                changerAPI.placeOldBlock();
-            }
-        
-            block.clear();
-        }
-        super.onEnd();
-    }
-    
     @Override public void onStart() {
         if (settings.getData().getSection("setup." + getName()) == null) {
             Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-spawn-not-set")));
             plugin.getEventMain().end();
         } else {
+            Location spawn = getSpawn();
+            storage = new BlockStorage();
             for (IGamePlayer gamePlayer : players) {
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 equipPlayer(player);
-                player.teleport(getSpawn());
+                player.teleport(spawn);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));
                 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                     if (players.size() != 0) {
@@ -175,10 +157,8 @@ public class Spleef extends GameMaker {
                     e.setCancelled(true);
                     return;
                 }
-                BlockChangerAPI changerAPI = new BlockChangerAPI(b);
-                changerAPI.setMaterial(Material.AIR);
-                block.add(changerAPI);
-                changerAPI.placeNewBlock();
+                storage.addBlock(b);
+                b.setType(Material.AIR);
             }
         }
     }

@@ -1,4 +1,4 @@
-package events.brainsynder;
+package events.brainsynder.utils;
 
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
