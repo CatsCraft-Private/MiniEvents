@@ -6,14 +6,14 @@ import events.brainsynder.managers.data.StoredData;
 import org.bukkit.entity.Player;
 
 class GamePlayer implements IGamePlayer {
-    private Game game;
+    private Game game = null;
     private Player player;
-    private State state;
+    private State state = State.NOT_PLAYING;
     private StoredData storedData;
     
     GamePlayer (Player player) {
         this.player = player;
-        storedData = new StoredData(player.getUniqueId());
+        storedData = new StoredData(player);
     }
     
     @Override public Game getGame() {
