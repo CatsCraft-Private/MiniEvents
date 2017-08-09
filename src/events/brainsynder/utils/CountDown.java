@@ -2,6 +2,7 @@ package events.brainsynder.utils;
 
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.key.IGamePlayer.State;
 import events.brainsynder.managers.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,6 +38,7 @@ public class CountDown implements Listener {
                                     if (size == 1) {
                                         IGamePlayer player = game.getPlayer().get(0);
                                         game.removePlayer(player);
+                                        player.setState(State.NOT_PLAYING);
                                         player.setGame(null);
                                         
                                     }
