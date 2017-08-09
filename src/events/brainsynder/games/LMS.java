@@ -40,11 +40,11 @@ public class LMS extends GameMaker {
     @Override public void onStart() {
         Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
-            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
-            equipPlayer(player);
             player.teleport(spawn);
+            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
+            equipPlayer(player);
             
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
         }
@@ -129,10 +129,8 @@ public class LMS extends GameMaker {
                 if ((p.getHealth() - event.getDamage()) <= 1) {
                     event.setCancelled(true);
                     p.setHealth(p.getMaxHealth());
-                    if (aliveCount() > 2) {
-                        lost(player);
-                    } else if (aliveCount() == 2) {
-                        lost(player);
+                    lost(player);
+                    if (aliveCount() == 1) {
                         for (IGamePlayer o : players) {
                             if (o.getPlayer().getUniqueId().equals(p.getUniqueId())) continue;
                             if (deadPlayers.contains(o)) continue;

@@ -60,11 +60,11 @@ public class Parkour extends GameMaker {
             topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ".winLocation"));
             
             for (IGamePlayer gamePlayer : players) {
-                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
-                equipPlayer(player);
                 player.teleport(spawn);
+                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
+                equipPlayer(player);
             }
             super.onStart();
         }

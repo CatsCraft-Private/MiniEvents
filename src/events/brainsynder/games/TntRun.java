@@ -41,12 +41,12 @@ public class TntRun extends GameMaker {
     @Override public void onStart() {
         Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
-            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
-            equipPlayer(player);
-            
             player.teleport(spawn);
+            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
+            equipPlayer(player);
+
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
         }
         storage = new BlockStorage();
@@ -151,11 +151,9 @@ public class TntRun extends GameMaker {
                     || player.getLocation().getBlock().getType().equals(Material.WATER)
                     || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.STATIONARY_WATER)
                     || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.WATER)) {
-                if (aliveCount() > 2) {
-                    lost(gamePlayer);
-                } else if (aliveCount() == 2) {
+                lost(gamePlayer);
+                if (aliveCount() == 1) {
                     endTask = true;
-                    lost(gamePlayer);
                     for (IGamePlayer o : players) {
                         if (o.getPlayer().getUniqueId().equals(player.getUniqueId())) continue;
                         if (deadPlayers.contains(o)) continue;
