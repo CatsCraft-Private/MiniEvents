@@ -44,14 +44,7 @@ public class CountDown implements Listener {
                                     plugin.getEventMain().end();
                                     cancel();
                                 } else {
-                                    ITellraw raw = Reflection.getTellraw("§b{EVENT} §7will start in §b{TIME} §7seconds! "
-                                            .replace("{TIME}", Integer.toString(i)).replace("{EVENT}", game.getName().toUpperCase()));
-                                    raw.then("§7Type §b/join §7to join.");
-                                    raw.tooltip("§7Or Click Here ;)");
-                                    raw.command("/join");
-                                    Bukkit.getOnlinePlayers().forEach(raw::send);
                                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.event-started").replace("{EVENT}", game.getName().toUpperCase())));
-                                    game.registerListeners();
                                     game.onStart();
                                     cancel();
                                 }
