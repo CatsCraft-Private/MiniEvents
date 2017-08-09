@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import events.brainsynder.key.IGamePlayer.State;
+
 public abstract class GameMaker implements Game {
     private boolean started = false;
     protected boolean endTask = false;
@@ -36,6 +38,7 @@ public abstract class GameMaker implements Game {
         if (player.getPlayerData().isStored())
             player.getPlayerData().restoreData();
         player.setGame(null);
+        player.setState(State.NOT_PLAYING);
         deadPlayers.add(player);
         //players.remove(player);
     }
