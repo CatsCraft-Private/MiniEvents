@@ -155,7 +155,7 @@ public class BlitzTag extends GameMaker {
         IActionMessage message = Reflection.getActionMessage();
         players.stream()
                 .filter(player -> !deadPlayers.contains(player))
-                .forEach(player -> message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §7§lhas been Randomly Tagged, RUN!!!"));
+                .forEach(player -> message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Randomly Tagged, RUN!!!"));
         runTagged(target, (aliveCount() == 2));
     }
 
