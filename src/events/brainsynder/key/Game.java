@@ -11,13 +11,16 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public interface Game extends Listener, CommandListener {
     List<IGamePlayer> players = new ArrayList<>();
     List<IGamePlayer> deadPlayers = new ArrayList<>();
     GamePlugin plugin = GamePlugin.instance;
     SettingsManager settings = plugin.getSettings();
+    LinkedList<UUID> waitTP = new LinkedList<>();
 
     /**
      * Run on Game end
@@ -111,6 +114,8 @@ public interface Game extends Listener, CommandListener {
      * Add a player to the Game
      */
     default void addPlayer(IGamePlayer player) {
+        if (!waitTP.contains(player.getPlayer().getUniqueId()))
+            waitTP.addLast(player.getPlayer().getUniqueId());
         if (!players.contains(player)) {
             players.add(player);
         }
@@ -120,9 +125,15 @@ public interface Game extends Listener, CommandListener {
      * Remove a player to the Game
      */
     default void removePlayer(IGamePlayer player) {
+        if (waitTP.contains(player.getPlayer().getUniqueId()))
+            waitTP.remove(player.getPlayer().getUniqueId());
         if (players.contains(player)) {
             players.remove(player);
         }
+    }
+
+    default LinkedList<UUID> waitingUUIDs () {
+        return waitTP;
     }
 
     default boolean isSetup() {

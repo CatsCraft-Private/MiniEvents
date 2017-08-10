@@ -6,6 +6,8 @@ import events.brainsynder.key.IGamePlayer.State;
 import events.brainsynder.managers.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.ITellraw;
@@ -47,6 +49,18 @@ public class CountDown implements Listener {
                                     cancel();
                                 } else {
                                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.event-started").replace("{EVENT}", game.getName().toUpperCase())));
+                                    for (IGamePlayer player : game.getPlayer()) {
+                                        player.getPlayerData().storeData(true);
+                                        player.setState(State.IN_GAME_ARENA);
+                                    }
+
+                                    Location location = game.getSpawn();
+                                    while (game.waitingUUIDs().peekFirst() != null) {
+                                        Player player = Bukkit.getPlayer(game.waitingUUIDs().pollFirst());
+                                        if (player == null) continue;
+                                        player.teleport(location);
+                                    }
+
                                     game.onStart();
                                     cancel();
                                 }
