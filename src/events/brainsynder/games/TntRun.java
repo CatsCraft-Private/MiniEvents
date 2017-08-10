@@ -39,8 +39,12 @@ public class TntRun extends GameMaker {
     }
     
     @Override public void onStart() {
+        Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
+            gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
+            player.teleport(spawn);
+            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             equipPlayer(player);
 
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));

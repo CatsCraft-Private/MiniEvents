@@ -6,10 +6,7 @@ import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import events.brainsynder.utils.BlockStorage;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -70,9 +67,13 @@ public class Spleef extends GameMaker {
             Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-spawn-not-set")));
             plugin.getEventMain().end();
         } else {
+            Location spawn = getSpawn();
             storage = new BlockStorage();
             for (IGamePlayer gamePlayer : players) {
+                gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
+                player.teleport(spawn);
+                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
                 equipPlayer(player);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));
             }
