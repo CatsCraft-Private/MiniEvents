@@ -47,16 +47,18 @@ public class BlitzTag extends GameMaker {
 
     @Override
     public void onLeave(IGamePlayer player) {
-        super.onLeave(player);
         if (tagged != null) {
-            if (tagged.getPlayer().getName().equals(player.getPlayer().getName())) {
-                tagged = null;
-                if (aliveCount() > 2) {
-                    countDown = 15;
-                }
+            if (tagged.getPlayer().isOnline()
+                    && tagged.getPlayer().getName().equals(player.getPlayer().getName())) {
+
+                player.getPlayer().sendMessage("§cYou can not leave this event while you are the Tagger.");
+                return;
+            } else {
+                countDown = 15;
                 randomTagged();
             }
         }
+        super.onLeave(player);
     }
 
     private void runTagged(IGamePlayer target, boolean lastRound) {
@@ -99,7 +101,6 @@ public class BlitzTag extends GameMaker {
                     }
                     ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.CLOUD, 0.5, 15, 0.5);
                     maker.sendToLocation(target.getPlayer().getLocation());
-                    tagged = null;
                     SoundMaker.ENTITY_GENERIC_EXPLODE.playSound(target.getPlayer().getLocation(), 1.0F, 2.0F);
                     randomTagged();
                     return;
@@ -134,7 +135,6 @@ public class BlitzTag extends GameMaker {
     }
 
     private void randomTagged() {
-        if (tagged != null) return;
         Random r = new Random();
         List<IGamePlayer> alive = new ArrayList<>();
         players.stream()
@@ -262,7 +262,6 @@ public class BlitzTag extends GameMaker {
                             .forEach(p -> message.sendMessage(p.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Tagged, RUN!!!"));
                     ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.VILLAGER_HAPPY, 15, 0.5);
                     maker.sendToLocation(player.getPlayer().getLocation());
-                    tagged = null;
                     SoundMaker.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(event.getDamager().getLocation(), 1.0F, 1.0F);
                     runTagged(player, (aliveCount() == 2));
                 } else {
@@ -275,11 +274,11 @@ public class BlitzTag extends GameMaker {
     @Override
     public String[] description() {
         return new String[]{
-                "§cBlitzTag§8 is an event made",
-                "§8to be fast paced and exhilarating",
-                "§8Simply be the last person to not get tagged.",
-                "§8If you do not tag a player within the time",
-                "§8You will be Disqualified, and a new tagger will be selected"
+                "§eBlitzTag§7 is an event made",
+                "§7to be fast paced and exhilarating",
+                "§7Simply be the last person to not get tagged.",
+                "§7If you do not tag a player within the time",
+                "§7You will be Disqualified, and a new tagger will be selected"
         };
     }
 
