@@ -48,9 +48,7 @@ public class BlitzTag extends GameMaker {
     @Override
     public void onLeave(IGamePlayer player) {
         if (tagged != null) {
-            if (tagged.getPlayer().isOnline()
-                    && tagged.getPlayer().getName().equals(player.getPlayer().getName())) {
-
+            if (tagged.getPlayer().isOnline() && tagged.getPlayer().getName().equals(player.getPlayer().getName())) {
                 player.getPlayer().sendMessage("§cYou can not leave this event while you are the Tagger.");
                 return;
             } else {
@@ -137,9 +135,7 @@ public class BlitzTag extends GameMaker {
     private void randomTagged() {
         Random r = new Random();
         List<IGamePlayer> alive = new ArrayList<>();
-        players.stream()
-                .filter(player -> !deadPlayers.contains(player))
-                .forEach(alive::add);
+        players.stream().filter(player -> !deadPlayers.contains(player)).forEach(alive::add);
         if (alive.size() <= 1) {
             onWin(alive.get(0));
             onEnd();
@@ -153,9 +149,7 @@ public class BlitzTag extends GameMaker {
         maker.sendToLocation(target.getPlayer().getLocation());
 
         IActionMessage message = Reflection.getActionMessage();
-        players.stream()
-                .filter(player -> !deadPlayers.contains(player))
-                .forEach(player -> message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Randomly Tagged, RUN!!!"));
+        players.stream().filter(player -> !deadPlayers.contains(player)).forEach(player -> message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Randomly Tagged, RUN!!!"));
         runTagged(target, (aliveCount() == 2));
     }
 

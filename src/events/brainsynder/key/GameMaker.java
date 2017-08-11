@@ -14,6 +14,7 @@ public abstract class GameMaker implements Game {
     @Override
     public void onEnd() {
         started = false;
+        endTask = false;
         //unregisterListeners();
         plugin.getEventMain().end();
         for (IGamePlayer player : players) {
@@ -75,7 +76,6 @@ public abstract class GameMaker implements Game {
                     cancel();
                     return;
                 }
-
                 perTick();
             }
         }.runTaskTimer(plugin, 0, 1);

@@ -147,8 +147,7 @@ public class TntRun extends GameMaker {
         if (endTask) return;
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
-            if (player.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER)
-                    || player.getLocation().getBlock().getType().equals(Material.WATER)
+            if (player.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) || player.getLocation().getBlock().getType().equals(Material.WATER)
                     || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.STATIONARY_WATER)
                     || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.WATER)) {
                 lost(gamePlayer);
