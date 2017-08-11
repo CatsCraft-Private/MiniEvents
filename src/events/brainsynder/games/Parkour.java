@@ -40,7 +40,6 @@ public class Parkour extends GameMaker {
             BlockLocation loc = new BlockLocation(p.getLocation());
             if (topLocation.atLocation(loc)) {
                 endTask = true;
-                Bukkit.broadcastMessage("endTask: true | from Parkour");
                 onWin(player);
                 plugin.getEventMain().end();
             }
