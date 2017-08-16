@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.UUID;
 
 public class KOTH extends GameMaker {
@@ -148,8 +149,10 @@ public class KOTH extends GameMaker {
             } else {
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(null);
-                for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
-                    player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
+                LinkedList<String> set = new LinkedList<>(settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false));
+                while (set.peekFirst() != null) {
+                    String slot = set.pollFirst();
+                    player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
                 
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));

@@ -18,6 +18,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.api.ParticleMaker;
 
+import java.util.LinkedList;
+
 public class TntRun extends GameMaker {
     private static BlockStorage storage = null;
     
@@ -98,10 +100,12 @@ public class TntRun extends GameMaker {
             } else {
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(null);
-                for (String m : settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false)) {
-                    player.getInventory().setItem(Integer.parseInt(m), settings.getData().getItemStack("setup." + getName() + ".inv." + m));
+                LinkedList<String> set = new LinkedList<>(settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false));
+                while (set.peekFirst() != null) {
+                    String slot = set.pollFirst();
+                    player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-            
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
