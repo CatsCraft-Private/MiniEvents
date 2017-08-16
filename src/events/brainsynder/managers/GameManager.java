@@ -71,7 +71,7 @@ public class GameManager {
         if (games == null) initiate();
         if (games.isEmpty()) initiate();
         for (Game game : games) {
-            if (game.getName().equals(name)) {
+            if (game.getName().equalsIgnoreCase(name)) {
                 return game;
             }
         }

@@ -2,6 +2,7 @@ package events.brainsynder.key;
 
 import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.CommandListener;
+import events.brainsynder.events.player.GamePlayerLeaveEvent;
 import events.brainsynder.managers.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,6 +31,8 @@ public interface Game extends Listener, CommandListener {
     void lost(IGamePlayer player);
 
     default void onLeave(IGamePlayer player) {
+        GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent<>(this, player);
+        Bukkit.getPluginManager().callEvent(event);
         if (player.getPlayerData().isStored())
             player.getPlayerData().restoreData();
         player.setGame(null);

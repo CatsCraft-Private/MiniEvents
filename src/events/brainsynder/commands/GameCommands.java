@@ -3,11 +3,12 @@ package events.brainsynder.commands;
 import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.Command;
 import events.brainsynder.commands.api.CommandListener;
+import events.brainsynder.events.player.GameCountdownLeaveEvent;
+import events.brainsynder.events.player.GamePlayerJoinEvent;
 import events.brainsynder.games.KOTH;
 import events.brainsynder.games.Parkour;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
-import events.brainsynder.key.IGamePlayer.State;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import events.brainsynder.utils.BlockLocation;
@@ -123,14 +124,9 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cEvent has already started."));
             return;
         }
-        plugin.getEventMain().waiting.addPlayer(gamePlayer);
-        gamePlayer.setGame(plugin.getEventMain().waiting);
-        gamePlayer.setState(IGamePlayer.State.WAITING);
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(plugin.getEventMain().waiting.getPlayer().size()))));
-        for (IGamePlayer gamer : plugin.getEventMain().waiting.getPlayer()) {
-            if (!gamer.getPlayer().getName().equals(player.getName()))
-            gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7joined the event. Players in the event: &b{1}&7.".replace("{0}", player.getName()).replace("{1}", Integer.toString(plugin.getEventMain().waiting.getPlayer().size()))));
-        }
+
+        GamePlayerJoinEvent<Game> event = new GamePlayerJoinEvent<>(plugin.getEventMain().waiting, gamePlayer);
+        Bukkit.getPluginManager().callEvent(event);
     }
     
     @Command(name = "leave")
@@ -140,7 +136,7 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are not in an event."));
             return;
         }
-        
+
         if (plugin.getEventMain().eventstarted) {
             gamePlayer.getGame().onLeave(gamePlayer);
             return;
@@ -149,14 +145,8 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere are no events are running."));
             return;
         }
-        
-        gamePlayer.getGame().removePlayer(gamePlayer);
-        gamePlayer.setState(State.NOT_PLAYING);
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7left the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(plugin.getEventMain().waiting.getPlayer().size()))));
-        for (IGamePlayer gamer : gamePlayer.getGame().getPlayer()) {
-            gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7left the event. Players in the event: &b{1}&7.".replace("{0}", player.getName()).replace("{1}", Integer.toString((plugin.getEventMain().waiting.getPlayer().size())))));
-        }
-        gamePlayer.setGame(null);
+        GameCountdownLeaveEvent<Game> event = new GameCountdownLeaveEvent<>(gamePlayer.getGame(), gamePlayer);
+        Bukkit.getPluginManager().callEvent(event);
     }
     
     @Command(name = "setkothtop")
