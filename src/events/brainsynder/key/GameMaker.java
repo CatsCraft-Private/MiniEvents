@@ -1,11 +1,12 @@
 package events.brainsynder.key;
 
+import events.brainsynder.events.game.GameEndEvent;
+import events.brainsynder.events.game.GameStartEvent;
+import events.brainsynder.events.player.GamePlayerLeaveEvent;
+import events.brainsynder.events.player.GamePlayerLostEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import events.brainsynder.key.IGamePlayer.State;
 
 public abstract class GameMaker implements Game {
     private boolean started = false;
@@ -15,37 +16,27 @@ public abstract class GameMaker implements Game {
     public void onEnd() {
         started = false;
         endTask = false;
-        //unregisterListeners();
-        plugin.getEventMain().end();
-        for (IGamePlayer player : players) {
-            if (deadPlayers.contains(player)) continue;
-            if (player.getPlayerData().isStored())
-                player.getPlayerData().restoreData();
-            player.setGame(null);
-            player.setState(IGamePlayer.State.NOT_PLAYING);
-        }
-        deadPlayers.clear();
-        players.clear();
+        GameEndEvent<Game> event = new GameEndEvent<>(this);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override
     public void onWin(IGamePlayer gamePlayer) {
+        GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent<>(this, gamePlayer);
+        Bukkit.getPluginManager().callEvent(event);
         onEnd();
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
     }
 
     @Override
     public void lost(IGamePlayer player) {
-        if (player.getPlayerData().isStored())
-            player.getPlayerData().restoreData();
-        player.setGame(null);
-        player.setState(State.NOT_PLAYING);
-        deadPlayers.add(player);
-        //players.remove(player);
+        GamePlayerLostEvent<Game> event = new GamePlayerLostEvent<>(this, player);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override
     public void onStart() {
+        GameStartEvent<Game> event = new GameStartEvent<>(this);
+        Bukkit.getPluginManager().callEvent(event);
         //registerListeners();
         started = true;
         plugin.getEventMain().eventstarting = false;

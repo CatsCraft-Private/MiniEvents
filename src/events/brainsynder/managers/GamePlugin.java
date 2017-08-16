@@ -1,6 +1,7 @@
 package events.brainsynder.managers;
 
 import events.brainsynder.EventsMain;
+import events.brainsynder.GameListener;
 import events.brainsynder.Handle;
 import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.GameCommands;
@@ -42,6 +43,7 @@ public class GamePlugin extends JavaPlugin {
         saveResource("config.yml", false);
         method = new CountDown(this);
         Bukkit.getServer().getPluginManager().registerEvents(new Handle(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new GameListener(), this);
         CommandManager.register(new GameCommands());
         if (!setupEconomy()) {
             getLogger().info("Could not find Vault. Make sure you set money.enabled to false.");

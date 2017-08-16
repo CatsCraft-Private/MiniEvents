@@ -3,9 +3,7 @@ package events.brainsynder.games;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
-import events.brainsynder.managers.GamePlugin;
 import events.brainsynder.utils.BlockStorage;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,27 +24,12 @@ public class TntRun extends GameMaker {
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
         storage.reset();
-
-        Player o = gamePlayer.getPlayer();
-        if (plugin.getConfig().getBoolean("events.money.enabled")) {
-            double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(o, i);
-            if (r.transactionSuccess()) {
-                o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-            }
-        }
         storage = null;
     }
     
     @Override public void onStart() {
-        Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
-            gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
-            player.teleport(spawn);
-            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
-            equipPlayer(player);
-
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
         }
         storage = new BlockStorage();

@@ -4,10 +4,8 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,18 +29,6 @@ public class BlitzTag extends GameMaker {
     @Override
     public String getName() {
         return "BlitzTag";
-    }
-
-    @Override
-    public void onWin(IGamePlayer gamePlayer) {
-        super.onWin(gamePlayer);
-        if (plugin.getConfig().getBoolean("events.money.enabled")) {
-            double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
-            if (r.transactionSuccess()) {
-                gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-            }
-        }
     }
 
     @Override
@@ -155,26 +141,19 @@ public class BlitzTag extends GameMaker {
 
     @Override
     public void onStart() {
-        Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
-            gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
-            player.teleport(spawn);
-            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
-            equipPlayer(player);
-
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 2 seconds to spread out..."));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 if (players.size() != 0) {
-                    super.onStart();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', ChatColor.AQUA + "Selecting Tagger..."));
                 }
-
             }, 120L);
         }
         new BukkitRunnable() {
             @Override
             public void run() {
+                BlitzTag.super.onStart();
                 randomTagged();
             }
         }.runTaskLater(plugin, 130);

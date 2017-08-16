@@ -1,5 +1,6 @@
 package events.brainsynder.utils;
 
+import events.brainsynder.events.game.PreGameStartEvent;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.IGamePlayer.State;
@@ -40,13 +41,14 @@ public class CountDown implements Listener {
                                         game.removePlayer(player);
                                         player.setState(State.NOT_PLAYING);
                                         player.setGame(null);
-                                        
                                     }
                                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.event-not-enough-players").replace("{EVENT}", game.getName().toUpperCase())));
                                     plugin.getEventMain().end();
                                     cancel();
                                 } else {
                                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.event-started").replace("{EVENT}", game.getName().toUpperCase())));
+                                    PreGameStartEvent<Game> event = new PreGameStartEvent<>(game);
+                                    Bukkit.getPluginManager().callEvent(event);
                                     game.onStart();
                                     cancel();
                                 }

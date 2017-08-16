@@ -33,29 +33,6 @@ public interface Game extends Listener, CommandListener {
     default void onLeave(IGamePlayer player) {
         GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent<>(this, player);
         Bukkit.getPluginManager().callEvent(event);
-        if (player.getPlayerData().isStored())
-            player.getPlayerData().restoreData();
-        player.setGame(null);
-        player.setState(IGamePlayer.State.NOT_PLAYING);
-        if (aliveCount() > 2) {
-            lost(player);
-            for (IGamePlayer gamePlayer : players) {
-                if (gamePlayer.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
-                if (deadPlayers.contains(gamePlayer)) continue;
-                gamePlayer.getPlayer().sendMessage("§c" + player.getPlayer().getName() + " has left the event.");
-            }
-        } else {
-            lost(player);
-            for (IGamePlayer o : players) {
-                if (o.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
-                if (deadPlayers.contains(o)) continue;
-                onWin(o);
-                onEnd();
-                plugin.getEventMain().end();
-                break;
-            }
-        }
-        players.remove(player);
     }
 
     default int aliveCount() {

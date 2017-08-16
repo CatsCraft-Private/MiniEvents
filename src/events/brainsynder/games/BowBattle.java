@@ -3,11 +3,8 @@ package events.brainsynder.games;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
-import events.brainsynder.managers.GamePlugin;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -21,32 +18,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class BowBattle extends GameMaker {
-    
-    @Override public void onWin(IGamePlayer gamePlayer) {
-        onEnd();
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
-        if (plugin.getConfig().getBoolean("events.money.enabled")) {
-            double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
-            if (r.transactionSuccess()) {
-                gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-            }
-        }
-    }
-    
+
     @Override public String getName() {
         return "BowBattle";
     }
     
     @Override public void onStart() {
-        Location spawn = getSpawn();
         for (IGamePlayer gamePlayer : players) {
-            gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
-            player.teleport(spawn);
-            gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
-            equipPlayer(player);
-    
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -159,10 +138,6 @@ public class BowBattle extends GameMaker {
                 "§eNone of those fancy 'Sword' and stuff",
                 "§eJust good ol' fashion Bow and Arrows..."
         };
-    }
-    @Override
-    public void onEnd() {
-        super.onEnd();
     }
 }
 

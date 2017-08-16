@@ -3,9 +3,10 @@ package events.brainsynder.games;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
-import events.brainsynder.managers.GamePlugin;
-import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,20 +23,6 @@ public class KO extends GameMaker {
 	@Override
 	public boolean allowsPVP() {
 		return true;
-	}
-
-	@Override
-	public void onWin(IGamePlayer gamePlayer) {
-		onEnd();
-		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
-		Player o = gamePlayer.getPlayer();
-		if (plugin.getConfig().getBoolean("events.money.enabled")) {
-			double i = plugin.getConfig().getDouble("events.money.amount");
-			EconomyResponse r = GamePlugin.econ.depositPlayer(o, i);
-			if (r.transactionSuccess()) {
-				o.sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-			}
-		}
 	}
 
 	@Override
@@ -66,17 +53,8 @@ public class KO extends GameMaker {
 
 	@Override
 	public void onStart() {
-		if (settings.getData().getSection("setup." + getName()) == null) {
-			Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("messages.spleef-spawn-not-set")));
-			plugin.getEventMain().end();
-		} else {
-			Location spawn = getSpawn();
 			for (IGamePlayer gamePlayer : players) {
-				gamePlayer.getPlayerData().storeData(true);
 				Player player = gamePlayer.getPlayer();
-				player.teleport(spawn);
-				gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
-				equipPlayer(player);
 				player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
 			}
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -86,7 +64,7 @@ public class KO extends GameMaker {
 					player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
 				});
 			}, 120L);
-		}
+
 	}
 
 	@Override
@@ -186,10 +164,5 @@ public class KO extends GameMaker {
 	public String[] description() {
 		return new String[] { "§eKO or known as §7Knock Out", "§eis a game where you have to knock",
 				"§eplayers into the water below...", "§ewatch out, they are doing the same to you..." };
-	}
-
-	@Override
-	public void onEnd() {
-		super.onEnd();
 	}
 }

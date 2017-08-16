@@ -2,35 +2,13 @@ package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
-import events.brainsynder.managers.GamePlugin;
 import events.brainsynder.utils.BlockLocation;
-import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Parkour extends GameMaker {
     private BlockLocation topLocation = null;
-    
-    @Override public void onWin(IGamePlayer gamePlayer) {
-        onEnd();
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
-        Player o = gamePlayer.getPlayer();
-        if (plugin.getConfig().getBoolean("events.money.enabled")) {
-            double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(o, i);
-            if (r.transactionSuccess()) {
-                o.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-            }
-        }
-    }
-    
-    @Override public void onEnd() {
-        super.onEnd();
-    }
     
     @Override public void perTick() {
         super.perTick();
@@ -47,27 +25,8 @@ public class Parkour extends GameMaker {
     }
     
     @Override public void onStart() {
-        if (settings.getData().getSection("setup." + getName()) == null) {
-            Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&cThis game is not fully setup."));
-            plugin.getEventMain().end();
-        } else {
-            if (!settings.getData().isSet("setup." + getName() + ".winLocation")) {
-                Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&cThis game is not fully setup."));
-                plugin.getEventMain().end();
-                return;
-            }
-            Location spawn = getSpawn();
-            topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ".winLocation"));
-            
-            for (IGamePlayer gamePlayer : players) {
-                gamePlayer.getPlayerData().storeData(true);
-                Player player = gamePlayer.getPlayer();
-                player.teleport(spawn);
-                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
-                equipPlayer(player);
-            }
-            super.onStart();
-        }
+        topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ".winLocation"));
+        super.onStart();
     }
     
     @Override public void equipPlayer(Player player) {
