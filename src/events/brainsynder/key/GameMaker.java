@@ -2,8 +2,9 @@ package events.brainsynder.key;
 
 import events.brainsynder.events.game.GameEndEvent;
 import events.brainsynder.events.game.GameStartEvent;
-import events.brainsynder.events.player.GamePlayerLeaveEvent;
 import events.brainsynder.events.player.GamePlayerLostEvent;
+import events.brainsynder.events.player.GamePlayerWinEvent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,7 +23,7 @@ public abstract class GameMaker implements Game {
 
     @Override
     public void onWin(IGamePlayer gamePlayer) {
-        GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent<>(this, gamePlayer);
+        GamePlayerWinEvent<Game> event = new GamePlayerWinEvent<>(this, gamePlayer);
         Bukkit.getPluginManager().callEvent(event);
         onEnd();
     }
