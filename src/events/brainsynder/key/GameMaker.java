@@ -4,7 +4,6 @@ import events.brainsynder.events.game.GameEndEvent;
 import events.brainsynder.events.game.GameStartEvent;
 import events.brainsynder.events.player.GamePlayerLostEvent;
 import events.brainsynder.events.player.GamePlayerWinEvent;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,7 +37,6 @@ public abstract class GameMaker implements Game {
     public void onStart() {
         GameStartEvent<Game> event = new GameStartEvent<>(this);
         Bukkit.getPluginManager().callEvent(event);
-        //registerListeners();
         started = true;
         plugin.getEventMain().eventstarting = false;
         plugin.getEventMain().eventstarted = true;

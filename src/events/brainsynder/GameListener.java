@@ -20,6 +20,8 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onJoin(GamePlayerJoinEvent event) {
+        if (plugin.getEventMain().eventstarted) return;
+
         IGamePlayer gamePlayer = event.getPlayer();
         event.getGame().addPlayer(gamePlayer);
         gamePlayer.setGame(event.getGame());
