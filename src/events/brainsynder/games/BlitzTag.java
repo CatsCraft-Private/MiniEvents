@@ -12,11 +12,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import simple.brainsynder.api.ItemMaker;
 import simple.brainsynder.api.ParticleMaker;
 import simple.brainsynder.nms.IActionMessage;
 import simple.brainsynder.nms.ITitleMessage;
 import simple.brainsynder.sound.SoundMaker;
 import simple.brainsynder.utils.Reflection;
+import simple.brainsynder.wrappers.MaterialWrapper;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -26,6 +28,7 @@ import java.util.Random;
 public class BlitzTag extends GameMaker {
     private IGamePlayer tagged = null;
     private int countDown = 15;
+    private ParticleMaker maker;
 
     @Override
     public String getName() {
@@ -44,6 +47,14 @@ public class BlitzTag extends GameMaker {
             }
         }
         super.onLeave(player);
+    }
+
+    @Override
+    public void perTick() {
+        super.perTick();
+        if (tagged == null) return;
+        if (maker == null) maker = new ParticleMaker(ParticleMaker.Particle.LAVA, 0.1, 2, 0, 0.8, 0);
+        maker.sendToLocation(tagged.getPlayer().getLocation());
     }
 
     private void runTagged(IGamePlayer target, boolean lastRound) {
@@ -134,7 +145,7 @@ public class BlitzTag extends GameMaker {
         this.tagged = target;
         ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.VILLAGER_HAPPY, 15, 0.5);
         maker.sendToLocation(target.getPlayer().getLocation());
-
+        target.getPlayer().getInventory().setHelmet(new ItemMaker(MaterialWrapper.WOOL, (byte) 14).create());
         IActionMessage message = Reflection.getActionMessage();
         players.stream().filter(player -> !deadPlayers.contains(player)).forEach(player -> message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Randomly Tagged, RUN!!!"));
         runTagged(target, (aliveCount() == 2));
@@ -228,10 +239,13 @@ public class BlitzTag extends GameMaker {
                 }
 
                 if (tagged.getPlayer().getName().equals(event.getDamager().getName())) {
+                    tagged.getPlayer().getInventory().setHelmet(new ItemMaker(MaterialWrapper.AIR).create());
                     tagged = player;
                     if (aliveCount() > 2) {
                         countDown = 15;
                     }
+                    player.getPlayer().getInventory().setHelmet(new ItemMaker(MaterialWrapper.WOOL, (byte) 14).create());
+
                     IActionMessage message = Reflection.getActionMessage();
                     players.stream()
                             .filter(p -> !deadPlayers.contains(p))

@@ -1,7 +1,8 @@
-package events.brainsynder.games;
+package events.brainsynder.games.team;
 
-import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.key.teams.ITeamGame;
+import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,13 +19,16 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.LinkedList;
 
-public class LMS extends GameMaker {
-    
+public class TDM extends TeamGameMaker {
+    private int win = 15;
+
     @Override public String getName() {
-        return "LMS";
+        return "TDM";
     }
     
     @Override public void onStart() {
+        win = (players.size() * 2);
+
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
@@ -56,7 +60,7 @@ public class LMS extends GameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-
+            
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -77,13 +81,9 @@ public class LMS extends GameMaker {
     
     @Override public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
-        ItemStack dsword = new ItemStack(Material.DIAMOND_SWORD, 1);
+        ItemStack dsword = new ItemStack(Material.IRON_SWORD, 1);
         dsword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
         player.getInventory().clear();
-        player.getInventory().setBoots(new ItemStack(Material.IRON_BOOTS));
-        player.getInventory().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
-        player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
-        player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
         inventory.setItem(0, dsword);
     
         for(int i = 0; i < inventory.getSize(); ++i) {
@@ -104,24 +104,37 @@ public class LMS extends GameMaker {
         Player p = (Player) event.getEntity();
         IGamePlayer player = GameManager.getPlayer(p);
         if (player.isPlaying()) {
-            if (player.getGame() instanceof LMS) {
+            if (player.getGame() instanceof TDM) {
                 if (!plugin.getEventMain().eventstarted) {
                     event.setCancelled(true);
                     return;
                 }
+                Player enemy = null;
+                if (event.getDamager() instanceof Player) {
+                    enemy = (Player) event.getDamager();
+                }else if (event.getDamager() instanceof Projectile) {
+                    Projectile projectile = (Projectile)event.getDamager();
+                    if (!(projectile.getShooter() instanceof Player)) return;
+                    enemy = (Player) projectile.getShooter();
+                }
+                if (enemy != null) {
+                    IGamePlayer<ITeamGame> hitter = GameManager.getPlayer(enemy);
+                    if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
+                        event.setCancelled(true);
+                    }else{
+                        double score = (hitter.getTeam().getScore() + 1);
+                        hitter.getTeam().setScore(score);
+                        if (win <= score) {
+                            onWin(hitter.getTeam());
+                            plugin.getEventMain().end();
+                        }
+                    }
+                }
+
+
                 if ((p.getHealth() - event.getDamage()) <= 1) {
                     event.setCancelled(true);
                     p.setHealth(p.getMaxHealth());
-                    lost(player);
-                    if (aliveCount() == 1) {
-                        for (IGamePlayer o : players) {
-                            if (o.getPlayer().getUniqueId().equals(p.getUniqueId())) continue;
-                            if (deadPlayers.contains(o)) continue;
-                            onWin(o);
-                            plugin.getEventMain().end();
-                            break;
-                        }
-                    }
                 }
             }
         }
@@ -129,9 +142,10 @@ public class LMS extends GameMaker {
     
     @Override public String[] description() {
         return new String[] {
-                "§6What is LMS?",
-                "§eLMS Stands for §7Last Man Standing",
-                "§eBe the last player alive, and you win!"
+                "§6What is TDM?",
+                "§eTDM Stands for §7Team Death Match",
+                "§eYou must kill the other teams players",
+                "§eFirst team to reach the score wins!"
         };
     }
 }

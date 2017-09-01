@@ -37,7 +37,7 @@ public class CountDown implements Listener {
                                 int size = game.getPlayer().size();
                                 if (size <= 1) {
                                     if (size == 1) {
-                                        IGamePlayer player = game.getPlayer().get(0);
+                                        IGamePlayer player = game.players.get(0);
                                         game.removePlayer(player);
                                         player.setState(State.NOT_PLAYING);
                                         player.setGame(null);

@@ -7,21 +7,19 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class NameTagChanger {
-    private static Team team;
-    private static Scoreboard scoreboard;
 
     public static void changePlayerName(Player player, String prefix, String suffix, TeamAction action) {
         if (player.getScoreboard() == null || prefix == null || suffix == null || action == null) {
             return;
         }
 
-        scoreboard = player.getScoreboard();
+        Scoreboard scoreboard = player.getScoreboard();
 
         if (scoreboard.getTeam(player.getName()) == null) {
             scoreboard.registerNewTeam(player.getName());
         }
 
-        team = scoreboard.getTeam(player.getName());
+        Team team = scoreboard.getTeam(player.getName());
         team.setPrefix(Color(prefix));
         team.setSuffix(Color(suffix));
 
@@ -49,5 +47,4 @@ public class NameTagChanger {
     private static String Color(String input) {
         return ChatColor.translateAlternateColorCodes('&', input);
     }
-
 }

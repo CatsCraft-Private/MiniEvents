@@ -16,22 +16,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public interface Game extends Listener, CommandListener {
-    List<IGamePlayer> players = new ArrayList<>();
+public interface Game<T> extends Listener, CommandListener {
+    public List<IGamePlayer> players = new ArrayList<>();
     List<IGamePlayer> deadPlayers = new ArrayList<>();
     GamePlugin plugin = GamePlugin.instance;
     SettingsManager settings = plugin.getSettings();
     LinkedList<UUID> waitTP = new LinkedList<>();
+    
+    default int minPlayers () {
+        return 2;
+    }
 
     /**
      * Run on Game end
      */
     void onEnd();
 
-    void lost(IGamePlayer player);
+    void lost(T player);
 
     default void onLeave(IGamePlayer player) {
-        GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent<>(this, player);
+        GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent(this, player);
         Bukkit.getPluginManager().callEvent(event);
     }
 
@@ -43,7 +47,7 @@ public interface Game extends Listener, CommandListener {
         return getClass().getSimpleName();
     }
 
-    void onWin(IGamePlayer gamePlayer);
+    void onWin(T gamePlayer);
 
     /**
      * Run on Game Start

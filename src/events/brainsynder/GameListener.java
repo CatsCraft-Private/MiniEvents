@@ -27,7 +27,7 @@ public class GameListener implements Listener {
         gamePlayer.setGame(event.getGame());
         gamePlayer.setState(IGamePlayer.State.WAITING);
         gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
-        for (IGamePlayer gamer : event.getGame().getPlayer()) {
+        for (IGamePlayer gamer : event.getGame().players) {
             if (!gamer.getPlayer().getName().equals(gamePlayer.getPlayer().getName()))
                 gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7joined the event. Players in the event: &b{1}&7.".replace("{0}", gamePlayer.getPlayer().getName()).replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
         }
@@ -69,7 +69,7 @@ public class GameListener implements Listener {
         gamePlayer.getGame().removePlayer(gamePlayer);
         gamePlayer.setState(IGamePlayer.State.NOT_PLAYING);
         gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7left the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
-        for (IGamePlayer gamer : gamePlayer.getGame().getPlayer()) {
+        for (IGamePlayer gamer : gamePlayer.getGame().players) {
             gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7left the event. Players in the event: &b{1}&7.".replace("{0}", gamer.getPlayer().getName()).replace("{1}", Integer.toString((event.getGame().getPlayer().size())))));
         }
         gamePlayer.setGame(null);

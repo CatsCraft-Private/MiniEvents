@@ -2,11 +2,13 @@ package events.brainsynder.managers;
 
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.data.StoredData;
 import org.bukkit.entity.Player;
 
-class GamePlayer implements IGamePlayer {
-    private Game game = null;
+class GamePlayer<T extends Game> implements IGamePlayer<T> {
+    private T game = null;
+    private Team team = null;
     private Player player;
     private State state = State.NOT_PLAYING;
     private StoredData storedData;
@@ -16,12 +18,22 @@ class GamePlayer implements IGamePlayer {
         storedData = new StoredData(player);
     }
     
-    @Override public Game getGame() {
+    @Override public T getGame() {
         return game;
     }
     
-    @Override public void setGame(Game game) {
+    @Override public void setGame(T game) {
         this.game = game;
+    }
+
+    @Override
+    public Team getTeam() {
+        return team;
+    }
+
+    @Override
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     @Override

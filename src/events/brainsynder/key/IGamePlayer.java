@@ -1,12 +1,17 @@
 package events.brainsynder.key;
 
+import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.data.StoredData;
 import org.bukkit.entity.Player;
 
-public interface IGamePlayer {
-    Game getGame();
-    
-    void setGame(Game game);
+public interface IGamePlayer<T extends Game> {
+    T getGame();
+
+    void setGame(T game);
+
+    Team getTeam();
+
+    void setTeam(Team team);
     
     Player getPlayer();
     

@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public abstract class GameMaker implements Game {
+public abstract class GameMaker implements Game<IGamePlayer> {
     private boolean started = false;
     protected boolean endTask = false;
 
