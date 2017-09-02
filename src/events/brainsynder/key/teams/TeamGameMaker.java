@@ -26,6 +26,9 @@ public abstract class TeamGameMaker implements ITeamGame {
     @Override
     public void randomizePlayers() {
         for (IGamePlayer p : players) {
+        	if(p.getTeam() != null) {
+        		p.getPlayer().teleport(getSpawn(p.getTeam()));
+        	}
             if (red.size() < blue.size()) {
                 red.addMember(p);
                 p.setTeam(red);
