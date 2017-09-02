@@ -47,7 +47,10 @@ public abstract class TeamGameMaker implements ITeamGame {
                     p.setTeam(blue);
                 }
             }
-            p.getPlayer().teleport(getSpawn(p.getTeam()));
+            System.out.println("Player: " + p.getPlayer().getName());
+            System.out.println("Team: " + p.getTeam().getName());
+            System.out.println("Location: " + getSpawn(p.getTeam()));
+            //p.getPlayer().teleport(getSpawn(p.getTeam()));
         }
     }
 
