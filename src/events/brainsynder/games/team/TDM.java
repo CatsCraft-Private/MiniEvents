@@ -20,16 +20,19 @@ import java.util.LinkedList;
 public class TDM extends TeamGameMaker {
     private int win = 15;
 
-    @Override public String getName() {
+    @Override
+    public String getName() {
         return "TDM";
     }
-    
-    @Override public void onStart() {
+
+    @Override
+    public void onStart() {
         super.onStart();
         win = (players.size() * 2);
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
@@ -47,7 +50,7 @@ public class TDM extends TeamGameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-            
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -65,25 +68,27 @@ public class TDM extends TeamGameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack dsword = new ItemStack(Material.IRON_SWORD, 1);
         dsword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
         player.getInventory().clear();
         inventory.setItem(0, dsword);
-    
-        for(int i = 0; i < inventory.getSize(); ++i) {
-            if(inventory.getItem(i) == null) {
+
+        for (int i = 0; i < inventory.getSize(); ++i) {
+            if (inventory.getItem(i) == null) {
                 inventory.addItem(new ItemStack(Material.MUSHROOM_SOUP));
             }
         }
     }
-    
-    @Override public boolean allowsPVP() {
+
+    @Override
+    public boolean allowsPVP() {
         return true;
     }
-    
+
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && (!(event.getDamager() instanceof Projectile))) return;
@@ -99,8 +104,8 @@ public class TDM extends TeamGameMaker {
                 Player enemy = null;
                 if (event.getDamager() instanceof Player) {
                     enemy = (Player) event.getDamager();
-                }else if (event.getDamager() instanceof Projectile) {
-                    Projectile projectile = (Projectile)event.getDamager();
+                } else if (event.getDamager() instanceof Projectile) {
+                    Projectile projectile = (Projectile) event.getDamager();
                     if (!(projectile.getShooter() instanceof Player)) return;
                     enemy = (Player) projectile.getShooter();
                 }
@@ -108,15 +113,19 @@ public class TDM extends TeamGameMaker {
                     IGamePlayer<ITeamGame> hitter = GameManager.getPlayer(enemy);
                     if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
                         event.setCancelled(true);
-                    }else{
-                        double score = (hitter.getTeam().getScore() + 1);
-                        hitter.getTeam().setScore(score);
-                        if (win <= score) {
-                            onWin(hitter.getTeam());
-                            plugin.getEventMain().end();
-                            return;
+                    } else {
+                        if ((p.getHealth() - event.getDamage()) <= 1) {
+                            double score = (hitter.getTeam().getScore() + 1);
+                            hitter.getTeam().setScore(score);
+                            if (win <= score) {
+                                onWin(hitter.getTeam());
+                                plugin.getEventMain().end();
+                                return;
+                            }
+                            event.setCancelled(true);
+                            p.setHealth(p.getMaxHealth());
+                            p.teleport(getSpawn(player.getTeam()));
                         }
-                        p.teleport(getSpawn(player.getTeam()));
                     }
                 }
 
@@ -128,9 +137,10 @@ public class TDM extends TeamGameMaker {
             }
         }
     }
-    
-    @Override public String[] description() {
-        return new String[] {
+
+    @Override
+    public String[] description() {
+        return new String[]{
                 "§6What is TDM?",
                 "§eTDM Stands for §7Team Death Match",
                 "§eYou must kill the other teams players",

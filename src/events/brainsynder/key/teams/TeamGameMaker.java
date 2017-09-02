@@ -47,23 +47,25 @@ public abstract class TeamGameMaker implements ITeamGame {
                     p.setTeam(blue);
                 }
             }
-            System.out.println("Player: " + p.getPlayer().getName());
-            System.out.println("Team: " + p.getTeam().getName());
-            System.out.println("Location: " + getSpawn(p.getTeam()));
-            //p.getPlayer().teleport(getSpawn(p.getTeam()));
+            Bukkit.broadcastMessage("Player: " + p.getPlayer().getName());
+            Bukkit.broadcastMessage("Team: " + p.getTeam().getName());
+            Bukkit.broadcastMessage("Location: " + getSpawn(p.getTeam()));
+            p.getPlayer().teleport(getSpawn(p.getTeam()));
         }
     }
 
-    private Map<Team, Location> locationMap = new HashMap<>();
-    public Location getSpawn (Team team) {
-        if (locationMap.containsKey(team)) return locationMap.get(team);
+    private Map<String, Location> locationMap = new HashMap<>();
+    protected Location getSpawn(Team team) {
+        if (locationMap.containsKey(team.getName())) return locationMap.get(team.getName());
         World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".team." + team.getName() + ".world"));
         double x = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".x");
         double y = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".y");
         double z = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".z");
         float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".team." + team.getName() + ".yaw"));
         float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".team." + team.getName() + ".pitch"));
-        return locationMap.put(team, new Location(w, x, y, z, yaw, pitch));
+        locationMap.put(team.getName(), new Location(w, x, y, z, yaw, pitch));
+
+        return locationMap.get(team.getName());
     }
 
     public Team getOppositeTeam (Team team) {
@@ -152,7 +154,7 @@ public abstract class TeamGameMaker implements ITeamGame {
         if (message == null) return;
         if (!plugin.getEventMain().eventstarted) return;
         if (!started) return;
-        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int)red.getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int)red.getScore())));
+        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int)red.getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int)blue.getScore())));
 
     }
 
