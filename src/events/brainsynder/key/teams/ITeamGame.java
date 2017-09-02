@@ -11,6 +11,13 @@ public interface ITeamGame extends Game<Team> {
     Team red = new Team("Red", Color.RED, ChatColor.RED);
     Team blue = new Team("Blue", Color.BLUE, ChatColor.BLUE);
 
+    default Team getRedTeam (){
+        return red;
+    }
+    default Team getBlueTeam (){
+        return blue;
+    }
+
     void randomizePlayers ();
 
     @Override
@@ -20,5 +27,12 @@ public interface ITeamGame extends Game<Team> {
         }
         GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent(this, player);
         Bukkit.getPluginManager().callEvent(event);
+    }
+
+    @Override
+    default boolean isSetup() {
+        return settings.getData().isSet("setup." + getName() + ".team." + red.getName() + ".world")
+                && settings.getData().isSet("setup." + getName() + ".team." + blue.getName() + ".world");
+
     }
 }

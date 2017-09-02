@@ -2,6 +2,7 @@ package events.brainsynder.managers;
 
 import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.games.*;
+import events.brainsynder.games.team.TDM;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import org.bukkit.entity.Player;
@@ -52,6 +53,7 @@ public class GameManager {
         register(new KO(), plugin);
         register(new Paintball(), plugin);
         register(new Parkour(), plugin);
+        register(new TDM(), plugin);
     }
 
     public static <T extends Game> T getGame(Class<T> clazz) {
@@ -66,6 +68,7 @@ public class GameManager {
         if (clazz.isAssignableFrom(Parkour.class)) return (T) new Parkour();
         if (clazz.isAssignableFrom(Spleef.class)) return (T) new Spleef();
         if (clazz.isAssignableFrom(TntRun.class)) return (T) new TntRun();
+        if (clazz.isAssignableFrom(TDM.class)) return (T) new TDM();
         throw new NullPointerException(clazz.getSimpleName() + " is not a registered Game.");
     }
 

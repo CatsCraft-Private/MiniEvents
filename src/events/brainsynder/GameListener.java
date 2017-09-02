@@ -5,6 +5,7 @@ import events.brainsynder.events.game.PreGameStartEvent;
 import events.brainsynder.events.player.*;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -60,7 +61,6 @@ public class GameListener implements Listener {
             }
         }
         game.players.remove(player);
-
     }
 
     @EventHandler
@@ -91,6 +91,17 @@ public class GameListener implements Listener {
     @EventHandler
     public void onPreStart (PreGameStartEvent event) {
         Bukkit.getServer().getPluginManager().registerEvents(event.getGame(), plugin);
+        if (event.getGame() instanceof ITeamGame) {
+            ITeamGame game = (ITeamGame) event.getGame();
+            for (IGamePlayer gamePlayer : event.getGame().players) {
+                gamePlayer.getPlayerData().storeData(true);
+                Player player = gamePlayer.getPlayer();
+                gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
+                event.getGame().equipPlayer(player);
+            }
+            game.randomizePlayers();
+            return;
+        }
         Location spawn = event.getGame().getSpawn();
         for (IGamePlayer gamePlayer : event.getGame().players) {
             gamePlayer.getPlayerData().storeData(true);

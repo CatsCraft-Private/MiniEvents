@@ -127,7 +127,9 @@ public class TDM extends TeamGameMaker {
                         if (win <= score) {
                             onWin(hitter.getTeam());
                             plugin.getEventMain().end();
+                            return;
                         }
+                        p.teleport(getSpawn(player.getTeam()));
                     }
                 }
 

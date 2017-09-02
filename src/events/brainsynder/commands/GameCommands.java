@@ -9,6 +9,8 @@ import events.brainsynder.games.KOTH;
 import events.brainsynder.games.Parkour;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.key.teams.ITeamGame;
+import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import events.brainsynder.utils.BlockLocation;
@@ -33,7 +35,7 @@ public class GameCommands implements CommandListener {
         plugin.getEventMain().eventstarting = false;
         plugin.getEventMain().cancelled = true;
     }
-    
+
     @Command(name = "setgamespawn")
     public void setSpawn(Player player, String[] args) {
         if (args.length == 0) {
@@ -52,6 +54,45 @@ public class GameCommands implements CommandListener {
             settings.getData().set("setup." + game.getName() + ".yaw", Float.floatToIntBits(l.getYaw()));
             settings.getData().set("setup." + game.getName() + ".pitch", Float.floatToIntBits(l.getPitch()));
             player.sendMessage("§cSet spawn point for §7" + game.getName());
+        }
+    }
+
+    @Command(name = "setteamspawn")
+    public void setTeamSpawn(Player player, String[] args) {
+        if (args.length == 0) {
+            player.sendMessage("/setteamspawn <game> <team>");
+        } else {
+            Game g = GameManager.getGame(args[0]);
+            if (g == null) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere is no event by that name."));
+                return;
+            }
+            if (!(g instanceof ITeamGame)) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThis Event is not a Team based Event"));
+                return;
+            }
+            ITeamGame game = (ITeamGame)g;
+            Location l = player.getLocation();
+
+            if (args.length == 1) {
+                player.sendMessage("/setteamspawn <game> <team>");
+            }else{
+                Team team = null;
+                if (game.getRedTeam().getName().equalsIgnoreCase(args[1])) team = game.getRedTeam();
+                if (game.getBlueTeam().getName().equalsIgnoreCase(args[1])) team = game.getBlueTeam();
+                if (team == null) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cNo team was found for: " + args[1]));
+                    return;
+                }
+
+                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".world", l.getWorld().getName());
+                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".x", l.getX());
+                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".y", l.getY());
+                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".z", l.getZ());
+                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".yaw", Float.floatToIntBits(l.getYaw()));
+                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".pitch", Float.floatToIntBits(l.getPitch()));
+                player.sendMessage("§cSet spawn point for §7" + game.getName());
+            }
         }
     }
     

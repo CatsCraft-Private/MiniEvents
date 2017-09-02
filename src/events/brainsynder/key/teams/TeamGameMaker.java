@@ -12,6 +12,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public abstract class TeamGameMaker implements ITeamGame {
@@ -20,32 +22,41 @@ public abstract class TeamGameMaker implements ITeamGame {
 
     @Override
     public void randomizePlayers() {
+        Location blueSpawn = getSpawn(blue);
+        Location redSpawn = getSpawn(red);
+
         for (IGamePlayer p : players) {
             if (p.getTeam() != null) return;
             if (red.size() < blue.size()) {
                 red.addMember(p);
+                p.getPlayer().teleport(redSpawn);
             } else if (blue.size() < red.size()) {
                 blue.addMember(p);
+                p.getPlayer().teleport(blueSpawn);
             } else {
                 Random RandomTeam = new Random();
                 int TeamID = RandomTeam.nextInt(1);
                 if (TeamID == 0) {
                     red.addMember(p);
+                    p.getPlayer().teleport(redSpawn);
                 } else {
                     blue.addMember(p);
+                    p.getPlayer().teleport(blueSpawn);
                 }
             }
         }
     }
 
+    private Map<Team, Location> locationMap = new HashMap<>();
     public Location getSpawn (Team team) {
+        if (locationMap.containsKey(team)) return locationMap.get(team);
         World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".team." + team.getName() + ".world"));
         double x = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".x");
         double y = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".y");
         double z = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".z");
         float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".team." + team.getName() + ".yaw"));
         float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".team." + team.getName() + ".pitch"));
-        return new Location(w, x, y, z, yaw, pitch);
+        return locationMap.put(team, new Location(w, x, y, z, yaw, pitch));
     }
 
     public Team getOppositeTeam (Team team) {
