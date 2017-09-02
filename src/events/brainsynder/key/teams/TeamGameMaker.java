@@ -37,8 +37,8 @@ public abstract class TeamGameMaker implements ITeamGame {
                 } else {
                     blue.addMember(p);
                 }
-                p.getPlayer().teleport(getSpawn(p.getTeam()));
             }
+            p.getPlayer().teleport(getSpawn(p.getTeam()));
         }
     }
 
