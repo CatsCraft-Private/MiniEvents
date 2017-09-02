@@ -2,8 +2,7 @@ package events.brainsynder.key.teams;
 
 import events.brainsynder.events.game.GameEndEvent;
 import events.brainsynder.events.game.TeamGameStart;
-import events.brainsynder.events.player.GamePlayerLeaveEvent;
-import events.brainsynder.events.team.TeamLostEvent;
+import events.brainsynder.events.team.TeamPlayerLeaveEvent;
 import events.brainsynder.events.team.TeamWinEvent;
 import events.brainsynder.key.IGamePlayer;
 import org.bukkit.Bukkit;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Random;
 
 public abstract class TeamGameMaker implements ITeamGame {
+    private Map<String, Location> locationMap = new HashMap<>();
     private boolean started = false;
     protected boolean endTask = false;
     private IActionMessage message = null;
@@ -26,20 +26,15 @@ public abstract class TeamGameMaker implements ITeamGame {
     @Override
     public void randomizePlayers() {
         for (IGamePlayer p : players) {
-        	if(p.getTeam() != null) {
-        		p.getPlayer().teleport(getSpawn(p.getTeam()));
-        		continue;
-        	}
-            if (red.size() < blue.size()) {
+            if (blue.size() > red.size()) {
                 red.addMember(p);
                 p.setTeam(red);
-            } else if (blue.size() < red.size()) {
+            } else if (red.size() > blue.size()) {
                 blue.addMember(p);
                 p.setTeam(blue);
             } else {
-                Random RandomTeam = new Random();
-                int TeamID = RandomTeam.nextInt(1);
-                if (TeamID == 0) {
+                Random rand = new Random();
+                if (rand.nextBoolean()) {
                     red.addMember(p);
                     p.setTeam(red);
                 } else {
@@ -47,14 +42,10 @@ public abstract class TeamGameMaker implements ITeamGame {
                     p.setTeam(blue);
                 }
             }
-            Bukkit.broadcastMessage("Player: " + p.getPlayer().getName());
-            Bukkit.broadcastMessage("Team: " + p.getTeam().getName());
-            Bukkit.broadcastMessage("Location: " + getSpawn(p.getTeam()));
             p.getPlayer().teleport(getSpawn(p.getTeam()));
         }
     }
 
-    private Map<String, Location> locationMap = new HashMap<>();
     protected Location getSpawn(Team team) {
         if (locationMap.containsKey(team.getName())) return locationMap.get(team.getName());
         World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".team." + team.getName() + ".world"));
@@ -68,7 +59,7 @@ public abstract class TeamGameMaker implements ITeamGame {
         return locationMap.get(team.getName());
     }
 
-    public Team getOppositeTeam (Team team) {
+    public Team getOppositeTeam(Team team) {
         if (team.getName().equals(red.getName())) return blue;
         return red;
     }
@@ -89,15 +80,12 @@ public abstract class TeamGameMaker implements ITeamGame {
             player.getTeam().removeMember(player);
             player.setTeam(null);
         }
-        
-        GamePlayerLeaveEvent<ITeamGame> event = new GamePlayerLeaveEvent<>(this, player);
+        TeamPlayerLeaveEvent event = new TeamPlayerLeaveEvent(this, player.getTeam(), player);
         Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override
     public void lost(Team player) {
-        TeamLostEvent event = new TeamLostEvent(this, player);
-        Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override
@@ -150,19 +138,22 @@ public abstract class TeamGameMaker implements ITeamGame {
         }.runTaskTimer(plugin, 0, 1);
     }
 
-    @Override public void perTick() {
+    @Override
+    public void perTick() {
         if (message == null) return;
         if (!plugin.getEventMain().eventstarted) return;
         if (!started) return;
-        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int)red.getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int)blue.getScore())));
+        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int) red.getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int) blue.getScore())));
 
     }
 
-    @Override public boolean hasStarted() {
+    @Override
+    public boolean hasStarted() {
         return started;
     }
 
-    @Override public void setStarted(boolean started) {
+    @Override
+    public void setStarted(boolean started) {
         this.started = started;
     }
 }

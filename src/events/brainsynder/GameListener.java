@@ -3,9 +3,12 @@ package events.brainsynder;
 import events.brainsynder.events.game.GameEndEvent;
 import events.brainsynder.events.game.PreGameStartEvent;
 import events.brainsynder.events.player.*;
+import events.brainsynder.events.team.TeamPlayerLeaveEvent;
+import events.brainsynder.events.team.TeamWinEvent;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
+import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.GamePlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -64,6 +67,43 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
+    public void onLeave(TeamPlayerLeaveEvent event) {
+        IGamePlayer player = event.getPlayer();
+        ITeamGame game = event.getGame();
+        if (player.getPlayerData().isStored())
+            player.getPlayerData().restoreData();
+        player.setGame(null);
+        player.setState(IGamePlayer.State.NOT_PLAYING);
+        if (game.aliveCount() > 2) {
+            if (player.getPlayerData().isStored())
+                player.getPlayerData().restoreData();
+            player.setGame(null);
+            player.setState(IGamePlayer.State.NOT_PLAYING);
+            event.getGame().deadPlayers.add(player);
+            for (IGamePlayer gamePlayer : game.players) {
+                if (gamePlayer.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
+                if (game.deadPlayers.contains(gamePlayer)) continue;
+                gamePlayer.getPlayer().sendMessage("§c" + player.getPlayer().getName() + " has left the event.");
+            }
+        } else {
+            if (player.getPlayerData().isStored())
+                player.getPlayerData().restoreData();
+            player.setGame(null);
+            player.setState(IGamePlayer.State.NOT_PLAYING);
+            event.getGame().deadPlayers.add(player);
+
+            for (IGamePlayer o : game.players) {
+                if (o.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
+                if (game.deadPlayers.contains(o)) continue;
+                game.onWin(event.getTeam());
+                game.onEnd();
+                break;
+            }
+        }
+        game.players.remove(player);
+    }
+
+    @EventHandler
     public void onLeave(GameCountdownLeaveEvent event) {
         IGamePlayer gamePlayer = event.getPlayer();
         gamePlayer.getGame().removePlayer(gamePlayer);
@@ -89,7 +129,22 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
-    public void onPreStart (PreGameStartEvent event) {
+    public void onWin(TeamWinEvent event) {
+        Team team = event.getTeam();
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', team.getChatColor() + team.getName() + " Team &7just won &b" + event.getGame().getName() + '!'));
+        if (plugin.getConfig().getBoolean("events.money.enabled")) {
+            double i = plugin.getConfig().getDouble("events.money.amount");
+            for (IGamePlayer gamePlayer : team.getMembers()) {
+                EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
+                if (r.transactionSuccess()) {
+                    gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPreStart(PreGameStartEvent event) {
         Bukkit.getServer().getPluginManager().registerEvents(event.getGame(), plugin);
         if (event.getGame() instanceof ITeamGame) {
             ITeamGame game = (ITeamGame) event.getGame();
@@ -122,7 +177,7 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
-    public void onEnd (GameEndEvent event) {
+    public void onEnd(GameEndEvent event) {
         plugin.getEventMain().end();
         for (IGamePlayer player : event.getGame().players) {
             if (event.getGame().deadPlayers.contains(player)) continue;
