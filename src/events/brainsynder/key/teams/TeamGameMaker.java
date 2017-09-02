@@ -22,27 +22,22 @@ public abstract class TeamGameMaker implements ITeamGame {
 
     @Override
     public void randomizePlayers() {
-        Location blueSpawn = getSpawn(blue);
-        Location redSpawn = getSpawn(red);
 
         for (IGamePlayer p : players) {
             if (p.getTeam() != null) return;
             if (red.size() < blue.size()) {
                 red.addMember(p);
-                p.getPlayer().teleport(redSpawn);
             } else if (blue.size() < red.size()) {
                 blue.addMember(p);
-                p.getPlayer().teleport(blueSpawn);
             } else {
                 Random RandomTeam = new Random();
                 int TeamID = RandomTeam.nextInt(1);
                 if (TeamID == 0) {
                     red.addMember(p);
-                    p.getPlayer().teleport(redSpawn);
                 } else {
                     blue.addMember(p);
-                    p.getPlayer().teleport(blueSpawn);
                 }
+                p.getPlayer().teleport(getSpawn(p.getTeam()));
             }
         }
     }
