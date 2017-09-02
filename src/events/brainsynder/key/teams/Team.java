@@ -61,4 +61,8 @@ public class Team {
     public String getName() {
         return name;
     }
+
+    public List<IGamePlayer> getMembers() {
+        return members;
+    }
 }

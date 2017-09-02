@@ -11,6 +11,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
+import simple.brainsynder.nms.IActionMessage;
+import simple.brainsynder.utils.Reflection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,26 +21,36 @@ import java.util.Random;
 public abstract class TeamGameMaker implements ITeamGame {
     private boolean started = false;
     protected boolean endTask = false;
+    private IActionMessage message;
 
     @Override
     public void randomizePlayers() {
+        Location blueSpawn = getSpawn(blue);
+        Location redSpawn = getSpawn(red);
 
         for (IGamePlayer p : players) {
             if (p.getTeam() != null) return;
             if (red.size() < blue.size()) {
                 red.addMember(p);
+                p.setTeam(red);
+                p.getPlayer().teleport(redSpawn);
             } else if (blue.size() < red.size()) {
                 blue.addMember(p);
+                p.setTeam(blue);
+                p.getPlayer().teleport(blueSpawn);
             } else {
                 Random RandomTeam = new Random();
                 int TeamID = RandomTeam.nextInt(1);
                 if (TeamID == 0) {
                     red.addMember(p);
+                    p.setTeam(red);
+                    p.getPlayer().teleport(redSpawn);
                 } else {
                     blue.addMember(p);
+                    p.setTeam(blue);
+                    p.getPlayer().teleport(blueSpawn);
                 }
             }
-            p.getPlayer().teleport(getSpawn(p.getTeam()));
         }
     }
 
@@ -98,6 +110,7 @@ public abstract class TeamGameMaker implements ITeamGame {
 
     @Override
     public void onStart() {
+        message = Reflection.getActionMessage();
         TeamGameStart event = new TeamGameStart(this);
         Bukkit.getPluginManager().callEvent(event);
         started = true;
@@ -134,7 +147,13 @@ public abstract class TeamGameMaker implements ITeamGame {
         }.runTaskTimer(plugin, 0, 1);
     }
 
-    @Override public void perTick() {}
+    @Override public void perTick() {
+        if (message == null) return;
+        if (!plugin.getEventMain().eventstarted) return;
+        if (!started) return;
+        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int)red.getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int)red.getScore())));
+
+    }
 
     @Override public boolean hasStarted() {
         return started;

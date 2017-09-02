@@ -4,8 +4,6 @@ import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -27,19 +25,8 @@ public class TDM extends TeamGameMaker {
     }
     
     @Override public void onStart() {
+        super.onStart();
         win = (players.size() * 2);
-
-        for (IGamePlayer gamePlayer : players) {
-            Player player = gamePlayer.getPlayer();
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
-        }
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            super.onStart();
-            players.forEach(gamePlayer -> {
-                Player player = gamePlayer.getPlayer();
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
-            });
-        }, 120L);
     }
     
     @Override public void equipPlayer(Player player) {

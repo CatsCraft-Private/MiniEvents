@@ -99,7 +99,6 @@ public class GameListener implements Listener {
                 gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
                 event.getGame().equipPlayer(player);
             }
-            game.randomizePlayers();
             return;
         }
         Location spawn = event.getGame().getSpawn();
