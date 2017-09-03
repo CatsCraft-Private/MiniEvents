@@ -138,11 +138,9 @@ public class GameListener implements Listener {
         Team team = event.getTeam();
         List<String> redMem = Collections.singletonList("§4Red Team Members:");
         List<String> blueMem = Collections.singletonList("§9Blue Team Members:");
-
-        for (IGamePlayer player : event.getGame().getRedTeam().getMembers())
-            redMem.add("§c- §7" + player.getPlayer().getName());
-        for (IGamePlayer player : event.getGame().getBlueTeam().getMembers())
-            redMem.add("§b- §7" + player.getPlayer().getName());
+        
+        event.getGame().getRedTeam().getMembers().forEach(player -> redMem.add("§c- §7" + player.getPlayer().getName()));
+        event.getGame().getBlueTeam().getMembers().forEach(player -> blueMem.add("§b- §7" + player.getPlayer().getName()));
 
         ITellraw raw = Reflection.getTellraw(team.getChatColor() + team.getName() + " Team §7just won §b" + event.getGame().getName() + "§7! Final Score of: ");
         raw.then("§4Red(§c" + ((int)event.getGame().getRedTeam().getScore()) + "§4)").tooltip(redMem).then(' ');
