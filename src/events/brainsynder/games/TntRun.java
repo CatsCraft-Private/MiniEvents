@@ -148,7 +148,6 @@ public class TntRun extends GameMaker {
                         break;
                     }
                 }
-                return;
             }
         }
     }
