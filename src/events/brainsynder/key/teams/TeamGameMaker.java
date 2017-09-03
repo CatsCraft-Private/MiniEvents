@@ -26,13 +26,7 @@ public abstract class TeamGameMaker implements ITeamGame {
     @Override
     public void randomizePlayers() {
         for (IGamePlayer p : players) {
-            if (blue.size() > red.size()) {
-                red.addMember(p);
-                p.setTeam(red);
-            } else if (red.size() > blue.size()) {
-                blue.addMember(p);
-                p.setTeam(blue);
-            } else {
+            if (blue.size() == red.size()) {
                 Random rand = new Random();
                 if (rand.nextBoolean()) {
                     red.addMember(p);
@@ -40,6 +34,14 @@ public abstract class TeamGameMaker implements ITeamGame {
                 } else {
                     blue.addMember(p);
                     p.setTeam(blue);
+                }
+            } else {
+                if (red.size() > blue.size()) {
+                    blue.addMember(p);
+                    p.setTeam(blue);
+                } else {
+                    red.addMember(p);
+                    p.setTeam(red);
                 }
             }
             p.getPlayer().teleport(getSpawn(p.getTeam()));

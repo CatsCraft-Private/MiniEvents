@@ -23,7 +23,10 @@ import org.bukkit.potion.PotionEffect;
 import simple.brainsynder.nms.ITellraw;
 import simple.brainsynder.utils.Reflection;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class GameCommands implements CommandListener {
     private GamePlugin plugin = GamePlugin.instance;
@@ -169,7 +172,45 @@ public class GameCommands implements CommandListener {
         GamePlayerJoinEvent<Game> event = new GamePlayerJoinEvent<>(plugin.getEventMain().waiting, gamePlayer);
         Bukkit.getPluginManager().callEvent(event);
     }
-    
+
+    @Command(name = "tester")
+    public void test (Player player, String[] args) {
+        if (args.length == 0) {
+            run(10, 2);
+        }else{
+            if (args.length == 1) {
+                run(Integer.parseInt(args[0]), 2);
+            }else{
+                run(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+            }
+        }
+    }
+
+    private void run (int max, int players) {
+        for (int tries = 0; tries < max; tries++) {
+            List<String> red = new ArrayList<>();
+            List<String> blue = new ArrayList<>();
+            for (int count = 0; count < players; count++) {
+                if (blue.size() == red.size()) {
+                    Random rand = new Random();
+                    if (rand.nextBoolean()) {
+                        red.add(String.valueOf(count));
+                    } else {
+                        blue.add(String.valueOf(count));
+                    }
+                } else {
+                    if (red.size() > blue.size()) {
+                        blue.add(String.valueOf(count));
+                    } else {
+                        red.add(String.valueOf(count));
+                    }
+                }
+            }
+
+            Bukkit.broadcastMessage("Try #" + (tries + 1) + " §4Red(§c" + red.size() + "§4) §9Blue(§b" + blue.size() + "§9)");
+        }
+    }
+
     @Command(name = "leave")
     public void leave(Player player) {
         IGamePlayer gamePlayer = GameManager.getPlayer(player);
