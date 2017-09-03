@@ -136,8 +136,8 @@ public class GameListener implements Listener {
     @EventHandler
     public void onWin(TeamWinEvent event) {
         Team team = event.getTeam();
-        List<String> redMem = Collections.singletonList("§4Red Team Members:");
-        List<String> blueMem = Collections.singletonList("§9Blue Team Members:");
+        List<String> redMem = new ArrayList<>();
+        List<String> blueMem = new ArrayList<>();
         
         event.getGame().getRedTeam().getMembers().forEach(player -> redMem.add("§c- §7" + player.getPlayer().getName()));
         event.getGame().getBlueTeam().getMembers().forEach(player -> blueMem.add("§b- §7" + player.getPlayer().getName()));
