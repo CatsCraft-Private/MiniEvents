@@ -41,9 +41,6 @@ public class BlitzTag extends GameMaker {
             if (tagged.getPlayer().isOnline() && tagged.getPlayer().getName().equals(player.getPlayer().getName())) {
                 player.getPlayer().sendMessage("§cYou can not leave this event while you are the Tagger.");
                 return;
-            } else {
-                countDown = 15;
-                randomTagged();
             }
         }
         super.onLeave(player);

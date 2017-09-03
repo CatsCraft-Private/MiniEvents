@@ -18,6 +18,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import simple.brainsynder.nms.ITellraw;
+import simple.brainsynder.utils.Reflection;
+
+import java.util.Collections;
+import java.util.List;
 
 public class GameListener implements Listener {
     private GamePlugin plugin = GamePlugin.instance;
@@ -27,7 +32,7 @@ public class GameListener implements Listener {
         if (plugin.getEventMain().eventstarted) return;
 
         IGamePlayer gamePlayer = event.getPlayer();
-        event.getGame().addPlayer(gamePlayer);
+        event.getGame().players.add(gamePlayer);
         gamePlayer.setGame(event.getGame());
         gamePlayer.setState(IGamePlayer.State.WAITING);
         gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
@@ -131,7 +136,18 @@ public class GameListener implements Listener {
     @EventHandler
     public void onWin(TeamWinEvent event) {
         Team team = event.getTeam();
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', team.getChatColor() + team.getName() + " Team &7just won &b" + event.getGame().getName() + '!'));
+        List<String> redMem = Collections.singletonList("§4Red Team Members:");
+        List<String> blueMem = Collections.singletonList("§9Blue Team Members:");
+
+        for (IGamePlayer player : event.getGame().getRedTeam().getMembers())
+            redMem.add("§c- §7" + player.getPlayer().getName());
+        for (IGamePlayer player : event.getGame().getBlueTeam().getMembers())
+            redMem.add("§b- §7" + player.getPlayer().getName());
+
+        ITellraw raw = Reflection.getTellraw(team.getChatColor() + team.getName() + " Team §7just won §b" + event.getGame().getName() + "§7! Final Score of: ");
+        raw.then("§4Red(§c" + ((int)event.getGame().getRedTeam().getScore()) + "§4)").tooltip(redMem).then(' ');
+        raw.then("§9Blue(§b" + ((int)event.getGame().getBlueTeam().getScore()) + "§9)").tooltip(blueMem);
+        Bukkit.getOnlinePlayers().forEach(raw::send);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
             for (IGamePlayer gamePlayer : team.getMembers()) {

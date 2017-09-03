@@ -23,10 +23,7 @@ import org.bukkit.potion.PotionEffect;
 import simple.brainsynder.nms.ITellraw;
 import simple.brainsynder.utils.Reflection;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 public class GameCommands implements CommandListener {
     private GamePlugin plugin = GamePlugin.instance;
@@ -173,7 +170,7 @@ public class GameCommands implements CommandListener {
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    @Command(name = "tester")
+    /*@Command(name = "tester")
     public void test (Player player, String[] args) {
         if (args.length == 0) {
             run(10, 2);
@@ -209,7 +206,7 @@ public class GameCommands implements CommandListener {
 
             Bukkit.broadcastMessage("Try #" + (tries + 1) + " §4Red(§c" + red.size() + "§4) §9Blue(§b" + blue.size() + "§9)");
         }
-    }
+    }*/
 
     @Command(name = "leave")
     public void leave(Player player) {

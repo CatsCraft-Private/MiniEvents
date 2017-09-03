@@ -78,6 +78,8 @@ public abstract class TeamGameMaker implements ITeamGame {
     public void onEnd() {
         started = false;
         endTask = false;
+        red.setScore(0);
+        blue.setScore(0);
         players.forEach(player -> player.setTeam(null));
         GameEndEvent<ITeamGame> event = new GameEndEvent<>(this);
         Bukkit.getPluginManager().callEvent(event);
@@ -100,9 +102,6 @@ public abstract class TeamGameMaker implements ITeamGame {
 
     @Override
     public void onWin(Team gamePlayer) {
-        red.setScore(0);
-        blue.setScore(0);
-
         TeamWinEvent event = new TeamWinEvent(this, gamePlayer);
         Bukkit.getPluginManager().callEvent(event);
         onEnd();

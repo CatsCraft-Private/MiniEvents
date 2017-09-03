@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -29,6 +30,10 @@ public class TDM extends TeamGameMaker {
     public void onStart() {
         super.onStart();
         win = (players.size() * 2);
+
+        players.forEach(player -> {
+            player.getPlayer().sendMessage("§7Get §b" + win + " §7Kills to win the game!");
+        });
     }
 
     @Override
@@ -134,6 +139,18 @@ public class TDM extends TeamGameMaker {
                     event.setCancelled(true);
                     p.setHealth(p.getMaxHealth());
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onRegen (EntityRegainHealthEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        IGamePlayer player = GameManager.getPlayer((Player) e.getEntity());
+        if (player.isPlaying()) {
+            if (player.getGame() instanceof TDM) {
+                if (plugin.getEventMain().eventstarted)
+                    e.setCancelled(true);
             }
         }
     }
