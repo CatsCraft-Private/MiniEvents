@@ -5,11 +5,10 @@ import org.bukkit.block.Block;
 import simple.brainsynder.nbt.StorageTagCompound;
 import simple.brainsynder.wrappers.MaterialWrapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 public class BlockStorage {
-    private List<StorageTagCompound> compoundList = new ArrayList<>();
+    private LinkedList<StorageTagCompound> compoundList = new LinkedList<>();
 
     public void addBlock (Block block) {
         StorageTagCompound compound = new StorageTagCompound();
@@ -17,10 +16,12 @@ public class BlockStorage {
         compound.setByte("data", block.getState().getRawData());
         BlockLocation location = new BlockLocation(block.getLocation());
         compound.setString("location", location.toDataString());
-        compoundList.add(compound);
+        compoundList.addLast(compound);
     }
 
     public void reset () {
+        if (compoundList.isEmpty()) return;
+
         for (StorageTagCompound compound : compoundList) {
             MaterialWrapper wrapper = MaterialWrapper.fromName(compound.getString("type"));
             byte data = compound.getByte("data");

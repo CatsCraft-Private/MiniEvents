@@ -4,6 +4,7 @@ import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
+import events.brainsynder.utils.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -116,6 +117,7 @@ public class TDM extends TeamGameMaker {
                     if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
                         event.setCancelled(true);
                     } else {
+                        if (event.getDamager() instanceof Projectile) PlayerUtils.sendBlood(p);
                         if ((p.getHealth() - event.getDamage()) <= 1) {
                             double score = (hitter.getTeam().getScore() + 1);
                             hitter.getTeam().setScore(score);
