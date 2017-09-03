@@ -57,11 +57,6 @@ public class TDM extends TeamGameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-
-                player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
-                player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
-                player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
-                player.getInventory().setBoots(settings.getData().getItemStack("setup." + getName() + ".armor.100"));
                 if (settings.getData().getSection("setup." + getName() + ".potion") != null) {
                     for (String m : settings.getData().getSection("setup." + getName() + ".potion.name.").getKeys(false)) {
                         String name = settings.getData().getString("setup." + getName() + ".potion.name." + m + ".type");
@@ -112,7 +107,7 @@ public class TDM extends TeamGameMaker {
                     if (!(projectile.getShooter() instanceof Player)) return;
                     enemy = (Player) projectile.getShooter();
                 }
-                
+
                 if (enemy != null) {
                     IGamePlayer<ITeamGame> hitter = GameManager.getPlayer(enemy);
                     if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
