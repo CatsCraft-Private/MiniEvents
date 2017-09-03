@@ -12,6 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import simple.brainsynder.nms.IActionMessage;
+import simple.brainsynder.utils.Reflection;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,26 +21,31 @@ import java.util.UUID;
 
 public class KOTH extends GameMaker {
     private HashMap<UUID, Integer> points = new HashMap<>();
+    private HashMap<UUID, Integer> per10 = new HashMap();
     private Location topLocation = null;
     private int per20 = 0;
-    
-    @Override public void onEnd() {
+    private IActionMessage message = null;
+
+    @Override
+    public void onEnd() {
         super.onEnd();
         points.clear();
     }
-    
-    @Override public void perTick() {
+
+    @Override
+    public void perTick() {
         super.perTick();
         if (topLocation == null) return;
-        
-        for (IGamePlayer gamePlayer : players) {
-            Player o = gamePlayer.getPlayer();
-            int point = points.getOrDefault(o.getUniqueId(), 1);
-            int l = ((point * 100) / 100);
-            if (per20 == 20) {
-                per20 = 0;
+        if (message == null) message = Reflection.getActionMessage();
+
+        if (per20 == 15) {
+            per20 = 0;
+            for (IGamePlayer gamePlayer : players) {
+                Player o = gamePlayer.getPlayer();
+                int point = points.getOrDefault(o.getUniqueId(), 1);
+                int l = ((point * 100) / 100);
                 
-                /*StringBuilder text = new StringBuilder();
+                StringBuilder text = new StringBuilder();
                 text.append("Progress Bar: ");
                 text.append("| ");
                 int greenNum = per10.getOrDefault(o.getUniqueId(), 0);
@@ -56,9 +63,8 @@ public class KOTH extends GameMaker {
                 }
                 text.append(ChatColor.RESET).append(" | ").append(l).append('%');
                 
-                IActionMessage message = Reflection.getActionMessage();
-                message.sendMessage(o, text.toString());*/
-                
+                message.sendMessage(o, text.toString());
+
                 if (o.getLocation().distance(topLocation) <= 3.0) {
                     if (point < 100) {
                         points.put(o.getUniqueId(), (point + 1));
@@ -67,7 +73,7 @@ public class KOTH extends GameMaker {
                                     plugin.getConfig().getString("messages.koth-announce-player")
                                             .replace("{0}", Integer.toString(l))));
                         }
-                        
+
                         if (l >= 50 && l % 10 == 0) {
                             for (IGamePlayer p : players) {
                                 Player pl = p.getPlayer();
@@ -83,39 +89,41 @@ public class KOTH extends GameMaker {
                         break;
                     }
                 }
-            } else {
-                per20++;
             }
+        } else {
+            per20++;
         }
     }
-    
-    @Override public void onStart() {
-            World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".top.world"));
-            double x = settings.getData().getDouble("setup." + getName() + ".top.x");
-            double y = settings.getData().getDouble("setup." + getName() + ".top.y");
-            double z = settings.getData().getDouble("setup." + getName() + ".top.z");
-            float yaw = (settings.getData().getInt("setup." + getName() + ".top.yaw"));
-            float pitch = (settings.getData().getInt("setup." + getName() + ".top.pitch"));
-            topLocation = new Location(world, x, y, z, yaw, pitch);
-            
-            for (IGamePlayer gamePlayer : players) {
+
+    @Override
+    public void onStart() {
+        World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".top.world"));
+        double x = settings.getData().getDouble("setup." + getName() + ".top.x");
+        double y = settings.getData().getDouble("setup." + getName() + ".top.y");
+        double z = settings.getData().getDouble("setup." + getName() + ".top.z");
+        float yaw = (settings.getData().getInt("setup." + getName() + ".top.yaw"));
+        float pitch = (settings.getData().getInt("setup." + getName() + ".top.pitch"));
+        topLocation = new Location(world, x, y, z, yaw, pitch);
+
+        for (IGamePlayer gamePlayer : players) {
+            Player player = gamePlayer.getPlayer();
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
+        }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            super.onStart();
+            players.forEach(gamePlayer -> {
                 Player player = gamePlayer.getPlayer();
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
-            }
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                super.onStart();
-                players.forEach(gamePlayer -> {
-                    Player player = gamePlayer.getPlayer();
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
-                });
-            }, 120L);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
+            });
+        }, 120L);
 
     }
-    
-    @Override public boolean allowsPVP() {
+
+    @Override
+    public boolean allowsPVP() {
         return true;
     }
-    
+
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
@@ -133,16 +141,17 @@ public class KOTH extends GameMaker {
             }
         }
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
-        
+
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
-        
+
         try {
             if (settings.getData().getSection("setup." + getName()) == null) {
                 equipDefaultPlayer(player);
@@ -154,7 +163,7 @@ public class KOTH extends GameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-                
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -172,8 +181,9 @@ public class KOTH extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack dsword = new ItemStack(Material.DIAMOND_SWORD, 1);
         dsword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
@@ -184,12 +194,14 @@ public class KOTH extends GameMaker {
         player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
         inventory.setItem(0, dsword);
     }
-    
-    @Override public String getName() {
+
+    @Override
+    public String getName() {
         return "KOTH";
     }
-    
-    @Override public String[] description() {
+
+    @Override
+    public String[] description() {
         return new String[]{
                 "§eKOTH or known as §7King of the Hill",
                 "§eis a game of capture, meaning you have to",

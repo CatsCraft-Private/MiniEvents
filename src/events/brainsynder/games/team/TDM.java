@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import simple.brainsynder.api.ItemMaker;
 
 import java.util.LinkedList;
 
@@ -81,12 +82,8 @@ public class TDM extends TeamGameMaker {
         dsword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
         player.getInventory().clear();
         inventory.setItem(0, dsword);
-
-        for (int i = 0; i < inventory.getSize(); ++i) {
-            if (inventory.getItem(i) == null) {
-                inventory.addItem(new ItemStack(Material.MUSHROOM_SOUP));
-            }
-        }
+        inventory.setItem(1, new ItemMaker(Material.BOW).enchant(Enchantment.ARROW_INFINITE, 1).create());
+        inventory.setItem(8, new ItemMaker(Material.ARROW).create());
     }
 
     @Override
