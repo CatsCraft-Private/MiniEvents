@@ -13,9 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.IActionMessage;
 import simple.brainsynder.utils.Reflection;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public abstract class TeamGameMaker implements ITeamGame {
     private Map<String, Location> locationMap = new HashMap<>();
@@ -25,27 +23,37 @@ public abstract class TeamGameMaker implements ITeamGame {
 
     @Override
     public void randomizePlayers() {
+        List<IGamePlayer> redMembers = new ArrayList<>();
+        List<IGamePlayer> blueMembers = new ArrayList<>();
+
         for (IGamePlayer p : players) {
-            if (blue.size() == red.size()) {
+            if (blueMembers.size() == redMembers.size()) {
                 Random rand = new Random();
                 if (rand.nextBoolean()) {
-                    red.addMember(p);
-                    p.setTeam(red);
+                    redMembers.add(p);
                 } else {
-                    blue.addMember(p);
-                    p.setTeam(blue);
+                    blueMembers.add(p);
                 }
             } else {
-                if (red.size() > blue.size()) {
-                    blue.addMember(p);
-                    p.setTeam(blue);
+                if (redMembers.size() > blueMembers.size()) {
+                    blueMembers.add(p);
                 } else {
-                    red.addMember(p);
-                    p.setTeam(red);
+                    redMembers.add(p);
                 }
             }
-            p.getPlayer().teleport(getSpawn(p.getTeam()));
         }
+
+        redMembers.forEach(player -> {
+            red.addMember(player);
+            player.setTeam(red);
+            player.getPlayer().teleport(getSpawn(player.getTeam()));
+        });
+
+        blueMembers.forEach(player -> {
+            blue.addMember(player);
+            player.setTeam(blue);
+            player.getPlayer().teleport(getSpawn(player.getTeam()));
+        });
     }
 
     protected Location getSpawn(Team team) {
