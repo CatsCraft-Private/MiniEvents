@@ -124,7 +124,6 @@ public class TDM extends TeamGameMaker {
                             hitter.getTeam().setScore(score);
                             if (win <= score) {
                                 onWin(hitter.getTeam());
-                                plugin.getEventMain().end();
                                 return;
                             }
                             event.setCancelled(true);
