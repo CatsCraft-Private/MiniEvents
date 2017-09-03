@@ -112,6 +112,7 @@ public class TDM extends TeamGameMaker {
                     if (!(projectile.getShooter() instanceof Player)) return;
                     enemy = (Player) projectile.getShooter();
                 }
+                
                 if (enemy != null) {
                     IGamePlayer<ITeamGame> hitter = GameManager.getPlayer(enemy);
                     if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
