@@ -41,6 +41,7 @@ public class GameCommands implements CommandListener {
         if (args.length == 0) {
             player.sendMessage("/setgamespawn <game>");
         } else {
+            if (!player.hasPermission("events.setSpawn")) return;
             Game game = GameManager.getGame(args[0]);
             if (game == null) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere is no event by that name."));
@@ -62,6 +63,7 @@ public class GameCommands implements CommandListener {
         if (args.length == 0) {
             player.sendMessage("/setteamspawn <game> <team>");
         } else {
+            if (!player.hasPermission("events.setSpawn")) return;
             Game g = GameManager.getGame(args[0]);
             if (g == null) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere is no event by that name."));
