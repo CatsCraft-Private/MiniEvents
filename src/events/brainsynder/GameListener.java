@@ -31,21 +31,22 @@ public class GameListener implements Listener {
     public void onJoin(GamePlayerJoinEvent event) {
         if (plugin.getEventMain().eventstarted) return;
 
+        Game<IGamePlayer> game = event.getGame();
         IGamePlayer gamePlayer = event.getPlayer();
         event.getGame().players.add(gamePlayer);
         gamePlayer.setGame(event.getGame());
         gamePlayer.setState(IGamePlayer.State.WAITING);
-        gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
-        for (IGamePlayer gamer : event.getGame().players) {
+        gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
+        for (IGamePlayer gamer : game.players) {
             if (!gamer.getPlayer().getName().equals(gamePlayer.getPlayer().getName()))
-                gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7joined the event. Players in the event: &b{1}&7.".replace("{0}", gamePlayer.getPlayer().getName()).replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
+                gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7joined the event. Players in the event: &b{1}&7.".replace("{0}", gamePlayer.getPlayer().getName()).replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
         }
     }
 
     @EventHandler
     public void onLeave(GamePlayerLeaveEvent event) {
         IGamePlayer player = event.getPlayer();
-        Game game = event.getGame();
+        Game<IGamePlayer> game = event.getGame();
         if (player.getPlayerData().isStored())
             player.getPlayerData().restoreData();
         player.setGame(null);
@@ -110,12 +111,13 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onLeave(GameCountdownLeaveEvent event) {
+        Game<IGamePlayer> game = event.getGame();
         IGamePlayer gamePlayer = event.getPlayer();
         gamePlayer.getGame().removePlayer(gamePlayer);
         gamePlayer.setState(IGamePlayer.State.NOT_PLAYING);
-        gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7left the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayer().size()))));
-        for (IGamePlayer gamer : gamePlayer.getGame().players) {
-            gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7left the event. Players in the event: &b{1}&7.".replace("{0}", gamer.getPlayer().getName()).replace("{1}", Integer.toString((event.getGame().getPlayer().size())))));
+        gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7left the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
+        for (IGamePlayer gamer : game.players) {
+            gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7left the event. Players in the event: &b{1}&7.".replace("{0}", gamePlayer.getPlayer().getName()).replace("{1}", Integer.toString((event.getGame().getPlayers().size())))));
         }
         gamePlayer.setGame(null);
     }
@@ -156,11 +158,11 @@ public class GameListener implements Listener {
                     gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
                 }
             }
-            event.getGame().getRedTeam().getMembers().clear();
-            event.getGame().getBlueTeam().getMembers().clear();
-            redMem.clear();
-            blueMem.clear();
         }
+        event.getGame().getRedTeam().getMembers().clear();
+        event.getGame().getBlueTeam().getMembers().clear();
+        redMem.clear();
+        blueMem.clear();
     }
 
     @EventHandler
@@ -168,7 +170,7 @@ public class GameListener implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(event.getGame(), plugin);
         if (event.getGame() instanceof ITeamGame) {
             ITeamGame game = (ITeamGame) event.getGame();
-            for (IGamePlayer gamePlayer : event.getGame().players) {
+            for (IGamePlayer gamePlayer : game.players) {
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
@@ -176,8 +178,10 @@ public class GameListener implements Listener {
             }
             return;
         }
+        Game<IGamePlayer> game = event.getGame();
+
         Location spawn = event.getGame().getSpawn();
-        for (IGamePlayer gamePlayer : event.getGame().players) {
+        for (IGamePlayer gamePlayer : game.players) {
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             player.teleport(spawn);
@@ -199,15 +203,16 @@ public class GameListener implements Listener {
     @EventHandler
     public void onEnd(GameEndEvent event) {
         plugin.getEventMain().end();
-        for (IGamePlayer player : event.getGame().players) {
+        Game<IGamePlayer> game = event.getGame();
+        for (IGamePlayer player : game.players) {
             if (event.getGame().deadPlayers.contains(player)) continue;
             if (player.getPlayerData().isStored())
                 player.getPlayerData().restoreData();
             player.setGame(null);
             player.setState(IGamePlayer.State.NOT_PLAYING);
         }
-        event.getGame().deadPlayers.clear();
-        event.getGame().players.clear();
+        game.deadPlayers.clear();
+        game.players.clear();
         HandlerList.unregisterAll(event.getGame());
     }
 }

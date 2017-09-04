@@ -300,8 +300,8 @@ public class GameCommands implements CommandListener {
                 double i = 100;
                 plugin.getEventMain().eventstarting = true;
                 plugin.getEventMain().cancelled = false;
-                if (!game.getPlayer().isEmpty())
-                    game.getPlayer().clear();
+                if (!game.getPlayers().isEmpty())
+                    game.getPlayers().clear();
                 plugin.getEventMain().waiting = game;
                 plugin.getMethod().start(game);
                 for (String e : GamePlugin.starting) {

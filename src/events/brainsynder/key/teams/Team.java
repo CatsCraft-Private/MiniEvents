@@ -29,7 +29,7 @@ public class Team {
         return members.size();
     }
 
-    public void addMember (IGamePlayer player) {
+    void addMember(IGamePlayer player) {
         Player p = player.getPlayer();
         p.getInventory().setHelmet(new LeatherArmorMaker(Material.LEATHER_HELMET).setColor(color).setName(chatColor + name + " Team Armor").create());
         p.getInventory().setChestplate(new LeatherArmorMaker(Material.LEATHER_CHESTPLATE).setColor(color).setName(chatColor + name + " Team Armor").create());
@@ -38,7 +38,7 @@ public class Team {
         if (!members.contains(player)) members.add(player);
     }
 
-    public void removeMember (IGamePlayer player) {
+    void removeMember(IGamePlayer player) {
         if (members.contains(player)) members.remove(player);
     }
 

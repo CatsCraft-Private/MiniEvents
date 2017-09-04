@@ -5,24 +5,35 @@ import events.brainsynder.events.game.TeamGameStart;
 import events.brainsynder.events.team.TeamPlayerLeaveEvent;
 import events.brainsynder.events.team.TeamWinEvent;
 import events.brainsynder.key.IGamePlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.IActionMessage;
 import simple.brainsynder.utils.Reflection;
 
 import java.util.*;
 
-public abstract class TeamGameMaker implements ITeamGame {
+public abstract class TeamGameMaker extends ITeamGame {
     private Map<String, Location> locationMap = new HashMap<>();
     private boolean started = false;
-    protected boolean endTask = false;
+    private boolean endTask = false;
     private IActionMessage message = null;
+    private Team red;
+    private Team blue;
+
+    @Override
+    public Team getBlueTeam() {
+        return blue;
+    }
+
+    @Override
+    public Team getRedTeam() {
+        return red;
+    }
 
     @Override
     public void randomizePlayers() {
+        red = new Team("Red", Color.RED, ChatColor.RED);
+        blue = new Team("Blue", Color.BLUE, ChatColor.BLUE);
         List<IGamePlayer> redMembers = new ArrayList<>();
         List<IGamePlayer> blueMembers = new ArrayList<>();
 
@@ -164,5 +175,12 @@ public abstract class TeamGameMaker implements ITeamGame {
     @Override
     public void setStarted(boolean started) {
         this.started = started;
+    }
+
+    @Override
+    public boolean isSetup() {
+        return settings.getData().isSet("setup." + getName() + ".team.Red.world")
+                && settings.getData().isSet("setup." + getName() + ".team.Blue.world");
+
     }
 }

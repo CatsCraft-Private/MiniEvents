@@ -4,35 +4,20 @@ import events.brainsynder.events.player.GamePlayerLeaveEvent;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
 
-public interface ITeamGame extends Game<Team> {
-    Team red = new Team("Red", Color.RED, ChatColor.RED);
-    Team blue = new Team("Blue", Color.BLUE, ChatColor.BLUE);
+public abstract class ITeamGame extends Game<Team> {
 
-    default Team getRedTeam (){
-        return red;
-    }
-    default Team getBlueTeam (){
-        return blue;
-    }
+    public abstract Team getRedTeam ();
+    public abstract Team getBlueTeam ();
 
-    void randomizePlayers ();
+    public abstract void randomizePlayers ();
 
     @Override
-    default void onLeave(IGamePlayer player) {
+    public void onLeave(IGamePlayer player) {
         if (player.getTeam() != null) {
             player.getTeam().removeMember(player);
         }
         GamePlayerLeaveEvent<Game> event = new GamePlayerLeaveEvent(this, player);
         Bukkit.getPluginManager().callEvent(event);
-    }
-
-    @Override
-    default boolean isSetup() {
-        return settings.getData().isSet("setup." + getName() + ".team." + red.getName() + ".world")
-                && settings.getData().isSet("setup." + getName() + ".team." + blue.getName() + ".world");
-
     }
 }

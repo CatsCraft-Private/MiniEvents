@@ -11,7 +11,13 @@ import java.util.LinkedList;
 
 public class Parkour extends GameMaker {
     private BlockLocation topLocation = null;
-    
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ".winLocation"));
+    }
+
     @Override public void perTick() {
         super.perTick();
         if (topLocation == null) return;
@@ -24,11 +30,6 @@ public class Parkour extends GameMaker {
                 plugin.getEventMain().end();
             }
         }
-    }
-    
-    @Override public void onStart() {
-        topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ".winLocation"));
-        super.onStart();
     }
     
     @Override public void equipPlayer(Player player) {

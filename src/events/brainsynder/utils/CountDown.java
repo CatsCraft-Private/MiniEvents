@@ -34,10 +34,10 @@ public class CountDown implements Listener {
                                 plugin.getEventMain().cancelled = false;
                                 cancel();
                             } else {
-                                int size = game.getPlayer().size();
+                                int size = game.getPlayers().size();
                                 if (size <= 1) {
                                     if (size == 1) {
-                                        IGamePlayer player = game.players.get(0);
+                                        IGamePlayer player = (IGamePlayer) game.players.get(0);
                                         game.removePlayer(player);
                                         player.setState(State.NOT_PLAYING);
                                         player.setGame(null);

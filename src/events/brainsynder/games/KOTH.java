@@ -17,14 +17,20 @@ import simple.brainsynder.utils.Reflection;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.UUID;
 
 public class KOTH extends GameMaker {
-    private HashMap<UUID, Integer> points = new HashMap<>();
-    private HashMap<UUID, Integer> per10 = new HashMap();
+    private HashMap<String, Integer> points;
+    private HashMap<String, Integer> per10;
     private Location topLocation = null;
     private int per20 = 0;
     private IActionMessage message = null;
+
+    public KOTH () {
+        super();
+        points = new HashMap<>();
+        per10 = new HashMap();
+        message = Reflection.getActionMessage();
+    }
 
     @Override
     public void onEnd() {
@@ -36,22 +42,21 @@ public class KOTH extends GameMaker {
     public void perTick() {
         super.perTick();
         if (topLocation == null) return;
-        if (message == null) message = Reflection.getActionMessage();
 
         if (per20 == 15) {
             per20 = 0;
             for (IGamePlayer gamePlayer : players) {
                 Player o = gamePlayer.getPlayer();
-                int point = points.getOrDefault(o.getUniqueId(), 1);
+                int point = points.getOrDefault(o.getUniqueId().toString(), 0);
                 int l = ((point * 100) / 100);
                 
                 StringBuilder text = new StringBuilder();
                 text.append("Progress Bar: ");
                 text.append("| ");
-                int greenNum = per10.getOrDefault(o.getUniqueId(), 0);
+                int greenNum = per10.getOrDefault(o.getUniqueId().toString(), 0);
                 if (l % 10 == 0) {
                     greenNum++;
-                    per10.put(o.getUniqueId(), greenNum);
+                    per10.put(o.getUniqueId().toString(), greenNum);
                 }
                 text.append(ChatColor.GREEN);
                 for (int i = 0; i < greenNum; i++) {
@@ -67,7 +72,7 @@ public class KOTH extends GameMaker {
 
                 if (o.getLocation().distance(topLocation) <= 3.0) {
                     if (point < 100) {
-                        points.put(o.getUniqueId(), (point + 1));
+                        points.put(o.getUniqueId().toString(), (point + 1));
                         if (l % 10 == 0) {
                             o.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                     plugin.getConfig().getString("messages.koth-announce-player")
@@ -104,7 +109,6 @@ public class KOTH extends GameMaker {
         float yaw = (settings.getData().getInt("setup." + getName() + ".top.yaw"));
         float pitch = (settings.getData().getInt("setup." + getName() + ".top.pitch"));
         topLocation = new Location(world, x, y, z, yaw, pitch);
-
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));

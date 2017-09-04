@@ -23,6 +23,11 @@ import java.util.LinkedList;
 
 public class Spleef extends GameMaker {
     private static BlockStorage storage = null;
+
+    public Spleef () {
+        super();
+        storage = new BlockStorage();
+    }
     
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
@@ -58,7 +63,6 @@ public class Spleef extends GameMaker {
     }
     
     @Override public void onStart() {
-            storage = new BlockStorage();
             for (IGamePlayer gamePlayer : players) {
                 Player player = gamePlayer.getPlayer();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));

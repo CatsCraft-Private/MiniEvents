@@ -22,7 +22,12 @@ import java.util.LinkedList;
 
 public class TntRun extends GameMaker {
     private static BlockStorage storage = null;
-    
+
+    public TntRun () {
+        super();
+        storage = new BlockStorage();
+    }
+
     @Override public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
         storage.reset();
@@ -34,7 +39,6 @@ public class TntRun extends GameMaker {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
         }
-        storage = new BlockStorage();
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if (players.size() != 0) {
                 super.onStart();

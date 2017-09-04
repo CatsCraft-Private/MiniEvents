@@ -18,25 +18,33 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public interface Game<T> extends Listener, CommandListener {
-    public List<IGamePlayer> players = new ArrayList<>();
-    List<IGamePlayer> deadPlayers = new ArrayList<>();
-    GamePlugin plugin = GamePlugin.instance;
-    SettingsManager settings = plugin.getSettings();
-    LinkedList<UUID> waitTP = new LinkedList<>();
+public abstract class Game<T> implements Listener, CommandListener {
+    public List<IGamePlayer> players;
+    public List<IGamePlayer> deadPlayers;
+    public GamePlugin plugin;
+    public SettingsManager settings;
+    private LinkedList<UUID> waitTP;
+
+    public Game () {
+        players = new ArrayList<>();
+        deadPlayers = new ArrayList<>();
+        plugin = GamePlugin.instance;
+        settings = plugin.getSettings();
+        waitTP = new LinkedList<>();
+    }
     
-    default int minPlayers () {
+    public int minPlayers () {
         return 2;
     }
 
     /**
      * Run on Game end
      */
-    void onEnd();
+    public abstract void onEnd();
 
-    void lost(T player);
+    public abstract void lost(T player);
 
-    default void onLeave(IGamePlayer player) {
+    public void onLeave(IGamePlayer player) {
         if (this instanceof ITeamGame) {
             TeamPlayerLeaveEvent event = new TeamPlayerLeaveEvent((ITeamGame) this, player.getTeam(), player);
             Bukkit.getPluginManager().callEvent(event);
@@ -47,65 +55,65 @@ public interface Game<T> extends Listener, CommandListener {
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    default int aliveCount() {
+    public int aliveCount() {
         return (players.size() - deadPlayers.size());
     }
 
-    default String getName() {
+    public String getName() {
         return getClass().getSimpleName();
     }
 
-    void onWin(T gamePlayer);
+    public abstract void onWin(T gamePlayer);
 
     /**
      * Run on Game Start
      */
-    void onStart();
+    public abstract void onStart();
 
     /**
      * Runs per tick
      */
-    void perTick();
+    public abstract void perTick();
 
     /**
      * Equips the items for the player, can be the custom inv setup.
      */
-    void equipPlayer(Player player);
+    public abstract void equipPlayer(Player player);
 
     /**
      * The Default Items for the game.
      */
-    void equipDefaultPlayer(Player player);
+    public abstract void equipDefaultPlayer(Player player);
 
     /**
      * Has the game started?
      */
-    boolean hasStarted();
+    public abstract boolean hasStarted();
 
     /**
      * Set if the game has started
      */
-    void setStarted(boolean val);
+    public abstract void setStarted(boolean val);
 
     /**
      * the Players Currently in the Game
      */
-    default List<IGamePlayer> getPlayer() {
+    public List<IGamePlayer> getPlayers() {
         return players;
     }
 
-    default void registerListeners() {
+    public void registerListeners() {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    default void unregisterListeners() {
+    public void unregisterListeners() {
         HandlerList.unregisterAll(this);
     }
 
     /**
      * Add a player to the Game
      */
-    default void addPlayer(IGamePlayer player) {
+    public void addPlayer(IGamePlayer player) {
         if (!waitTP.contains(player.getPlayer().getUniqueId()))
             waitTP.addLast(player.getPlayer().getUniqueId());
         if (!players.contains(player)) {
@@ -116,7 +124,7 @@ public interface Game<T> extends Listener, CommandListener {
     /**
      * Remove a player to the Game
      */
-    default void removePlayer(IGamePlayer player) {
+    public void removePlayer(IGamePlayer player) {
         if (waitTP.contains(player.getPlayer().getUniqueId()))
             waitTP.remove(player.getPlayer().getUniqueId());
         if (players.contains(player)) {
@@ -124,23 +132,23 @@ public interface Game<T> extends Listener, CommandListener {
         }
     }
 
-    default LinkedList<UUID> waitingUUIDs () {
+    public LinkedList<UUID> waitingUUIDs () {
         return waitTP;
     }
 
-    default boolean isSetup() {
+    public boolean isSetup() {
         return false;
     }
 
-    default boolean allowsPVP() {
+    public boolean allowsPVP() {
         return false;
     }
 
-    default String[] description() {
+    public String[] description() {
         return new String[0];
     }
 
-    default Location getSpawn() {
+    public Location getSpawn() {
         World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".world"));
         double x = settings.getData().getDouble("setup." + getName() + ".x");
         double y = settings.getData().getDouble("setup." + getName() + ".y");
