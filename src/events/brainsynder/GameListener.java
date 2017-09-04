@@ -156,6 +156,10 @@ public class GameListener implements Listener {
                     gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
                 }
             }
+            event.getGame().getRedTeam().getMembers().clear();
+            event.getGame().getBlueTeam().getMembers().clear();
+            redMem.clear();
+            blueMem.clear();
         }
     }
 
