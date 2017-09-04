@@ -36,6 +36,7 @@ public class KOTH extends GameMaker {
     public void onEnd() {
         super.onEnd();
         points.clear();
+        per10.clear();
     }
 
     @Override
