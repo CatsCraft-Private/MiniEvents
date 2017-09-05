@@ -48,11 +48,6 @@ public class Handle implements Listener {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     if (gamePlayer.getGame().getGameSettings().canTakeFallDmg ()) return;
                     event.setCancelled(true);
-                } else {
-                    if ((event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
-                            || (event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE)) return;
-                    if (gamePlayer.getGame().getGameSettings().canTakeOtherDamage ()) return;
-                    event.setCancelled(true);
                 }
             }
         }
