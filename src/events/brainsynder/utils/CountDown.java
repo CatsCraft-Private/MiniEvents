@@ -28,6 +28,12 @@ public class CountDown implements Listener {
                 int i = plugin.getConfig().getInt("events.time-to-start");
                 
                 public void run() {
+                    if (plugin.getEventMain().cancelled) {
+                        plugin.getEventMain().cancelled = false;
+                        cancel();
+                        return;
+                    }
+
                     switch (i) {
                         case 0:
                             if (plugin.getEventMain().cancelled) {

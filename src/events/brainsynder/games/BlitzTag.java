@@ -1,6 +1,7 @@
 package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
+import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
@@ -32,6 +33,7 @@ public class BlitzTag extends GameMaker {
 
     public BlitzTag () {
         super();
+        setGameSettings(new GameSettings(true));
         maker = new ParticleMaker(ParticleMaker.Particle.LAVA, 0.1, 2, 0, 0.8, 0);
     }
 

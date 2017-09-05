@@ -24,15 +24,25 @@ public abstract class Game<T> implements Listener, CommandListener {
     public GamePlugin plugin;
     public SettingsManager settings;
     private LinkedList<UUID> waitTP;
+    private GameSettings gameSettings;
 
     public Game () {
+        gameSettings = new GameSettings ();
         players = new ArrayList<>();
         deadPlayers = new ArrayList<>();
         plugin = GamePlugin.instance;
         settings = plugin.getSettings();
         waitTP = new LinkedList<>();
     }
-    
+
+    public void setGameSettings(GameSettings gameSettings) {
+        this.gameSettings = gameSettings;
+    }
+
+    public GameSettings getGameSettings() {
+        return gameSettings;
+    }
+
     public int minPlayers () {
         return 2;
     }

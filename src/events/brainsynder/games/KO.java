@@ -1,6 +1,7 @@
 package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
+import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import org.bukkit.Bukkit;
@@ -21,6 +22,11 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.LinkedList;
 
 public class KO extends GameMaker {
+
+	public KO () {
+		super();
+		setGameSettings(new GameSettings(true));
+	}
 
 	@Override
 	public boolean allowsPVP() {

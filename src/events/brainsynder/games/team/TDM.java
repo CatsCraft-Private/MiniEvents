@@ -1,5 +1,6 @@
 package events.brainsynder.games.team;
 
+import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.TeamGameMaker;
@@ -22,6 +23,11 @@ import java.util.LinkedList;
 
 public class TDM extends TeamGameMaker {
     private int win = 15;
+
+    public TDM() {
+        super();
+        setGameSettings(new GameSettings(true));
+    }
 
     @Override
     public String getName() {

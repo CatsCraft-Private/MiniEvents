@@ -1,6 +1,7 @@
 package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
+import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import org.bukkit.Bukkit;
@@ -19,6 +20,10 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.LinkedList;
 
 public class LMS extends GameMaker {
+    public LMS () {
+        super();
+        setGameSettings(new GameSettings(true));
+    }
     
     @Override public String getName() {
         return "LMS";

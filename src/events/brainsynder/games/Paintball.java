@@ -1,6 +1,7 @@
 package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
+import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import org.bukkit.Bukkit;
@@ -31,6 +32,10 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class Paintball extends GameMaker {
+    public Paintball () {
+        super();
+        setGameSettings(new GameSettings(true));
+    }
 
     @Override public String getName() {
         return "Paintball";

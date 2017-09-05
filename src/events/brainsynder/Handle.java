@@ -9,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -24,7 +26,7 @@ public class Handle implements Listener {
         if (event.getEntity() instanceof Player) {
             IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity());
             if (gamePlayer.isPlaying()) {
-                if (gamePlayer.getGame().allowsPVP ()) return;
+                if (gamePlayer.getGame().getGameSettings().canPvp ()) return;
                 event.setCancelled(true);
                 return;
             }
@@ -32,8 +34,28 @@ public class Handle implements Listener {
         if (event.getDamager() instanceof Player) {
             IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getDamager());
             if (gamePlayer.isPlaying()) {
-                if (gamePlayer.getGame().allowsPVP ()) return;
+                if (gamePlayer.getGame().getGameSettings().canPvp ()) return;
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onHurt (EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity());
+            if (gamePlayer.isPlaying()) {
+                if ((event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
+                        || (event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE)) {
+                    if (gamePlayer.getGame().getGameSettings().canPvp ()) return;
+                    event.setCancelled(true);
+                } else if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                    if (gamePlayer.getGame().getGameSettings().canTakeFallDmg ()) return;
+                    event.setCancelled(true);
+                } else {
+                    if (gamePlayer.getGame().getGameSettings().canTakeOtherDamage ()) return;
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -85,10 +107,20 @@ public class Handle implements Listener {
                 event.setCancelled(true);
         }
     }
-    
+
     @EventHandler
     public void blockBreakEvent(PlayerPickupItemEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
+        if (gamePlayer.isPlaying()) {
+            if (GamePlugin.instance.getEventMain().eventstarted
+                    || GamePlugin.instance.getEventMain().eventstarting)
+                event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void hungerLoss(FoodLevelChangeEvent event) {
+        IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity());
         if (gamePlayer.isPlaying()) {
             if (GamePlugin.instance.getEventMain().eventstarted
                     || GamePlugin.instance.getEventMain().eventstarting)

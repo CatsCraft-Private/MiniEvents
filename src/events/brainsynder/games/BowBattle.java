@@ -1,6 +1,7 @@
 package events.brainsynder.games;
 
 import events.brainsynder.key.GameMaker;
+import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.PlayerUtils;
@@ -21,6 +22,10 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.LinkedList;
 
 public class BowBattle extends GameMaker {
+    public BowBattle () {
+        super();
+        setGameSettings(new GameSettings(true));
+    }
 
     @Override public String getName() {
         return "BowBattle";
