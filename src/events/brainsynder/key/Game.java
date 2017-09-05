@@ -35,7 +35,7 @@ public abstract class Game<T> implements Listener, CommandListener {
         waitTP = new LinkedList<>();
     }
 
-    public void setGameSettings(GameSettings gameSettings) {
+    protected void setGameSettings(GameSettings gameSettings) {
         this.gameSettings = gameSettings;
     }
 
