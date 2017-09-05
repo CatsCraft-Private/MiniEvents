@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GamePlugin extends JavaPlugin {
-    private SettingsManager settings = SettingsManager.getInstance();
-    private EventsMain eventsmain = new EventsMain(this);
+    private SettingsManager settings;
+    private EventsMain eventsmain;
     private CountDown method;
     public static Economy econ = null;
     public static GamePlugin instance = null;
@@ -38,6 +38,8 @@ public class GamePlugin extends JavaPlugin {
     
     public void onEnable() {
         instance = this;
+        settings = SettingsManager.getInstance();
+        eventsmain = new EventsMain(this);
         GameManager.initiate();
         settings.setup(this);
         saveResource("config.yml", false);
