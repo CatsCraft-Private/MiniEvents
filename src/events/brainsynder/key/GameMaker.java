@@ -42,7 +42,9 @@ public abstract class GameMaker extends Game<IGamePlayer> {
         plugin.getEventMain().eventstarted = true;
         plugin.getEventMain().waiting = null;
         players.forEach(player -> {
-            Bukkit.getServer ().dispatchCommand (Bukkit.getConsoleSender (), "pet remove " + player.getPlayer().getName());
+            try {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
+            }catch (Throwable ignored){}
             player.setState(IGamePlayer.State.IN_GAME);
             player.getPlayer().setGameMode(GameMode.ADVENTURE);
         });

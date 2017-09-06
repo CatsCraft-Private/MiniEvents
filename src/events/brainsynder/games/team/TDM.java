@@ -118,6 +118,7 @@ public class TDM extends TeamGameMaker {
                     IGamePlayer<ITeamGame> hitter = GameManager.getPlayer(enemy);
                     if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
                         event.setCancelled(true);
+                        return;
                     } else {
                         if (event.getDamager() instanceof Projectile) PlayerUtils.sendBlood(p);
                         if ((p.getHealth() - event.getDamage()) <= 1) {
@@ -130,6 +131,8 @@ public class TDM extends TeamGameMaker {
                             event.setCancelled(true);
                             p.setHealth(p.getMaxHealth());
                             p.teleport(getSpawn(player.getTeam()));
+                            players.forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + "" + player.getTeam().getChatColor() + " was killed by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName()));
+                            return;
                         }
                     }
                 }

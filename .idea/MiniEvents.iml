@@ -19,7 +19,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lombok" level="project" />
     <orderEntry type="library" name="SimpleAPI" level="project" />
-    <orderEntry type="library" name="spigot-1.8.8-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Vault" level="project" />
+    <orderEntry type="library" name="spigot-1.12.1-R0.1-SNAPSHOT-b1378" level="project" />
   </component>
 </module>
