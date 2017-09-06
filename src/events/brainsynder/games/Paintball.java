@@ -32,16 +32,12 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class Paintball extends GameMaker {
-    public Paintball () {
-        super();
-        setGameSettings(new GameSettings(true));
-    }
-
     @Override public String getName() {
         return "Paintball";
     }
 
     @Override public void onStart() {
+        gameSettings = new GameSettings(true);
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));

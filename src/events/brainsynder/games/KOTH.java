@@ -28,7 +28,6 @@ public class KOTH extends GameMaker {
 
     public KOTH () {
         super();
-        setGameSettings(new GameSettings(true));
         points = new HashMap<>();
         per10 = new HashMap();
         message = Reflection.getActionMessage();
@@ -105,6 +104,7 @@ public class KOTH extends GameMaker {
 
     @Override
     public void onStart() {
+        gameSettings = new GameSettings(true);
         World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".top.world"));
         double x = settings.getData().getDouble("setup." + getName() + ".top.x");
         double y = settings.getData().getDouble("setup." + getName() + ".top.y");

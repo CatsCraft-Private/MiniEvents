@@ -33,7 +33,6 @@ public class BlitzTag extends GameMaker {
 
     public BlitzTag () {
         super();
-        setGameSettings(new GameSettings(true));
         maker = new ParticleMaker(ParticleMaker.Particle.LAVA, 0.1, 2, 0, 0.8, 0);
     }
 
@@ -157,6 +156,7 @@ public class BlitzTag extends GameMaker {
 
     @Override
     public void onStart() {
+        gameSettings = new GameSettings(true);
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 2 seconds to spread out..."));

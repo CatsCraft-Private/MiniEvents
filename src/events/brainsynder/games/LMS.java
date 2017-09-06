@@ -22,7 +22,6 @@ import java.util.LinkedList;
 public class LMS extends GameMaker {
     public LMS () {
         super();
-        setGameSettings(new GameSettings(true));
     }
     
     @Override public String getName() {
@@ -30,6 +29,7 @@ public class LMS extends GameMaker {
     }
     
     @Override public void onStart() {
+        gameSettings = new GameSettings(true);
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));

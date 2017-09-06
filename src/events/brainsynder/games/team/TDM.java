@@ -24,11 +24,6 @@ import java.util.LinkedList;
 public class TDM extends TeamGameMaker {
     private int win = 15;
 
-    public TDM() {
-        super();
-        setGameSettings(new GameSettings(true));
-    }
-
     @Override
     public String getName() {
         return "TDM";
@@ -37,6 +32,7 @@ public class TDM extends TeamGameMaker {
     @Override
     public void onStart() {
         super.onStart();
+        gameSettings = new GameSettings(true);
         win = (players.size() * 2);
 
         players.forEach(player -> {

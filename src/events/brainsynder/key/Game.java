@@ -24,7 +24,7 @@ public abstract class Game<T> implements Listener, CommandListener {
     public GamePlugin plugin;
     public SettingsManager settings;
     private LinkedList<UUID> waitTP;
-    private GameSettings gameSettings;
+    protected GameSettings gameSettings;
 
     public Game () {
         gameSettings = new GameSettings ();
