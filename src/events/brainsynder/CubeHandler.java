@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CubeHandler implements Listener,CommandListener {
+public class CubeHandler implements Listener, CommandListener {
     private List<Cuboid> cuboids = new ArrayList<>();
     private Map<String, BlockLocation> locationMap = new HashMap<>();
 
@@ -39,11 +39,12 @@ public class CubeHandler implements Listener,CommandListener {
                 BlockLocation corner2 = BlockLocation.fromString(compound.getString("corner2"));
 
                 cuboids.add(new Cuboid(corner1, corner2));
-            } catch (NBTException ignored) {}
+            } catch (NBTException ignored) {
+            }
         });
     }
 
-    public void unload (GamePlugin plugin) {
+    public void unload(GamePlugin plugin) {
         List<String> data = new ArrayList<>();
         cuboids.forEach(cuboid -> {
             StorageTagCompound compound = new StorageTagCompound();
@@ -55,15 +56,16 @@ public class CubeHandler implements Listener,CommandListener {
         file.set("Cubes", data);
     }
 
-    @Command (name = "cubewand")
-    public void run (Player player) {
+    @Command(name = "cubewand")
+    public void run(Player player) {
         if (!player.hasPermission("Events.getWand")) return;
         player.getInventory().addItem(GamePlugin.instance.getCubeWand());
     }
 
     @EventHandler
-    public void onBreak (BlockBreakEvent e) {
+    public void onBreak(BlockBreakEvent e) {
         if (e.getPlayer().getEquipment().getItemInMainHand().isSimilar(GamePlugin.instance.getCubeWand())) {
+            if (!e.getPlayer().hasPermission("Events.select")) return;
             e.setCancelled(true);
             if (locationMap.containsKey(e.getPlayer().getName())) {
                 BlockLocation corner1 = locationMap.get(e.getPlayer().getName());
@@ -71,7 +73,7 @@ public class CubeHandler implements Listener,CommandListener {
                 cuboids.add(new Cuboid(corner1, corner2));
                 locationMap.remove(e.getPlayer().getName());
                 e.getPlayer().sendMessage("§aCuboid has been set.");
-            }else{
+            } else {
                 BlockLocation corner1 = new BlockLocation(e.getBlock().getLocation());
                 locationMap.put(e.getPlayer().getName(), corner1);
                 e.getPlayer().sendMessage("§cCorner One has been set.");
@@ -80,21 +82,23 @@ public class CubeHandler implements Listener,CommandListener {
     }
 
     @EventHandler
-    public void onMove (PlayerMoveEvent e) {
+    public void onMove(PlayerMoveEvent e) {
         if (cuboids.isEmpty()) return;
+        BlockLocation to = new BlockLocation(e.getTo());
+        IGamePlayer player = GameManager.getPlayer(e.getPlayer());
+        if (player.isPlaying()) return;
+        if (e.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
         cuboids.forEach(cuboid -> {
-            if (cuboid.contains(new BlockLocation(e.getTo()))) {
+            if (cuboid.contains(to)) {
                 //if (e.getPlayer().hasPermission("EventsEntry.bypass")) return;
-                IGamePlayer player = GameManager.getPlayer(e.getPlayer());
-                if (player.isPlaying()) return;
-                if (e.getPlayer().getGameMode() != GameMode.SPECTATOR)
                 e.getPlayer().setGameMode(GameMode.SPECTATOR);
+                e.getPlayer().sendMessage("§cYou were put in Spectator mode to not interfere with the Event. You can switch your game mode once you Exit the arena.");
             }
         });
     }
 
     @EventHandler
-    public void onChange (PlayerGameModeChangeEvent e) {
+    public void onChange(PlayerGameModeChangeEvent e) {
         if (e.getNewGameMode() != GameMode.SPECTATOR) {
             if (cuboids.isEmpty()) return;
             cuboids.forEach(cuboid -> {
