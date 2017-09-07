@@ -6,8 +6,10 @@ import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.BlockSave;
+import events.brainsynder.utils.BlockUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -15,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.api.ItemMaker;
 
 import java.util.HashMap;
@@ -29,7 +32,6 @@ import java.util.Map;
  * - 3 min game time (180 seconds)
  */
 public class Splatoon extends TeamGameMaker {
-
     /**
      * String = Team name
      * Map.String = BlockLocation.toDataString()
@@ -44,6 +46,21 @@ public class Splatoon extends TeamGameMaker {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                players.forEach(player -> {
+                    try {
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
+                    }catch (Throwable ignored){}
+                });
+            }
+        }.runTaskLater(plugin, 30);
+    }
+
+    @Override
     public String getName() {
         return "Splatoon";
     }
@@ -52,15 +69,43 @@ public class Splatoon extends TeamGameMaker {
     public void equipPlayer(Player player) {
     }
 
+    private ItemStack getRedGun() {
+        ItemMaker maker = new ItemMaker (Material.GOLD_BARDING);
+        maker.setName("§c§lRed Paint Cannon");
+        return maker.create();
+    }
+    private ItemStack getBlueGun() {
+        ItemMaker maker = new ItemMaker (Material.DIAMOND_BARDING);
+        maker.setName("§9§lBlue Paint Cannon");
+        return maker.create();
+    }
+
+    private void colorBlocks(Location location, IGamePlayer gamePlayer) {
+        BlockUtils.getBlocksInRadius(location, -1, false).forEach(block -> {
+            if (block == null) return;
+            if (block.getType() == Material.AIR) return;
+            if (block.getType().isSolid()) {
+                if (block.getType() == Material.STONE_SLAB2) return;
+                if (block.getType() == Material.DOUBLE_STONE_SLAB2) return;
+                if (block.getType() == Material.PURPUR_DOUBLE_SLAB) return;
+                if (block.getType() == Material.PURPUR_SLAB) return;
+
+            }
+        });
+    }
+
     @Override
     public void equipDefaultPlayer(Player player) {
-        Inventory inventory = player.getInventory();
-        ItemStack dsword = new ItemStack(Material.IRON_SWORD, 1);
-        dsword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
         player.getInventory().clear();
-        inventory.setItem(0, dsword);
-        inventory.setItem(1, new ItemMaker(Material.BOW).enchant(Enchantment.ARROW_INFINITE, 1).create());
-        inventory.setItem(8, new ItemMaker(Material.ARROW).create());
+        Inventory inventory = player.getInventory();
+        IGamePlayer gamePlayer = GameManager.getPlayer(player);
+        if (gamePlayer.getTeam() != null) {
+            if (gamePlayer.getTeam().getName().equals("Red")) {
+                inventory.setItem(0, getRedGun());
+            }else{
+                inventory.setItem(0, getBlueGun());
+            }
+        }
     }
 
     @Override
@@ -122,8 +167,8 @@ public class Splatoon extends TeamGameMaker {
     @Override
     public String[] description() {
         return new String[]{
-                "§6What is Splatoon?",
-                "§e"
+                "§6Splatoon Objective:",
+                "§ePaint the most blocks"
         };
     }
 }

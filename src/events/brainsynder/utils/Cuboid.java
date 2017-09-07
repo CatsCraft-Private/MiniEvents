@@ -719,6 +719,13 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         }
         return true;
     }
+
+    public BlockLocation getCorner1 () {
+        return new BlockLocation(Bukkit.getWorld(worldName), x1, y1, z1);
+    }
+    public BlockLocation getCorner2 () {
+        return new BlockLocation(Bukkit.getWorld(worldName), x2, y2, z2);
+    }
     
     public static class CuboidIterator implements Iterator<Block> {
         private World w;

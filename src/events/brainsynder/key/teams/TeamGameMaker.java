@@ -5,6 +5,7 @@ import events.brainsynder.events.game.TeamGameStart;
 import events.brainsynder.events.team.TeamPlayerLeaveEvent;
 import events.brainsynder.events.team.TeamWinEvent;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.utils.DyeColorWrapper;
 import org.bukkit.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.IActionMessage;
@@ -32,8 +33,8 @@ public abstract class TeamGameMaker extends ITeamGame {
 
     @Override
     public void randomizePlayers() {
-        red = new Team("Red", Color.RED, ChatColor.RED);
-        blue = new Team("Blue", Color.BLUE, ChatColor.BLUE);
+        red = new Team("Red", DyeColorWrapper.RED, ChatColor.RED);
+        blue = new Team("Blue", DyeColorWrapper.BLUE, ChatColor.BLUE);
         List<IGamePlayer> redMembers = new ArrayList<>();
         List<IGamePlayer> blueMembers = new ArrayList<>();
 

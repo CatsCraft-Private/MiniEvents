@@ -6,6 +6,7 @@ import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.PlayerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.api.ItemMaker;
 
 import java.util.LinkedList;
@@ -35,9 +37,18 @@ public class TDM extends TeamGameMaker {
         gameSettings = new GameSettings(true);
         win = (players.size() * 2);
 
-        players.forEach(player -> {
-            player.getPlayer().sendMessage("§7Get §b" + win + " §7Kills to win the game!");
-        });
+        players.forEach(player -> player.getPlayer().sendMessage("§7Get §b" + win + " §7Kills to win the game!"));
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                players.forEach(player -> {
+                    try {
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
+                    }catch (Throwable ignored){}
+                });
+            }
+        }.runTaskLater(plugin, 30);
     }
 
     @Override
@@ -127,7 +138,7 @@ public class TDM extends TeamGameMaker {
                             event.setCancelled(true);
                             p.setHealth(p.getMaxHealth());
                             p.teleport(getSpawn(player.getTeam()));
-                            players.forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + "" + player.getTeam().getChatColor() + " was killed by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName()));
+                            players.forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + p.getName() + " §7was killed by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName()));
                             return;
                         }
                     }

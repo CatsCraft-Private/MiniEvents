@@ -1,8 +1,8 @@
 package events.brainsynder.key.teams;
 
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.utils.DyeColorWrapper;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -14,12 +14,12 @@ import java.util.List;
 public class Team {
     private String name;
     private List<IGamePlayer> members = new ArrayList<> ();
-    private Color color = null;
+    private DyeColorWrapper color = null;
     private double score = 0;
     private ChatColor chatColor = null;
     private Scoreboard board = null;
 
-    public Team (String name, Color color, ChatColor chatColor) {
+    public Team (String name, DyeColorWrapper color, ChatColor chatColor) {
         this.name = name;
         this.color = color;
         this.chatColor = chatColor;
@@ -31,10 +31,10 @@ public class Team {
 
     void addMember(IGamePlayer player) {
         Player p = player.getPlayer();
-        p.getInventory().setHelmet(new LeatherArmorMaker(Material.LEATHER_HELMET).setColor(color).setName(chatColor + name + " Team Armor").create());
-        p.getInventory().setChestplate(new LeatherArmorMaker(Material.LEATHER_CHESTPLATE).setColor(color).setName(chatColor + name + " Team Armor").create());
-        p.getInventory().setLeggings(new LeatherArmorMaker(Material.LEATHER_LEGGINGS).setColor(color).setName(chatColor + name + " Team Armor").create());
-        p.getInventory().setBoots(new LeatherArmorMaker(Material.LEATHER_BOOTS).setColor(color).setName(chatColor + name + " Team Armor").create());
+        p.getInventory().setHelmet(new LeatherArmorMaker(Material.LEATHER_HELMET).setColor(color.getVanilla()).setName(chatColor + name + " Team Armor").create());
+        p.getInventory().setChestplate(new LeatherArmorMaker(Material.LEATHER_CHESTPLATE).setColor(color.getVanilla()).setName(chatColor + name + " Team Armor").create());
+        p.getInventory().setLeggings(new LeatherArmorMaker(Material.LEATHER_LEGGINGS).setColor(color.getVanilla()).setName(chatColor + name + " Team Armor").create());
+        p.getInventory().setBoots(new LeatherArmorMaker(Material.LEATHER_BOOTS).setColor(color.getVanilla()).setName(chatColor + name + " Team Armor").create());
         if (!members.contains(player)) members.add(player);
     }
 
@@ -42,7 +42,7 @@ public class Team {
         if (members.contains(player)) members.remove(player);
     }
 
-    public Color getColor() {
+    public DyeColorWrapper getColor() {
         return color;
     }
 

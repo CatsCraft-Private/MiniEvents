@@ -1,9 +1,6 @@
 package events.brainsynder.managers;
 
-import events.brainsynder.EventsMain;
-import events.brainsynder.GameListener;
-import events.brainsynder.Handle;
-import events.brainsynder.SettingsManager;
+import events.brainsynder.*;
 import events.brainsynder.commands.GameCommands;
 import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.key.Game;
@@ -11,9 +8,12 @@ import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.utils.CountDown;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import simple.brainsynder.api.ItemMaker;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +35,7 @@ public class GamePlugin extends JavaPlugin {
             " ",
             "§b§kO§7*****> §bEVENT§7 <*****§b§kO"
     );
+    private CubeHandler cubeHandler;
     
     public void onEnable() {
         instance = this;
@@ -47,6 +48,8 @@ public class GamePlugin extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new Handle(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new GameListener(), this);
         CommandManager.register(new GameCommands());
+        cubeHandler = new CubeHandler ();
+        cubeHandler.load(this);
         if (!setupEconomy()) {
             getLogger().info("Could not find Vault. Make sure you set money.enabled to false.");
         }
@@ -67,6 +70,7 @@ public class GamePlugin extends JavaPlugin {
     }
     
     public void onDisable() {
+        cubeHandler.unload(this);
         try {
             for (Player o : Bukkit.getOnlinePlayers()) {
                 IGamePlayer gamePlayer = GameManager.getPlayer(o);
@@ -91,5 +95,11 @@ public class GamePlugin extends JavaPlugin {
     
     public SettingsManager getSettings() {
         return this.settings;
+    }
+
+    public ItemStack getCubeWand() {
+        ItemMaker maker = new ItemMaker(Material.STICK);
+        maker.setName("&eCube Wand");
+        return maker.create();
     }
 }

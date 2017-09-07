@@ -167,7 +167,7 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cEvent has already started."));
             return;
         }
-
+        gamePlayer.setGame(plugin.getEventMain().waiting);
         GamePlayerJoinEvent<Game> event = new GamePlayerJoinEvent<>(plugin.getEventMain().waiting, gamePlayer);
         Bukkit.getPluginManager().callEvent(event);
     }
