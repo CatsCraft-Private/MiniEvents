@@ -5,8 +5,8 @@ import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
+import events.brainsynder.utils.PetHandler;
 import events.brainsynder.utils.PlayerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -42,13 +42,18 @@ public class TDM extends TeamGameMaker {
         new BukkitRunnable() {
             @Override
             public void run() {
-                players.forEach(player -> {
-                    try {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
-                    }catch (Throwable ignored){}
-                });
+                players.forEach(player -> PetHandler.removePet(player.getPlayer()));
             }
-        }.runTaskLater(plugin, 30);
+        }.runTaskLater(plugin, 60);
+    }
+
+    @Override
+    public void perTick() {
+        super.perTick();
+        if (message == null) return;
+        if (!plugin.getEventMain().eventstarted) return;
+        if (!hasStarted()) return;
+        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int) getRedTeam().getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int) getBlueTeam().getScore())));
     }
 
     @Override

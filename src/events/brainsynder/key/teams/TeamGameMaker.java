@@ -17,9 +17,15 @@ public abstract class TeamGameMaker extends ITeamGame {
     private Map<String, Location> locationMap = new HashMap<>();
     private boolean started = false;
     private boolean endTask = false;
-    private IActionMessage message = null;
+    protected IActionMessage message = null;
     private Team red;
     private Team blue;
+
+    public TeamGameMaker () {
+        super();
+        red = new Team("Red", DyeColorWrapper.RED, ChatColor.RED);
+        blue = new Team("Blue", DyeColorWrapper.BLUE, ChatColor.BLUE);
+    }
 
     @Override
     public Team getBlueTeam() {
@@ -33,8 +39,6 @@ public abstract class TeamGameMaker extends ITeamGame {
 
     @Override
     public void randomizePlayers() {
-        red = new Team("Red", DyeColorWrapper.RED, ChatColor.RED);
-        blue = new Team("Blue", DyeColorWrapper.BLUE, ChatColor.BLUE);
         List<IGamePlayer> redMembers = new ArrayList<>();
         List<IGamePlayer> blueMembers = new ArrayList<>();
 
@@ -102,7 +106,6 @@ public abstract class TeamGameMaker extends ITeamGame {
     public void onLeave(IGamePlayer player) {
         if (player.getTeam() != null) {
             player.getTeam().removeMember(player);
-            player.setTeam(null);
         }
         TeamPlayerLeaveEvent event = new TeamPlayerLeaveEvent(this, player.getTeam(), player);
         Bukkit.getPluginManager().callEvent(event);
@@ -163,13 +166,7 @@ public abstract class TeamGameMaker extends ITeamGame {
     }
 
     @Override
-    public void perTick() {
-        if (message == null) return;
-        if (!plugin.getEventMain().eventstarted) return;
-        if (!started) return;
-        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int) red.getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int) blue.getScore())));
-
-    }
+    public void perTick() {}
 
     @Override
     public boolean hasStarted() {

@@ -1,8 +1,11 @@
 package events.brainsynder;
 
+import events.brainsynder.events.player.GameCountdownLeaveEvent;
+import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,10 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 /**
  * Handles all the Events in the plugin. (Well... Most of them XD)
@@ -52,13 +52,41 @@ public class Handle implements Listener {
             }
         }
     }
-    
+
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
-        if (gamePlayer.isPlaying()) {
-            gamePlayer.getGame().onLeave(gamePlayer);
+        if (!gamePlayer.isPlaying() && (gamePlayer.getState() != IGamePlayer.State.WAITING)) {
+            return;
         }
+
+        if (GamePlugin.instance.getEventMain().eventstarted) {
+            gamePlayer.getGame().onLeave(gamePlayer);
+            return;
+        }
+        if ((!GamePlugin.instance.getEventMain().eventstarting) && (!GamePlugin.instance.getEventMain().eventstarted)) {
+            return;
+        }
+        GameCountdownLeaveEvent<Game> e = new GameCountdownLeaveEvent<>(gamePlayer.getGame(), gamePlayer);
+        Bukkit.getPluginManager().callEvent(e);
+    }
+
+    @EventHandler
+    public void onLeave(PlayerKickEvent event) {
+        IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
+        if (!gamePlayer.isPlaying() && (gamePlayer.getState() != IGamePlayer.State.WAITING)) {
+            return;
+        }
+
+        if (GamePlugin.instance.getEventMain().eventstarted) {
+            gamePlayer.getGame().onLeave(gamePlayer);
+            return;
+        }
+        if ((!GamePlugin.instance.getEventMain().eventstarting) && (!GamePlugin.instance.getEventMain().eventstarted)) {
+            return;
+        }
+        GameCountdownLeaveEvent<Game> e = new GameCountdownLeaveEvent<>(gamePlayer.getGame(), gamePlayer);
+        Bukkit.getPluginManager().callEvent(e);
     }
     
     @EventHandler

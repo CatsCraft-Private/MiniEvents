@@ -3,7 +3,7 @@ package events.brainsynder.games;
 import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.utils.BlockLocation;
-import org.bukkit.Bukkit;
+import events.brainsynder.utils.PetHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -21,13 +21,9 @@ public class Parkour extends GameMaker {
         new BukkitRunnable() {
             @Override
             public void run() {
-                players.forEach(player -> {
-                    try {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
-                    }catch (Throwable ignored){}
-                });
+                players.forEach(player -> PetHandler.removePet(player.getPlayer()));
             }
-        }.runTaskLater(plugin, 30);
+        }.runTaskLater(plugin, 60);
     }
 
     @Override public void perTick() {

@@ -4,6 +4,7 @@ import events.brainsynder.events.game.GameEndEvent;
 import events.brainsynder.events.game.GameStartEvent;
 import events.brainsynder.events.player.GamePlayerLostEvent;
 import events.brainsynder.events.player.GamePlayerWinEvent;
+import events.brainsynder.utils.PetHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -44,9 +45,7 @@ public abstract class GameMaker extends Game<IGamePlayer> {
         players.forEach(player -> {
             player.setState(IGamePlayer.State.IN_GAME);
             player.getPlayer().setGameMode(GameMode.ADVENTURE);
-            try {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
-            }catch (Throwable ignored){}
+            PetHandler.removePet(player.getPlayer());
         });
         new BukkitRunnable() {
             @Override

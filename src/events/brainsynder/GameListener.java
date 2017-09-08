@@ -106,6 +106,7 @@ public class GameListener implements Listener {
                 break;
             }
         }
+        player.setTeam(null);
         game.players.remove(player);
     }
 

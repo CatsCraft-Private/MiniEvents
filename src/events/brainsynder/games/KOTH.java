@@ -70,7 +70,7 @@ public class KOTH extends GameMaker {
                 }
                 text.append(ChatColor.RESET).append(" | ").append(l).append('%');
                 
-                message.sendMessage(o, text.toString());
+                //message.sendMessage(o, text.toString());
 
                 if (o.getLocation().distance(topLocation) <= 3.0) {
                     if (point < 100) {

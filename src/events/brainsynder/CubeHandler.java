@@ -88,9 +88,9 @@ public class CubeHandler implements Listener, CommandListener {
         IGamePlayer player = GameManager.getPlayer(e.getPlayer());
         if (player.isPlaying()) return;
         if (e.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
+        if (e.getPlayer().hasPermission("EventsEntry.bypass")) return;
         cuboids.forEach(cuboid -> {
             if (cuboid.contains(to)) {
-                //if (e.getPlayer().hasPermission("EventsEntry.bypass")) return;
                 e.getPlayer().setGameMode(GameMode.SPECTATOR);
                 e.getPlayer().sendMessage("§cYou were put in Spectator mode to not interfere with the Event. You can switch your game mode once you Exit the arena.");
             }
@@ -101,9 +101,9 @@ public class CubeHandler implements Listener, CommandListener {
     public void onChange(PlayerGameModeChangeEvent e) {
         if (e.getNewGameMode() != GameMode.SPECTATOR) {
             if (cuboids.isEmpty()) return;
+            if (e.getPlayer().hasPermission("EventsEntry.bypass")) return;
             cuboids.forEach(cuboid -> {
                 if (cuboid.contains(new BlockLocation(e.getPlayer().getLocation()))) {
-                    //if (e.getPlayer().hasPermission("EventsEntry.bypass")) return;
                     IGamePlayer player = GameManager.getPlayer(e.getPlayer());
                     if (player.isPlaying()) return;
                     e.setCancelled(true);
