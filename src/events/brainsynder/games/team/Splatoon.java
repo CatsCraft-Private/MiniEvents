@@ -23,6 +23,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import simple.brainsynder.api.ItemMaker;
@@ -103,8 +105,57 @@ public class Splatoon extends TeamGameMaker {
             announced = false;
         }
         per15++;
-        int redSize = teamBlocks.getOrDefault(getRedTeam().getName(), new HashMap<>()).size();
-        int blueSize = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>()).size();
+        Map<String, BlockSave> saved = teamBlocks.getOrDefault(getRedTeam().getName(), new HashMap<>());
+        Map<String, BlockSave> enemySaved = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>());
+        players.forEach(gamePlayer -> {
+            Player player = gamePlayer.getPlayer();
+            BlockLocation location = new BlockLocation(player.getLocation().subtract(0,1,0));
+            if (saved.containsKey(location.toDataString())) {
+                if (gamePlayer.getTeam().getName().equals("Red")) {
+                    if (player.hasPotionEffect(PotionEffectType.SLOW))
+                        player.removePotionEffect(PotionEffectType.SLOW);
+
+                    if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+                    }
+                }else{
+                    if (player.hasPotionEffect(PotionEffectType.SPEED))
+                        player.removePotionEffect(PotionEffectType.SPEED);
+
+                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+                    }
+                }
+                return;
+            }
+            if (enemySaved.containsKey(location.toDataString())) {
+                if (gamePlayer.getTeam().getName().equals("Blue")) {
+                    if (player.hasPotionEffect(PotionEffectType.SLOW))
+                        player.removePotionEffect(PotionEffectType.SLOW);
+
+                    if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+                    }
+                }else{
+                    if (player.hasPotionEffect(PotionEffectType.SPEED))
+                        player.removePotionEffect(PotionEffectType.SPEED);
+
+                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+                    }
+                }
+                return;
+            }
+            if (player.hasPotionEffect(PotionEffectType.SPEED))
+                player.removePotionEffect(PotionEffectType.SPEED);
+            if (player.hasPotionEffect(PotionEffectType.SLOW))
+                player.removePotionEffect(PotionEffectType.SLOW);
+
+        });
+
+
+        int redSize = saved.size();
+        int blueSize = enemySaved.size();
         getRedTeam().setScore(redSize);
         getBlueTeam().setScore(blueSize);
         if (time <= 0) {
