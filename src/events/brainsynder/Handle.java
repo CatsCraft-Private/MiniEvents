@@ -1,6 +1,7 @@
 package events.brainsynder;
 
 import events.brainsynder.events.player.GameCountdownLeaveEvent;
+import events.brainsynder.games.Spleef;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
@@ -20,13 +21,13 @@ import org.bukkit.event.player.*;
  * Handles all the Events in the plugin. (Well... Most of them XD)
  */
 public class Handle implements Listener {
-    
+
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
             IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity());
             if (gamePlayer.isPlaying()) {
-                if (gamePlayer.getGame().getGameSettings().canPvp ()) return;
+                if (gamePlayer.getGame().getGameSettings().canPvp()) return;
                 event.setCancelled(true);
                 return;
             }
@@ -34,19 +35,19 @@ public class Handle implements Listener {
         if (event.getDamager() instanceof Player) {
             IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getDamager());
             if (gamePlayer.isPlaying()) {
-                if (gamePlayer.getGame().getGameSettings().canPvp ()) return;
+                if (gamePlayer.getGame().getGameSettings().canPvp()) return;
                 event.setCancelled(true);
             }
         }
     }
 
     @EventHandler
-    public void onHurt (EntityDamageEvent event) {
+    public void onHurt(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity());
             if (gamePlayer.isPlaying()) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                    if (gamePlayer.getGame().getGameSettings().canTakeFallDmg ()) return;
+                    if (gamePlayer.getGame().getGameSettings().canTakeFallDmg()) return;
                     event.setCancelled(true);
                 }
             }
@@ -88,7 +89,7 @@ public class Handle implements Listener {
         GameCountdownLeaveEvent<Game> e = new GameCountdownLeaveEvent<>(gamePlayer.getGame(), gamePlayer);
         Bukkit.getPluginManager().callEvent(e);
     }
-    
+
     @EventHandler
     public void onChat(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
@@ -99,16 +100,18 @@ public class Handle implements Listener {
             event.setCancelled(true);
         }
     }
-    
+
     @EventHandler
     public void blockBreakEvent(final BlockBreakEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
         if (gamePlayer.isPlaying()) {
-            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
+            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting) {
+                if (gamePlayer.getGame() instanceof Spleef) return;
                 event.setCancelled(true);
+            }
         }
     }
-    
+
     @EventHandler
     public void blockBreakEvent(final BlockPlaceEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
@@ -118,7 +121,7 @@ public class Handle implements Listener {
                 event.setCancelled(true);
         }
     }
-    
+
     @EventHandler
     public void blockBreakEvent(PlayerDropItemEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());

@@ -1,5 +1,7 @@
 package events.brainsynder.games.team;
 
+import de.robingrether.idisguise.disguise.DisguiseType;
+import de.robingrether.idisguise.disguise.MobDisguise;
 import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
@@ -19,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -32,10 +35,7 @@ import simple.brainsynder.api.ParticleMaker;
 import simple.brainsynder.math.MathUtils;
 import simple.brainsynder.sound.SoundMaker;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -53,8 +53,9 @@ public class Splatoon extends TeamGameMaker {
      */
     private int time = 180, per15 = 0;
     private boolean announced = false;
-    private List<Integer> keyTimes = Arrays.asList(1,2,3,4,5,10,20,30,60,120);
+    private List<Integer> keyTimes = Arrays.asList(1, 2, 3, 4, 5, 10, 20, 30, 60, 120);
     private Map<String, Map<String, BlockSave>> teamBlocks = null;
+    private List<String> squids = new ArrayList<>();
 
     public Splatoon() {
         super();
@@ -63,7 +64,23 @@ public class Splatoon extends TeamGameMaker {
     }
 
     @Override
+    public void onLeave(IGamePlayer player) {
+        if (DisguiseHandler.getApi().isDisguised(player.getPlayer()) && squids.contains(player.getPlayer().getUniqueId().toString())) {
+            DisguiseHandler.getApi().undisguise(player.getPlayer());
+            squids.remove(player.getPlayer().getUniqueId().toString());
+        }
+        super.onLeave(player);
+    }
+
+    @Override
     public void onEnd() {
+        players.forEach(player -> {
+            if (DisguiseHandler.getApi().isDisguised(player.getPlayer()) && squids.contains(player.getPlayer().getUniqueId().toString())) {
+                DisguiseHandler.getApi().undisguise(player.getPlayer());
+                squids.remove(player.getPlayer().getUniqueId().toString());
+            }
+        });
+
         super.onEnd();
         for (String team : teamBlocks.keySet()) {
             Map<String, BlockSave> map = teamBlocks.getOrDefault(team, new HashMap<>());
@@ -109,42 +126,44 @@ public class Splatoon extends TeamGameMaker {
         Map<String, BlockSave> enemySaved = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>());
         players.forEach(gamePlayer -> {
             Player player = gamePlayer.getPlayer();
-            BlockLocation location = new BlockLocation(player.getLocation().subtract(0,1,0));
-            if (saved.containsKey(location.toDataString())) {
-                if (gamePlayer.getTeam().getName().equals("Red")) {
-                    if (player.hasPotionEffect(PotionEffectType.SLOW))
-                        player.removePotionEffect(PotionEffectType.SLOW);
+            BlockLocation location = new BlockLocation(player.getLocation().subtract(0, 1, 0));
+            if (squids.contains(player.getUniqueId().toString())) {
+                if (saved.containsKey(location.toDataString())) {
+                    if (gamePlayer.getTeam().getName().equals("Red")) {
+                        if (player.hasPotionEffect(PotionEffectType.SLOW))
+                            player.removePotionEffect(PotionEffectType.SLOW);
 
-                    if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                    }
-                }else{
-                    if (player.hasPotionEffect(PotionEffectType.SPEED))
-                        player.removePotionEffect(PotionEffectType.SPEED);
+                        if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+                        }
+                    } else {
+                        if (player.hasPotionEffect(PotionEffectType.SPEED))
+                            player.removePotionEffect(PotionEffectType.SPEED);
 
-                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+                        if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+                        }
                     }
+                    return;
                 }
-                return;
-            }
-            if (enemySaved.containsKey(location.toDataString())) {
-                if (gamePlayer.getTeam().getName().equals("Blue")) {
-                    if (player.hasPotionEffect(PotionEffectType.SLOW))
-                        player.removePotionEffect(PotionEffectType.SLOW);
+                if (enemySaved.containsKey(location.toDataString())) {
+                    if (gamePlayer.getTeam().getName().equals("Blue")) {
+                        if (player.hasPotionEffect(PotionEffectType.SLOW))
+                            player.removePotionEffect(PotionEffectType.SLOW);
 
-                    if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                    }
-                }else{
-                    if (player.hasPotionEffect(PotionEffectType.SPEED))
-                        player.removePotionEffect(PotionEffectType.SPEED);
+                        if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+                        }
+                    } else {
+                        if (player.hasPotionEffect(PotionEffectType.SPEED))
+                            player.removePotionEffect(PotionEffectType.SPEED);
 
-                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+                        if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+                        }
                     }
+                    return;
                 }
-                return;
             }
             if (player.hasPotionEffect(PotionEffectType.SPEED))
                 player.removePotionEffect(PotionEffectType.SPEED);
@@ -161,7 +180,7 @@ public class Splatoon extends TeamGameMaker {
         if (time <= 0) {
             if (redSize > blueSize) {
                 onWin(getRedTeam());
-            }else{
+            } else {
                 onWin(getBlueTeam());
             }
             return;
@@ -192,7 +211,7 @@ public class Splatoon extends TeamGameMaker {
         return maker.create();
     }
 
-    private boolean allowChange (Block block) {
+    private boolean allowChange(Block block) {
         if (block == null) return true;
         if (block.getType() == Material.AIR) return true;
         return false;
@@ -215,6 +234,7 @@ public class Splatoon extends TeamGameMaker {
             if (block.getType() == Material.WOOL) return;
             if (block.getType() == Material.LADDER) return;
             if (block.getType() == Material.CARPET) return;
+            if (block.getType() == Material.VINE) return;
             if (block.getType().name().contains("PISTON")) return;
             if (block.getType().name().contains("DOOR")) return;
             if (block.getType().name().contains("BED")) return;
@@ -291,7 +311,7 @@ public class Splatoon extends TeamGameMaker {
                     IGamePlayer<ITeamGame> hitter = GameManager.getPlayer(enemy);
                     if (hitter.getTeam().getName().equals(player.getTeam().getName())) {
                         event.setCancelled(true);
-                    }else{
+                    } else {
                         if ((p.getHealth() - event.getDamage()) <= 1) {
                             event.setCancelled(true);
                             p.setHealth(p.getMaxHealth());
@@ -304,7 +324,7 @@ public class Splatoon extends TeamGameMaker {
         }
     }
 
-    private void shootBullet (Player player) {
+    private void shootBullet(Player player) {
         Vector direction = RandomRef.calculatePath(player);
         Projectile proj = player.launchProjectile(Snowball.class);
         proj.setMetadata("SPLATOON", new FixedMetadataValue(plugin, "SPLATOON"));
@@ -314,17 +334,52 @@ public class Splatoon extends TeamGameMaker {
     }
 
     @EventHandler
-    public void fire (PlayerInteractEvent e) {
+    public void fire(PlayerInteractEvent e) {
         if (!e.getAction().name().contains("RIGHT")) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
-        if ((e.getItem().isSimilar(getRedGun()))
-                || (e.getItem().isSimilar(getBlueGun()))) {
-            shootBullet(e.getPlayer());
+        if (e.getItem() == null) return;
+        if (e.getItem().getType() == Material.AIR) return;
+
+        IGamePlayer player = GameManager.getPlayer(e.getPlayer());
+        if (player.isPlaying()) {
+            if (player.getGame() instanceof Splatoon) {
+                if ((e.getItem().isSimilar(getRedGun()))
+                        || (e.getItem().isSimilar(getBlueGun()))) {
+                    shootBullet(player.getPlayer());
+                }
+            }
         }
     }
 
     @EventHandler
-    public void onHit (ProjectileHitEvent e) {
+    public void onSwitch(PlayerItemHeldEvent e) {
+        IGamePlayer player = GameManager.getPlayer(e.getPlayer());
+        if (player.isPlaying()) {
+            if (player.getGame() instanceof Splatoon) {
+                if (e.getPreviousSlot() == 0) {
+                    MobDisguise disguise = new MobDisguise(DisguiseType.SQUID);
+                    disguise.setCustomNameVisible(true);
+                    disguise.setCustomName(player.getTeam().getChatColor() + e.getPlayer().getName());
+                    DisguiseHandler.getApi().disguise(player.getPlayer(), disguise);
+                    squids.add(player.getPlayer().getUniqueId().toString());
+                    return;
+                }
+                if (e.getNewSlot() == 0) {
+                    if (squids.contains(player.getPlayer().getUniqueId().toString())) {
+                        if (player.getPlayer().hasPotionEffect(PotionEffectType.SPEED))
+                            player.getPlayer().removePotionEffect(PotionEffectType.SPEED);
+                        if (player.getPlayer().hasPotionEffect(PotionEffectType.SLOW))
+                            player.getPlayer().removePotionEffect(PotionEffectType.SLOW);
+                        DisguiseHandler.getApi().undisguise(player.getPlayer());
+                        squids.remove(player.getPlayer().getUniqueId().toString());
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onHit(ProjectileHitEvent e) {
         if (e.getEntity().hasMetadata("SPLATOON")) {
             IGamePlayer player = GameManager.getPlayer((Player) e.getEntity().getShooter());
             if (e.getHitBlock() == null) {
@@ -341,7 +396,7 @@ public class Splatoon extends TeamGameMaker {
     }
 
     @EventHandler
-    public void onRegen(EntityRegainHealthEvent e) {
+    public void disableRegen(EntityRegainHealthEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         IGamePlayer player = GameManager.getPlayer((Player) e.getEntity());
         if (player.isPlaying()) {
@@ -356,7 +411,11 @@ public class Splatoon extends TeamGameMaker {
     public String[] description() {
         return new String[]{
                 "§6Splatoon Objective:",
-                "§ePaint the most blocks"
+                "§e- Paint the most blocks",
+                "§e- You are also able to override the other teams color",
+                "§eto make them loose points and your team gains the points",
+                "§e- To Morph into a squid Simply switch the active slot (Scroll)",
+                "§e- To unMorph Simply scroll back to the Paint Cannon (Slot 1)"
         };
     }
 }

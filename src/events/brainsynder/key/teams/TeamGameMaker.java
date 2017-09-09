@@ -60,14 +60,14 @@ public abstract class TeamGameMaker extends ITeamGame {
         }
 
         redMembers.forEach(player -> {
-            red.addMember(player);
-            player.setTeam(red);
+            getRedTeam().addMember(player);
+            player.setTeam(getRedTeam());
             player.getPlayer().teleport(getSpawn(player.getTeam()));
         });
 
         blueMembers.forEach(player -> {
-            blue.addMember(player);
-            player.setTeam(blue);
+            getBlueTeam().addMember(player);
+            player.setTeam(getBlueTeam());
             player.getPlayer().teleport(getSpawn(player.getTeam()));
         });
     }
@@ -85,17 +85,17 @@ public abstract class TeamGameMaker extends ITeamGame {
         return locationMap.get(team.getName());
     }
 
-    public Team getOppositeTeam(Team team) {
-        if (team.getName().equals(red.getName())) return blue;
-        return red;
+    protected Team getOppositeTeam(Team team) {
+        if (team.getName().equals(getRedTeam().getName())) return getBlueTeam();
+        return getRedTeam();
     }
 
     @Override
     public void onEnd() {
         started = false;
         endTask = false;
-        red.setScore(0);
-        blue.setScore(0);
+        getRedTeam().setScore(0);
+        getBlueTeam().setScore(0);
         players.forEach(player -> player.setTeam(null));
         GameEndEvent<ITeamGame> event = new GameEndEvent<>(this);
         Bukkit.getPluginManager().callEvent(event);
