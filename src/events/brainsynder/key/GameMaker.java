@@ -22,6 +22,11 @@ public abstract class GameMaker extends Game<IGamePlayer> {
     }
 
     @Override
+    public void respawnPlayer(IGamePlayer gamePlayer) {
+        gamePlayer.getPlayer().teleport(getSpawn());
+    }
+
+    @Override
     public void onWin(IGamePlayer gamePlayer) {
         GamePlayerWinEvent<Game> event = new GamePlayerWinEvent<>(this, gamePlayer);
         Bukkit.getPluginManager().callEvent(event);
@@ -75,6 +80,12 @@ public abstract class GameMaker extends Game<IGamePlayer> {
 
     @Override
     public void perTick() {
+        if (!players.isEmpty())
+            players.forEach(gamePlayer -> {
+                if (gamePlayer.getPlayer().getLocation().getBlockY() <= 10) {
+                    respawnPlayer(gamePlayer);
+                }
+            });
     }
 
     @Override

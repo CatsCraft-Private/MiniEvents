@@ -172,44 +172,6 @@ public class GameCommands implements CommandListener {
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    /*@Command(name = "tester")
-    public void test (Player player, String[] args) {
-        if (args.length == 0) {
-            run(10, 2);
-        }else{
-            if (args.length == 1) {
-                run(Integer.parseInt(args[0]), 2);
-            }else{
-                run(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
-            }
-        }
-    }
-
-    private void run (int max, int players) {
-        for (int tries = 0; tries < max; tries++) {
-            List<String> red = new ArrayList<>();
-            List<String> blue = new ArrayList<>();
-            for (int count = 0; count < players; count++) {
-                if (blue.size() == red.size()) {
-                    Random rand = new Random();
-                    if (rand.nextBoolean()) {
-                        red.add(String.valueOf(count));
-                    } else {
-                        blue.add(String.valueOf(count));
-                    }
-                } else {
-                    if (red.size() > blue.size()) {
-                        blue.add(String.valueOf(count));
-                    } else {
-                        red.add(String.valueOf(count));
-                    }
-                }
-            }
-
-            Bukkit.broadcastMessage("Try #" + (tries + 1) + " §4Red(§c" + red.size() + "§4) §9Blue(§b" + blue.size() + "§9)");
-        }
-    }*/
-
     @Command(name = "leave")
     public void leave(Player player) {
         IGamePlayer gamePlayer = GameManager.getPlayer(player);
@@ -297,7 +259,7 @@ public class GameCommands implements CommandListener {
                     player.sendMessage("§cThe spawn point for " + game.getName() + " has not yet been set.");
                     return;
                 }
-                double i = 100;
+                double i = plugin.getConfig().getDouble("events.money.amount");
                 plugin.getEventMain().eventstarting = true;
                 plugin.getEventMain().cancelled = false;
                 if (!game.getPlayers().isEmpty())

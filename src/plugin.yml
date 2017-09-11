@@ -1,6 +1,6 @@
 name: MiniEvents
-author: brainsynder
+authors: [brainsynder,Bobcatsss]
 main: events.brainsynder.managers.GamePlugin
-softdepend: [Vault]
-depends: [SimpleAPI,CCMetaMorph]
+softdepend: [Vault,SimplePets]
+depends: [SimpleAPI,CCMetaMorph,Spartan]
 version: 2.0

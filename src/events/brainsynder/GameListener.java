@@ -10,7 +10,6 @@ import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.GamePlugin;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -129,10 +128,7 @@ public class GameListener implements Listener {
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + event.getGame().getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
-            if (r.transactionSuccess()) {
-                gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-            }
+            Bukkit.getServer ().dispatchCommand (Bukkit.getConsoleSender (), "eco give " + gamePlayer.getPlayer().getName () + " " + i);
         }
     }
 
@@ -154,10 +150,7 @@ public class GameListener implements Listener {
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
             for (IGamePlayer gamePlayer : team.getMembers()) {
-                EconomyResponse r = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), i);
-                if (r.transactionSuccess()) {
-                    gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.got-money").replace("{0}", Double.toString(i))));
-                }
+                Bukkit.getServer ().dispatchCommand (Bukkit.getConsoleSender (), "eco give " + gamePlayer.getPlayer().getName () + " " + i);
             }
         }
         event.getGame().getRedTeam().getMembers().clear();

@@ -6,6 +6,8 @@ import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import me.vagdedes.spartan.api.CheckCancelEvent;
+import me.vagdedes.spartan.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,6 +40,22 @@ public class Handle implements Listener {
                 if (gamePlayer.getGame().getGameSettings().canPvp()) return;
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onCheck (PlayerViolationEvent e){
+        IGamePlayer gamePlayer = GameManager.getPlayer(e.getPlayer());
+        if (gamePlayer.isPlaying()) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onCheck (CheckCancelEvent e){
+        IGamePlayer gamePlayer = GameManager.getPlayer(e.getPlayer());
+        if (gamePlayer.isPlaying()) {
+            e.setCancelled(true);
         }
     }
 

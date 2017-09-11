@@ -52,6 +52,8 @@ public abstract class Game<T> implements Listener, CommandListener {
      */
     public abstract void onEnd();
 
+    public abstract void respawnPlayer(IGamePlayer gamePlayer);
+
     public abstract void lost(T player);
 
     public void onLeave(IGamePlayer player) {

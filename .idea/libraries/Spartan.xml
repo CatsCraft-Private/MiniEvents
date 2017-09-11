@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Spartan">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/Spartan.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

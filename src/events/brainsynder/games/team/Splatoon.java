@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -111,7 +112,8 @@ public class Splatoon extends TeamGameMaker {
     }
 
     @Override
-    public void equipPlayer(Player player) {}
+    public void equipPlayer(Player player) {
+    }
 
     @Override
     public void perTick() {
@@ -126,7 +128,9 @@ public class Splatoon extends TeamGameMaker {
         Map<String, BlockSave> enemySaved = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>());
         players.forEach(gamePlayer -> {
             Player player = gamePlayer.getPlayer();
-            BlockLocation location = new BlockLocation(player.getLocation().subtract(0, 1, 0));
+            Location loc = player.getLocation().subtract(0, 0.5, 0);
+            if ((loc.getBlock() == null) || (loc.getBlock().getType() == Material.AIR)) return;
+            BlockLocation location = new BlockLocation(loc);
             if (squids.contains(player.getUniqueId().toString())) {
                 if (saved.containsKey(location.toDataString())) {
                     if (gamePlayer.getTeam().getName().equals("Red")) {
@@ -202,12 +206,20 @@ public class Splatoon extends TeamGameMaker {
     private ItemStack getRedGun() {
         ItemMaker maker = new ItemMaker(Material.GOLD_BARDING);
         maker.setName("§c§lRed Paint Cannon");
+        maker.addLoreLine("&e- &7You are also able to override the other teams color");
+        maker.addLoreLine("&7to make them loose points and your team gains the points");
+        maker.addLoreLine("&e- &7To Morph into a squid Simply switch the active slot (Scroll)");
+        maker.addLoreLine("&e- &7To unMorph Simply scroll back to the Paint Cannon (Slot 1)");
         return maker.create();
     }
 
     private ItemStack getBlueGun() {
         ItemMaker maker = new ItemMaker(Material.DIAMOND_BARDING);
         maker.setName("§9§lBlue Paint Cannon");
+        maker.addLoreLine("&e- &7You are also able to override the other teams color");
+        maker.addLoreLine("&7to make them loose points and your team gains the points");
+        maker.addLoreLine("&e- &7To Morph into a squid Simply switch the active slot (Scroll)");
+        maker.addLoreLine("&e- &7To unMorph Simply scroll back to the Paint Cannon (Slot 1)");
         return maker.create();
     }
 
@@ -250,8 +262,21 @@ public class Splatoon extends TeamGameMaker {
                     && (!allowChange(block.getRelative(BlockFace.WEST)))
                     && (!allowChange(block.getRelative(BlockFace.NORTH)))) return;
 
+
             BlockLocation blockLocation = new BlockLocation(block.getLocation());
             if (saveMap.containsKey(blockLocation.toDataString())) return;
+            if (allowChange(block.getRelative(BlockFace.UP))) {
+                if (block.getType().name().toLowerCase().contains("step")) {
+                    Collection<Entity> entities = block.getWorld().getNearbyEntities(block.getLocation(), 1, 1, 1);
+                    if (!entities.isEmpty()) {
+                        entities.forEach(entity -> {
+                            if (entity instanceof Player) {
+                                entity.teleport(entity.getLocation().add(0, 1.5, 0));
+                            }
+                        });
+                    }
+                }
+            }
 
             BlockSave save = new BlockSave(block);
             if (enemySaveMap.containsKey(blockLocation.toDataString())) {
@@ -313,6 +338,14 @@ public class Splatoon extends TeamGameMaker {
                         event.setCancelled(true);
                     } else {
                         if ((p.getHealth() - event.getDamage()) <= 1) {
+                            if (squids.contains(player.getPlayer().getUniqueId().toString())) {
+                                if (player.getPlayer().hasPotionEffect(PotionEffectType.SPEED))
+                                    player.getPlayer().removePotionEffect(PotionEffectType.SPEED);
+                                if (player.getPlayer().hasPotionEffect(PotionEffectType.SLOW))
+                                    player.getPlayer().removePotionEffect(PotionEffectType.SLOW);
+                                DisguiseHandler.getApi().undisguise(player.getPlayer());
+                                squids.remove(player.getPlayer().getUniqueId().toString());
+                            }
                             event.setCancelled(true);
                             p.setHealth(p.getMaxHealth());
                             players.forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + p.getName() + " §7was painted by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName()));

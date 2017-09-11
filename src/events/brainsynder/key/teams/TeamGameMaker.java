@@ -21,7 +21,7 @@ public abstract class TeamGameMaker extends ITeamGame {
     private Team red;
     private Team blue;
 
-    public TeamGameMaker () {
+    public TeamGameMaker() {
         super();
         red = new Team("Red", DyeColorWrapper.RED, ChatColor.RED);
         blue = new Team("Blue", DyeColorWrapper.BLUE, ChatColor.BLUE);
@@ -70,6 +70,11 @@ public abstract class TeamGameMaker extends ITeamGame {
             player.setTeam(getBlueTeam());
             player.getPlayer().teleport(getSpawn(player.getTeam()));
         });
+    }
+
+    @Override
+    public void respawnPlayer(IGamePlayer player) {
+        if (player.getTeam() != null) player.getPlayer().teleport(getSpawn(player.getTeam()));
     }
 
     protected Location getSpawn(Team team) {
@@ -137,7 +142,8 @@ public abstract class TeamGameMaker extends ITeamGame {
             player.getPlayer().setGameMode(GameMode.ADVENTURE);
             try {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pet remove " + player.getPlayer().getName());
-            }catch (Throwable ignored){}
+            } catch (Throwable ignored) {
+            }
         });
         new BukkitRunnable() {
             @Override
@@ -166,7 +172,14 @@ public abstract class TeamGameMaker extends ITeamGame {
     }
 
     @Override
-    public void perTick() {}
+    public void perTick() {
+        if (!players.isEmpty())
+            players.forEach(gamePlayer -> {
+                if (gamePlayer.getPlayer().getLocation().getBlockY() <= 10) {
+                    respawnPlayer(gamePlayer);
+                }
+            });
+    }
 
     @Override
     public boolean hasStarted() {
