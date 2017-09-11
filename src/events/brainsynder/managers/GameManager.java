@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class GameManager {
-    private static List<Game> games = new ArrayList<>();
     public static ExpireHashMap<String, IGamePlayer> gamePlayerMap = new ExpireHashMap<>();
+    private static List<Game> games = new ArrayList<>();
 
     public static IGamePlayer getPlayer(Player player) {
         if (gamePlayerMap.containsKey(player.getName())) return gamePlayerMap.get(player.getName());

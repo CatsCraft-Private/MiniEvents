@@ -23,11 +23,11 @@ public abstract class Game<T> implements Listener, CommandListener {
     public List<IGamePlayer> deadPlayers;
     public GamePlugin plugin;
     public SettingsManager settings;
-    private LinkedList<UUID> waitTP;
     protected GameSettings gameSettings;
+    private LinkedList<UUID> waitTP;
 
-    public Game () {
-        gameSettings = new GameSettings ();
+    public Game() {
+        gameSettings = new GameSettings();
         players = new ArrayList<>();
         deadPlayers = new ArrayList<>();
         plugin = GamePlugin.instance;
@@ -35,15 +35,15 @@ public abstract class Game<T> implements Listener, CommandListener {
         waitTP = new LinkedList<>();
     }
 
-    protected void setGameSettings(GameSettings gameSettings) {
-        this.gameSettings = gameSettings;
-    }
-
     public GameSettings getGameSettings() {
         return gameSettings;
     }
 
-    public int minPlayers () {
+    protected void setGameSettings(GameSettings gameSettings) {
+        this.gameSettings = gameSettings;
+    }
+
+    public int minPlayers() {
         return 2;
     }
 
@@ -144,7 +144,7 @@ public abstract class Game<T> implements Listener, CommandListener {
         }
     }
 
-    public LinkedList<UUID> waitingUUIDs () {
+    public LinkedList<UUID> waitingUUIDs() {
         return waitTP;
     }
 

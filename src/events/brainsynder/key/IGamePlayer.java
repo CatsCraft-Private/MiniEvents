@@ -12,16 +12,16 @@ public interface IGamePlayer<T extends Game> {
     Team getTeam();
 
     void setTeam(Team team);
-    
+
     Player getPlayer();
-    
+
     StoredData getPlayerData();
-    
-    boolean isPlaying ();
 
-    State getState ();
+    boolean isPlaying();
 
-    void setState (State state);
+    State getState();
+
+    void setState(State state);
 
     enum State {
         NOT_PLAYING,

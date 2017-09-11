@@ -13,19 +13,19 @@ import java.util.List;
 
 public class Team {
     private String name;
-    private List<IGamePlayer> members = new ArrayList<> ();
+    private List<IGamePlayer> members = new ArrayList<>();
     private DyeColorWrapper color = null;
     private double score = 0;
     private ChatColor chatColor = null;
     private Scoreboard board = null;
 
-    public Team (String name, DyeColorWrapper color, ChatColor chatColor) {
+    public Team(String name, DyeColorWrapper color, ChatColor chatColor) {
         this.name = name;
         this.color = color;
         this.chatColor = chatColor;
     }
 
-    public int size () {
+    public int size() {
         return members.size();
     }
 
@@ -46,12 +46,12 @@ public class Team {
         return color;
     }
 
-    public void setScore(double score) {
-        this.score = score;
-    }
-
     public double getScore() {
         return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
     }
 
     public ChatColor getChatColor() {

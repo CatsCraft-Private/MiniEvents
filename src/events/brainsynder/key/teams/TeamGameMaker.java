@@ -14,10 +14,10 @@ import simple.brainsynder.utils.Reflection;
 import java.util.*;
 
 public abstract class TeamGameMaker extends ITeamGame {
+    protected IActionMessage message = null;
     private Map<String, Location> locationMap = new HashMap<>();
     private boolean started = false;
     private boolean endTask = false;
-    protected IActionMessage message = null;
     private Team red;
     private Team blue;
 

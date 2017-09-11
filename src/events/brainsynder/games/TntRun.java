@@ -23,18 +23,20 @@ import java.util.LinkedList;
 public class TntRun extends GameMaker {
     private static BlockStorage storage = null;
 
-    public TntRun () {
+    public TntRun() {
         super();
         storage = new BlockStorage();
     }
 
-    @Override public void onWin(IGamePlayer gamePlayer) {
+    @Override
+    public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
         storage.reset();
         storage = null;
     }
-    
-    @Override public void onStart() {
+
+    @Override
+    public void onStart() {
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
@@ -46,9 +48,10 @@ public class TntRun extends GameMaker {
                     Player player = gamePlayer.getPlayer();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-invins-over")));
                     Location location = player.getLocation();
-                    
+
                     new BukkitRunnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             if (!gamePlayer.isPlaying()) {
                                 cancel();
                                 return;
@@ -61,8 +64,8 @@ public class TntRun extends GameMaker {
                                 cancel();
                                 return;
                             }
-                            
-                            
+
+
                             final Block b = location.getBlock().getRelative(BlockFace.DOWN);
                             if (b == null) return;
                             if (b.getType() != Material.TNT) return;
@@ -81,23 +84,25 @@ public class TntRun extends GameMaker {
                     }.runTaskTimer(plugin, 0, 10);
                 }
             }
-            
+
         }, 120L);
     }
-    
-    @Override public String getName() {
+
+    @Override
+    public String getName() {
         return "TntRun";
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
-        
+
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
-    
+
         try {
             if (settings.getData().getSection("setup." + getName()) == null) {
                 equipDefaultPlayer(player);
@@ -127,13 +132,15 @@ public class TntRun extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         player.getInventory().setArmorContents(null);
         player.getInventory().clear();
     }
-    
-    @Override public void perTick() {
+
+    @Override
+    public void perTick() {
         super.perTick();
         if (endTask) return;
         for (IGamePlayer gamePlayer : players) {
@@ -155,7 +162,7 @@ public class TntRun extends GameMaker {
             }
         }
     }
-    
+
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
@@ -184,8 +191,9 @@ public class TntRun extends GameMaker {
             }
         }
     }
-    
-    @Override public String[] description() {
+
+    @Override
+    public String[] description() {
         return new String[]{
                 "§6What is TntRun?",
                 "§eTntRun is where you run around",

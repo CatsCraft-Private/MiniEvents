@@ -10,8 +10,8 @@ import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class GameMaker extends Game<IGamePlayer> {
-    private boolean started = false;
     protected boolean endTask = false;
+    private boolean started = false;
 
     @Override
     public void onEnd() {

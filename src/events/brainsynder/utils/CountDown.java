@@ -17,16 +17,16 @@ import simple.brainsynder.utils.Reflection;
  */
 public class CountDown implements Listener {
     public GamePlugin plugin;
-    
+
     public CountDown(GamePlugin plugin) {
         this.plugin = plugin;
     }
-    
+
     public void start(Game game) {
         if (plugin.getEventMain().eventstarting) {
             new BukkitRunnable() {
                 int i = plugin.getConfig().getInt("events.time-to-start");
-                
+
                 public void run() {
                     if (plugin.getEventMain().cancelled) {
                         plugin.getEventMain().cancelled = false;
@@ -82,7 +82,7 @@ public class CountDown implements Listener {
                                 Bukkit.getOnlinePlayers().forEach(raw::send);
                             }
                     }
-                    
+
                     --i;
                 }
             }.runTaskTimer(plugin, 0L, 20L);

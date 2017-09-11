@@ -5,11 +5,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 public class DirectionUtils {
-    public enum Direction {
-        NORTH, EAST, WEST, SOUTH
-    }
-
-
     private static String direction(float yaw) {
         yaw /= 90.0F;
         int i = Math.round(yaw);
@@ -32,11 +27,11 @@ public class DirectionUtils {
         }
     }
 
-    public static BlockFace getDirectionAsFace (Player player) {
+    public static BlockFace getDirectionAsFace(Player player) {
         return getDirectionAsFace(player.getLocation());
     }
 
-    public static BlockFace getDirectionAsFace (Location location) {
+    public static BlockFace getDirectionAsFace(Location location) {
         switch (getCardinalDirection(location)) {
             case NORTH:
                 return BlockFace.NORTH;
@@ -71,5 +66,9 @@ public class DirectionUtils {
         } else {
             return Direction.WEST;
         }
+    }
+
+    public enum Direction {
+        NORTH, EAST, WEST, SOUTH
     }
 }

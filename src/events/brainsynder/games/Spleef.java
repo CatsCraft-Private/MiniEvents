@@ -24,18 +24,20 @@ import java.util.LinkedList;
 public class Spleef extends GameMaker {
     private static BlockStorage storage = null;
 
-    public Spleef () {
+    public Spleef() {
         super();
         storage = new BlockStorage();
     }
-    
-    @Override public void onWin(IGamePlayer gamePlayer) {
+
+    @Override
+    public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
         storage.reset();
         storage = null;
     }
-    
-    @Override public void perTick() {
+
+    @Override
+    public void perTick() {
         super.perTick();
         if (endTask) return;
         for (IGamePlayer gamePlayer : players) {
@@ -61,32 +63,34 @@ public class Spleef extends GameMaker {
             }
         }
     }
-    
-    @Override public void onStart() {
-            for (IGamePlayer gamePlayer : players) {
+
+    @Override
+    public void onStart() {
+        for (IGamePlayer gamePlayer : players) {
+            Player player = gamePlayer.getPlayer();
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));
+        }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            super.onStart();
+            players.forEach(gamePlayer -> {
                 Player player = gamePlayer.getPlayer();
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));
-            }
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                super.onStart();
-                players.forEach(gamePlayer -> {
-                    Player player = gamePlayer.getPlayer();
-                    player.setGameMode(GameMode.SURVIVAL);
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-invins-over")));
-                });
-            }, 120L);
+                player.setGameMode(GameMode.SURVIVAL);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-invins-over")));
+            });
+        }, 120L);
 
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
-        
+
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
-    
+
         try {
             if (settings.getData().getSection("setup." + getName()) == null) {
                 equipDefaultPlayer(player);
@@ -98,7 +102,7 @@ public class Spleef extends GameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-            
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -116,8 +120,9 @@ public class Spleef extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack dspade = new ItemStack(Material.DIAMOND_SPADE, 1);
         dspade.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
@@ -127,13 +132,14 @@ public class Spleef extends GameMaker {
         player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 3));
         inventory.setItem(0, dspade);
     }
-    
-    @Override public String getName() {
+
+    @Override
+    public String getName() {
         return "Spleef";
     }
-    
+
     @EventHandler
-    public void onBreak (BlockBreakEvent e) {
+    public void onBreak(BlockBreakEvent e) {
         IGamePlayer player = GameManager.getPlayer(e.getPlayer());
         if (player.isPlaying()) {
             if (!(player.getGame() instanceof Spleef)) return;
@@ -158,8 +164,9 @@ public class Spleef extends GameMaker {
             }
         }
     }
-    
-    @Override public String[] description() {
+
+    @Override
+    public String[] description() {
         return new String[]{
                 "§7Spleef §eis a game where you use your shovel",
                 "§eto make holes in the ground and",

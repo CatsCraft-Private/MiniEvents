@@ -19,9 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GamePlugin extends JavaPlugin {
-    private SettingsManager settings;
-    private EventsMain eventsmain;
-    private CountDown method;
     public static Economy econ = null;
     public static GamePlugin instance = null;
     public static List<String> starting = Arrays.asList(
@@ -35,8 +32,11 @@ public class GamePlugin extends JavaPlugin {
             " ",
             "§b§kO§7*****> §bEVENT§7 <*****§b§kO"
     );
+    private SettingsManager settings;
+    private EventsMain eventsmain;
+    private CountDown method;
     private CubeHandler cubeHandler;
-    
+
     public void onEnable() {
         instance = this;
         settings = SettingsManager.getInstance();
@@ -48,13 +48,13 @@ public class GamePlugin extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new Handle(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new GameListener(), this);
         CommandManager.register(new GameCommands());
-        cubeHandler = new CubeHandler ();
+        cubeHandler = new CubeHandler();
         cubeHandler.load(this);
         if (!setupEconomy()) {
             getLogger().info("Could not find Vault. Make sure you set money.enabled to false.");
         }
     }
-    
+
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
@@ -68,7 +68,7 @@ public class GamePlugin extends JavaPlugin {
             }
         }
     }
-    
+
     public void onDisable() {
         cubeHandler.unload(this);
         try {
@@ -79,20 +79,21 @@ public class GamePlugin extends JavaPlugin {
                     current.onEnd();
                 }
             }
-        }catch (Exception ignored){}
-    
+        } catch (Exception ignored) {
+        }
+
         eventsmain.end();
         saveConfig();
     }
-    
+
     public CountDown getMethod() {
         return method;
     }
-    
+
     public EventsMain getEventMain() {
         return eventsmain;
     }
-    
+
     public SettingsManager getSettings() {
         return this.settings;
     }

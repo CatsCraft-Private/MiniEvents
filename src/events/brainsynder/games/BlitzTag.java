@@ -31,7 +31,7 @@ public class BlitzTag extends GameMaker {
     private int countDown = 15;
     private ParticleMaker maker;
 
-    public BlitzTag () {
+    public BlitzTag() {
         super();
         maker = new ParticleMaker(ParticleMaker.Particle.LAVA, 0.1, 2, 0, 0.8, 0);
     }

@@ -12,17 +12,19 @@ class GamePlayer<T extends Game> implements IGamePlayer<T> {
     private Player player;
     private State state = State.NOT_PLAYING;
     private StoredData storedData;
-    
-    GamePlayer (Player player) {
+
+    GamePlayer(Player player) {
         this.player = player;
         storedData = new StoredData(player);
     }
-    
-    @Override public T getGame() {
+
+    @Override
+    public T getGame() {
         return game;
     }
-    
-    @Override public void setGame(T game) {
+
+    @Override
+    public void setGame(T game) {
         this.game = game;
     }
 
@@ -46,15 +48,18 @@ class GamePlayer<T extends Game> implements IGamePlayer<T> {
         this.state = state;
     }
 
-    @Override public Player getPlayer() {
+    @Override
+    public Player getPlayer() {
         return player;
     }
-    
-    @Override public StoredData getPlayerData() {
+
+    @Override
+    public StoredData getPlayerData() {
         return storedData;
     }
-    
-    @Override public boolean isPlaying() {
+
+    @Override
+    public boolean isPlaying() {
         return ((game != null) && ((state == State.IN_GAME_ARENA) || (state == State.IN_GAME)));
     }
 }

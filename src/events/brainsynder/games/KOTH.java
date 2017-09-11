@@ -26,7 +26,7 @@ public class KOTH extends GameMaker {
     private int per20 = 0;
     private IActionMessage message = null;
 
-    public KOTH () {
+    public KOTH() {
         super();
         points = new HashMap<>();
         per10 = new HashMap();
@@ -51,7 +51,7 @@ public class KOTH extends GameMaker {
                 Player o = gamePlayer.getPlayer();
                 int point = points.getOrDefault(o.getUniqueId().toString(), 0);
                 int l = ((point * 100) / 100);
-                
+
                 StringBuilder text = new StringBuilder();
                 text.append("Progress Bar: ");
                 text.append("| ");
@@ -69,7 +69,7 @@ public class KOTH extends GameMaker {
                     text.append('■');
                 }
                 text.append(ChatColor.RESET).append(" | ").append(l).append('%');
-                
+
                 //message.sendMessage(o, text.toString());
 
                 if (o.getLocation().distance(topLocation) <= 3.0) {

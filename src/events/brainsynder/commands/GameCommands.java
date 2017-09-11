@@ -28,7 +28,7 @@ import java.util.Arrays;
 public class GameCommands implements CommandListener {
     private GamePlugin plugin = GamePlugin.instance;
     private SettingsManager settings = plugin.getSettings();
-    
+
     public void end() {
         plugin.getEventMain().waiting = null;
         plugin.getEventMain().eventstarted = false;
@@ -73,12 +73,12 @@ public class GameCommands implements CommandListener {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThis Event is not a Team based Event"));
                 return;
             }
-            ITeamGame game = (ITeamGame)g;
+            ITeamGame game = (ITeamGame) g;
             Location l = player.getLocation();
 
             if (args.length == 1) {
                 player.sendMessage("/setteamspawn <game> <team>");
-            }else{
+            } else {
                 Team team = null;
                 if (game.getRedTeam().getName().equalsIgnoreCase(args[1])) team = game.getRedTeam();
                 if (game.getBlueTeam().getName().equalsIgnoreCase(args[1])) team = game.getBlueTeam();
@@ -97,20 +97,20 @@ public class GameCommands implements CommandListener {
             }
         }
     }
-    
+
     private void save(Player player, Game game) {
         int slot = 0;
         for (ItemStack stack : player.getInventory().getContents()) {
             settings.getData().set("setup." + game.getName() + ".inv." + slot, stack);
             slot++;
         }
-        
+
         int sslot = 100;
         for (ItemStack stack : player.getInventory().getArmorContents()) {
             settings.getData().set("setup." + game.getName() + ".armor." + sslot, stack);
             ++sslot;
         }
-        
+
         int v = 0;
         for (PotionEffect p : player.getActivePotionEffects()) {
             settings.getData().set("setup." + game.getName() + ".potion.name." + v + ".type", p.getType().getName());
@@ -119,7 +119,7 @@ public class GameCommands implements CommandListener {
             v++;
         }
     }
-    
+
     @Command(name = "setinv")
     public void setInv(Player player, String[] args) {
         if (args.length == 0) {
@@ -134,7 +134,7 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Saved inventory loadout for {0}.".replace("{0}", game.getName())));
         }
     }
-    
+
     @Command(name = "delinv")
     public void delInv(Player player, String[] args) {
         if (args.length == 0) {
@@ -149,7 +149,7 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Deleted inventory loadout for {0}.".replace("{0}", game.getName())));
         }
     }
-    
+
     @Command(name = "join")
     public void join(Player player) {
         IGamePlayer gamePlayer = GameManager.getPlayer(player);
@@ -157,12 +157,12 @@ public class GameCommands implements CommandListener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are already in the event."));
             return;
         }
-    
+
         if (!plugin.getEventMain().eventstarting) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere are no events to join."));
             return;
         }
-    
+
         if (plugin.getEventMain().eventstarted) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cEvent has already started."));
             return;
@@ -191,7 +191,7 @@ public class GameCommands implements CommandListener {
         GameCountdownLeaveEvent<Game> event = new GameCountdownLeaveEvent<>(gamePlayer.getGame(), gamePlayer);
         Bukkit.getPluginManager().callEvent(event);
     }
-    
+
     @Command(name = "setkothtop")
     public void setScore(Player player, String[] args) {
         if (!player.hasPermission("events.setKOTH")) return;
@@ -205,7 +205,7 @@ public class GameCommands implements CommandListener {
         settings.getData().set("setup." + game.getName() + ".top.pitch", l.getPitch());
         player.sendMessage("§cSet score point for §7" + game.getName());
     }
-    
+
     @Command(name = "setparkourwin")
     public void setParkourScore(Player player, String[] args) {
         if (!player.hasPermission("events.setParkour")) return;
@@ -214,7 +214,7 @@ public class GameCommands implements CommandListener {
         settings.getData().set("setup." + game.getName() + ".winLocation", l.toDataString());
         player.sendMessage("§cSet score point for §7" + game.getName());
     }
-    
+
     @Command(name = "event")
     public void event(Player player, String[] args) {
         if (args.length == 0) {
@@ -230,7 +230,7 @@ public class GameCommands implements CommandListener {
                 plugin.reloadConfig();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Reloaded MiniEvent's config."));
             } else if (args[0].equalsIgnoreCase("end")) {
-                
+
                 if (!player.hasPermission("event.end") && !player.hasPermission("event.*") && !player.isOp()) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not have permission."));
                 } else {
@@ -241,12 +241,12 @@ public class GameCommands implements CommandListener {
                             current.onEnd();
                         }
                     }
-                    
+
                     plugin.getEventMain().end();
                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&cAny event in progress was ended."));
                 }
             } else {
-                if (plugin.getEventMain().waiting != null ||  plugin.getEventMain().eventstarted || plugin.getEventMain().eventstarting) {
+                if (plugin.getEventMain().waiting != null || plugin.getEventMain().eventstarted || plugin.getEventMain().eventstarting) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere is already an events in progress."));
                     return;
                 }
@@ -285,7 +285,7 @@ public class GameCommands implements CommandListener {
             }
         }
     }
-    
+
     private void sendUssage(Player player) {
         ITellraw raw = Reflection.getTellraw("§7/event §c[§7end§c, §7reload");
         for (Game game : GameManager.getGames()) {

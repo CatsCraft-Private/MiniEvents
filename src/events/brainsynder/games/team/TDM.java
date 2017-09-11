@@ -159,7 +159,7 @@ public class TDM extends TeamGameMaker {
     }
 
     @EventHandler
-    public void onRegen (EntityRegainHealthEvent e) {
+    public void onRegen(EntityRegainHealthEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         IGamePlayer player = GameManager.getPlayer((Player) e.getEntity());
         if (player.isPlaying()) {

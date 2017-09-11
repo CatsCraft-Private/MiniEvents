@@ -44,7 +44,7 @@ public class Handle implements Listener {
     }
 
     @EventHandler
-    public void onCheck (PlayerViolationEvent e){
+    public void onCheck(PlayerViolationEvent e) {
         IGamePlayer gamePlayer = GameManager.getPlayer(e.getPlayer());
         if (gamePlayer.isPlaying()) {
             e.setCancelled(true);
@@ -52,7 +52,7 @@ public class Handle implements Listener {
     }
 
     @EventHandler
-    public void onCheck (CheckCancelEvent e){
+    public void onCheck(CheckCancelEvent e) {
         IGamePlayer gamePlayer = GameManager.getPlayer(e.getPlayer());
         if (gamePlayer.isPlaying()) {
             e.setCancelled(true);

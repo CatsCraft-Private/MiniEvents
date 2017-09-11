@@ -23,11 +23,13 @@ import java.util.LinkedList;
 
 public class BowBattle extends GameMaker {
 
-    @Override public String getName() {
+    @Override
+    public String getName() {
         return "BowBattle";
     }
-    
-    @Override public void onStart() {
+
+    @Override
+    public void onStart() {
         gameSettings = new GameSettings(true);
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
@@ -41,8 +43,9 @@ public class BowBattle extends GameMaker {
             });
         }, 120L);
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
@@ -60,7 +63,7 @@ public class BowBattle extends GameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-            
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -78,8 +81,9 @@ public class BowBattle extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack bow = new ItemStack(Material.BOW);
         bow.addUnsafeEnchantment(Enchantment.DURABILITY, 10);
@@ -101,11 +105,12 @@ public class BowBattle extends GameMaker {
         inventory.setItem(7, new ItemStack(Material.MUSHROOM_SOUP));
         inventory.setItem(8, new ItemStack(Material.MUSHROOM_SOUP));
     }
-    
-    @Override public boolean allowsPVP() {
+
+    @Override
+    public boolean allowsPVP() {
         return true;
     }
-    
+
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && (!(event.getDamager() instanceof Projectile))) return;
@@ -139,8 +144,9 @@ public class BowBattle extends GameMaker {
             }
         }
     }
-    
-    @Override public String[] description() {
+
+    @Override
+    public String[] description() {
         return new String[]{
                 "§eBattle other players with Bows",
                 "§eNone of those fancy 'Sword' and stuff",

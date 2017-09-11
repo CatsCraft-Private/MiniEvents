@@ -15,16 +15,14 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     protected final String worldName;
     protected final int x1, y1, z1;
     protected final int x2, y2, z2;
-    
+
     /**
      * Construct a Cuboid given two Location objects which represent any two
      * corners of the Cuboid. Note: The 2 locations must be on the same
      * world.
      *
-     * @param l1
-     *         - One of the corners
-     * @param l2
-     *         - The other corner
+     * @param l1 - One of the corners
+     * @param l2 - The other corner
      */
     public Cuboid(BlockLocation l1, BlockLocation l2) {
         if (!l1.getWorld().getName().equals(l2.getWorld().getName()))
@@ -37,45 +35,36 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         this.y2 = Math.max(l1.getY(), l2.getY());
         this.z2 = Math.max(l1.getZ(), l2.getZ());
     }
-    
+
     /**
      * Construct a one-block Cuboid at the given Location of the Cuboid.
      *
-     * @param l1
-     *         location of the Cuboid
+     * @param l1 location of the Cuboid
      */
     public Cuboid(BlockLocation l1) {
         this(l1, l1);
     }
-    
+
     /**
      * Copy constructor.
      *
-     * @param other
-     *         - The Cuboid to copy
+     * @param other - The Cuboid to copy
      */
     public Cuboid(Cuboid other) {
         this(other.getWorld().getName(), other.x1, other.y1, other.z1,
                 other.x2, other.y2, other.z2);
     }
-    
+
     /**
      * Construct a Cuboid in the given World and xyz co-ordinates
      *
-     * @param world
-     *         - The Cuboid's world
-     * @param x1
-     *         - X co-ordinate of corner 1
-     * @param y1
-     *         - Y co-ordinate of corner 1
-     * @param z1
-     *         - Z co-ordinate of corner 1
-     * @param x2
-     *         - X co-ordinate of corner 2
-     * @param y2
-     *         - Y co-ordinate of corner 2
-     * @param z2
-     *         - Z co-ordinate of corner 2
+     * @param world - The Cuboid's world
+     * @param x1    - X co-ordinate of corner 1
+     * @param y1    - Y co-ordinate of corner 1
+     * @param z1    - Z co-ordinate of corner 1
+     * @param x2    - X co-ordinate of corner 2
+     * @param y2    - Y co-ordinate of corner 2
+     * @param z2    - Z co-ordinate of corner 2
      */
     public Cuboid(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
         this.worldName = world.getName();
@@ -86,24 +75,17 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         this.z1 = Math.min(z1, z2);
         this.z2 = Math.max(z1, z2);
     }
-    
+
     /**
      * Construct a Cuboid in the given world name and xyz co-ordinates.
      *
-     * @param worldName
-     *         - The Cuboid's world name
-     * @param x1
-     *         - X co-ordinate of corner 1
-     * @param y1
-     *         - Y co-ordinate of corner 1
-     * @param z1
-     *         - Z co-ordinate of corner 1
-     * @param x2
-     *         - X co-ordinate of corner 2
-     * @param y2
-     *         - Y co-ordinate of corner 2
-     * @param z2
-     *         - Z co-ordinate of corner 2
+     * @param worldName - The Cuboid's world name
+     * @param x1        - X co-ordinate of corner 1
+     * @param y1        - Y co-ordinate of corner 1
+     * @param z1        - Z co-ordinate of corner 1
+     * @param x2        - X co-ordinate of corner 2
+     * @param y2        - Y co-ordinate of corner 2
+     * @param z2        - Z co-ordinate of corner 2
      */
     private Cuboid(String worldName, int x1, int y1, int z1, int x2, int y2,
                    int z2) {
@@ -115,13 +97,12 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         this.z1 = Math.min(z1, z2);
         this.z2 = Math.max(z1, z2);
     }
-    
+
     /**
      * Construct a Cuboid using a map with the following keys: worldName, x1,
      * x2, y1, y2, z1, z2
      *
-     * @param map
-     *         - The map of keys.
+     * @param map - The map of keys.
      */
     public Cuboid(JSONObject map) {
         this.worldName = (String) map.get("worldName");
@@ -132,7 +113,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         this.z1 = (Integer) map.get("z1");
         this.z2 = (Integer) map.get("z2");
     }
-    
+
     public JSONObject serialize() {
         JSONObject map = new JSONObject();
         map.put("worldName", this.worldName);
@@ -144,7 +125,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         map.put("z2", this.z2);
         return map;
     }
-    
+
     /**
      * Get the Location of the lower northeast corner of the Cuboid (minimum
      * XYZ co-ordinates).
@@ -154,7 +135,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public Location getLowerNE() {
         return new Location(this.getWorld(), this.x1, this.y1, this.z1);
     }
-    
+
     /**
      * Get the Location of the upper southwest corner of the Cuboid (maximum
      * XYZ co-ordinates).
@@ -164,7 +145,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public Location getUpperSW() {
         return new Location(this.getWorld(), this.x2, this.y2, this.z2);
     }
-    
+
     /**
      * Get the BLOCKS in the Cuboid.
      *
@@ -177,7 +158,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
             copy.add(blockI.next());
         return copy;
     }
-    
+
     /**
      * Get the the centre of the Cuboid.
      *
@@ -192,14 +173,12 @@ public class Cuboid implements Iterable<Block>, Cloneable {
                 + (y1 - this.y1) / 2.0, this.z1
                 + (z1 - this.z1) / 2.0);
     }
-    
+
     /**
      * Get the Cuboid's world.
      *
      * @return The World object representing this Cuboid's world
-     *
-     * @throws IllegalStateException
-     *         if the world is not loaded
+     * @throws IllegalStateException if the world is not loaded
      */
     public World getWorld() {
         World world = Bukkit.getWorld(this.worldName);
@@ -207,7 +186,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
             throw new IllegalStateException("World '" + this.worldName + "' is not loaded");
         return world;
     }
-    
+
     /**
      * Get the size of this Cuboid along the X axis
      *
@@ -216,7 +195,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getSizeX() {
         return (this.x2 - this.x1) + 1;
     }
-    
+
     /**
      * Get the size of this Cuboid along the Y axis
      *
@@ -225,7 +204,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getSizeY() {
         return (this.y2 - this.y1) + 1;
     }
-    
+
     /**
      * Get the size of this Cuboid along the Z axis
      *
@@ -234,7 +213,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getSizeZ() {
         return (this.z2 - this.z1) + 1;
     }
-    
+
     /**
      * Get the minimum X co-ordinate of this Cuboid
      *
@@ -243,7 +222,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getLowerX() {
         return this.x1;
     }
-    
+
     /**
      * Get the minimum Y co-ordinate of this Cuboid
      *
@@ -252,7 +231,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getLowerY() {
         return this.y1;
     }
-    
+
     /**
      * Get the minimum Z co-ordinate of this Cuboid
      *
@@ -261,7 +240,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getLowerZ() {
         return this.z1;
     }
-    
+
     /**
      * Get the maximum X co-ordinate of this Cuboid
      *
@@ -270,7 +249,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getUpperX() {
         return this.x2;
     }
-    
+
     /**
      * Get the maximum Y co-ordinate of this Cuboid
      *
@@ -279,7 +258,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getUpperY() {
         return this.y2;
     }
-    
+
     /**
      * Get the maximum Z co-ordinate of this Cuboid
      *
@@ -288,7 +267,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getUpperZ() {
         return this.z2;
     }
-    
+
     /**
      * Get the Blocks at the eight corners of the Cuboid.
      *
@@ -307,18 +286,15 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         res[7] = w.getBlockAt(this.x2, this.y2, this.z2);
         return res;
     }
-    
+
     /**
      * Expand the Cuboid in the given direction by the given amount. Negative
      * amounts will shrink the Cuboid in the given direction. Shrinking a
      * cuboid's face past the opposite face is not an error and will return a
      * valid Cuboid.
      *
-     * @param dir
-     *         - The direction in which to expand
-     * @param amount
-     *         - The number of BLOCKS by which to expand
-     *
+     * @param dir    - The direction in which to expand
+     * @param amount - The number of BLOCKS by which to expand
      * @return A new Cuboid expanded by the given direction and amount
      */
     public Cuboid expand(CuboidDirection dir, int amount) {
@@ -346,30 +322,24 @@ public class Cuboid implements Iterable<Block>, Cloneable {
                         + dir);
         }
     }
-    
+
     /**
      * Shift the Cuboid in the given direction by the given amount.
      *
-     * @param dir
-     *         - The direction in which to shift
-     * @param amount
-     *         - The number of BLOCKS by which to shift
-     *
+     * @param dir    - The direction in which to shift
+     * @param amount - The number of BLOCKS by which to shift
      * @return A new Cuboid shifted by the given direction and amount
      */
     public Cuboid shift(CuboidDirection dir, int amount) {
         return expand(dir, amount).expand(dir.opposite(), -amount);
     }
-    
+
     /**
      * Outset (grow) the Cuboid in the given direction by the given amount.
      *
-     * @param dir
-     *         - The direction in which to outset (must be Horizontal,
-     *         Vertical, or Both)
-     * @param amount
-     *         - The number of BLOCKS by which to outset
-     *
+     * @param dir    - The direction in which to outset (must be Horizontal,
+     *               Vertical, or Both)
+     * @param amount - The number of BLOCKS by which to outset
      * @return A new Cuboid outset by the given direction and amount
      */
     public Cuboid outset(CuboidDirection dir, int amount) {
@@ -395,58 +365,47 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         }
         return c;
     }
-    
+
     /**
      * Inset (shrink) the Cuboid in the given direction by the given amount.
      * Equivalent to calling outset() with a negative amount.
      *
-     * @param dir
-     *         - The direction in which to inset (must be Horizontal,
-     *         Vertical, or Both)
-     * @param amount
-     *         - The number of BLOCKS by which to inset
-     *
+     * @param dir    - The direction in which to inset (must be Horizontal,
+     *               Vertical, or Both)
+     * @param amount - The number of BLOCKS by which to inset
      * @return A new Cuboid inset by the given direction and amount
      */
     public Cuboid inset(CuboidDirection dir, int amount) {
         return this.outset(dir, -amount);
     }
-    
+
     /**
      * Return true if the point at (x,y,z) is contained within this Cuboid.
      *
-     * @param x
-     *         - The X co-ordinate
-     * @param y
-     *         - The Y co-ordinate
-     * @param z
-     *         - The Z co-ordinate
-     *
+     * @param x - The X co-ordinate
+     * @param y - The Y co-ordinate
+     * @param z - The Z co-ordinate
      * @return true if the given point is within this Cuboid, false otherwise
      */
     public boolean contains(int x, int y, int z) {
         return x >= this.x1 && x <= this.x2 && y >= this.y1
                 && y <= this.y2 && z >= this.z1 && z <= this.z2;
     }
-    
+
     /**
      * Check if the given Block is contained within this Cuboid.
      *
-     * @param b
-     *         - The Block to check for
-     *
+     * @param b - The Block to check for
      * @return true if the Block is within this Cuboid, false otherwise
      */
     public boolean contains(Block b) {
         return this.contains(new BlockLocation(b.getLocation()));
     }
-    
+
     /**
      * Check if the given Location is contained within this Cuboid.
      *
-     * @param l
-     *         - The Location to check for
-     *
+     * @param l - The Location to check for
      * @return true if the Location is within this Cuboid, false otherwise
      */
     public boolean contains(BlockLocation l) {
@@ -454,7 +413,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
             return false;
         return this.contains(l.getX(), l.getY(), l.getZ());
     }
-    
+
     /**
      * Get the volume of this Cuboid.
      *
@@ -463,7 +422,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public int getVolume() {
         return this.getSizeX() * this.getSizeY() * this.getSizeZ();
     }
-    
+
     /**
      * Get the average light level of all empty (air) BLOCKS in the Cuboid.
      * Returns 0 if there are no empty BLOCKS.
@@ -481,7 +440,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         }
         return n > 0 ? (byte) (total / n) : 0;
     }
-    
+
     /**
      * Contract the Cuboid, returning a Cuboid with any air around the edges
      * removed, just large enough to include all non-air BLOCKS.
@@ -496,15 +455,13 @@ public class Cuboid implements Iterable<Block>, Cloneable {
                 .contract(CuboidDirection.North)
                 .contract(CuboidDirection.West);
     }
-    
+
     /**
      * Contract the Cuboid in the given direction, returning a new Cuboid
      * which has no exterior empty space. E.g. A direction of Down will push
      * the top face downwards as much as possible.
      *
-     * @param dir
-     *         - The direction in which to contract
-     *
+     * @param dir - The direction in which to contract
      * @return A new Cuboid contracted in the given direction
      */
     public Cuboid contract(CuboidDirection dir) {
@@ -558,15 +515,13 @@ public class Cuboid implements Iterable<Block>, Cloneable {
                         + dir);
         }
     }
-    
+
     /**
      * Get the Cuboid representing the face of this Cuboid. The resulting
      * Cuboid will be one block thick in the axis perpendicular to the
      * requested face.
      *
-     * @param dir
-     *         - which face of the Cuboid to get
-     *
+     * @param dir - which face of the Cuboid to get
      * @return The Cuboid representing this Cuboid's requested face
      */
     public Cuboid getFace(CuboidDirection dir) {
@@ -594,13 +549,11 @@ public class Cuboid implements Iterable<Block>, Cloneable {
                         + dir);
         }
     }
-    
+
     /**
      * Check if the Cuboid contains only BLOCKS of the given type
      *
-     * @param blockId
-     *         - The block ID to check for
-     *
+     * @param blockId - The block ID to check for
      * @return true if this Cuboid contains only BLOCKS of the given type
      */
     @SuppressWarnings("deprecation")
@@ -611,68 +564,57 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         }
         return true;
     }
-    
+
     /**
      * Get the Cuboid big enough to hold both this Cuboid and the given one.
      *
-     * @param other
-     *         - The other cuboid.
-     *
+     * @param other - The other cuboid.
      * @return A new Cuboid large enough to hold this Cuboid and the given
      * Cuboid
      */
     public Cuboid getBoundingCuboid(Cuboid other) {
         if (other == null)
             return this;
-        
+
         int xMin = Math.min(this.x1, other.x1);
         int yMin = Math.min(this.y1, other.y1);
         int zMin = Math.min(this.z1, other.z1);
         int xMax = Math.max(this.x2, other.x2);
         int yMax = Math.max(this.y2, other.y2);
         int zMax = Math.max(this.z2, other.z2);
-        
+
         return new Cuboid(this.worldName, xMin, yMin, zMin, xMax, yMax,
                 zMax);
     }
-    
+
     /**
      * Get a block relative to the lower NE point of the Cuboid.
      *
-     * @param x
-     *         - The X co-ordinate
-     * @param y
-     *         - The Y co-ordinate
-     * @param z
-     *         - The Z co-ordinate
-     *
+     * @param x - The X co-ordinate
+     * @param y - The Y co-ordinate
+     * @param z - The Z co-ordinate
      * @return The block at the given position
      */
     public Block getRelativeBlock(int x, int y, int z) {
         return this.getWorld().getBlockAt(this.x1 + x, this.y1 + y,
                 this.z1 + z);
     }
-    
+
     /**
      * Get a block relative to the lower NE point of the Cuboid in the given
      * World. This version of getRelativeBlock() should be used if being
      * called many times, to avoid excessive calls to getWorld().
      *
-     * @param w
-     *         - The world
-     * @param x
-     *         - The X co-ordinate
-     * @param y
-     *         - The Y co-ordinate
-     * @param z
-     *         - The Z co-ordinate
-     *
+     * @param w - The world
+     * @param x - The X co-ordinate
+     * @param y - The Y co-ordinate
+     * @param z - The Z co-ordinate
      * @return The block at the given position
      */
     public Block getRelativeBlock(World w, int x, int y, int z) {
         return w.getBlockAt(this.x1 + x, y1 + y, this.z1 + z);
     }
-    
+
     /**
      * Get a list of the chunks which are fully or partially contained in
      * this cuboid.
@@ -681,7 +623,7 @@ public class Cuboid implements Iterable<Block>, Cloneable {
      */
     public List<Chunk> getChunks() {
         List<Chunk> res = new ArrayList<>();
-        
+
         World w = this.getWorld();
         int x1 = this.x1 & ~0xf;
         int x2 = this.x2 & ~0xf;
@@ -694,24 +636,24 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         }
         return res;
     }
-    
+
     public Iterator<Block> iterator() {
         return new CuboidIterator(this.getWorld(), this.x1, this.y1,
                 this.z1, this.x2, this.y2, this.z2);
     }
-    
+
     @Override
     public Cuboid clone() {
         return new Cuboid(this);
     }
-    
+
     @Override
     public String toString() {
         return "Cuboid: " + this.worldName + ',' + this.x1
                 + ',' + this.y1 + ',' + this.z1 + "=>" + this.x2
                 + ',' + this.y2 + ',' + this.z2;
     }
-    
+
     public boolean isEmpty() {
         for (Block b : getBlocks()) {
             if (b.getType() != Material.AIR)
@@ -720,57 +662,17 @@ public class Cuboid implements Iterable<Block>, Cloneable {
         return true;
     }
 
-    public BlockLocation getCorner1 () {
+    public BlockLocation getCorner1() {
         return new BlockLocation(Bukkit.getWorld(worldName), x1, y1, z1);
     }
-    public BlockLocation getCorner2 () {
+
+    public BlockLocation getCorner2() {
         return new BlockLocation(Bukkit.getWorld(worldName), x2, y2, z2);
     }
-    
-    public static class CuboidIterator implements Iterator<Block> {
-        private World w;
-        private int baseX, baseY, baseZ;
-        private int x, y, z;
-        private int sizeX, sizeY, sizeZ;
-        
-        public CuboidIterator(World w, int x1, int y1, int z1, int x2,
-                              int y2, int z2) {
-            this.w = w;
-            this.baseX = x1;
-            this.baseY = y1;
-            this.baseZ = z1;
-            this.sizeX = Math.abs(x2 - x1) + 1;
-            this.sizeY = Math.abs(y2 - y1) + 1;
-            this.sizeZ = Math.abs(z2 - z1) + 1;
-            this.x = this.y = this.z = 0;
-        }
-        
-        public boolean hasNext() {
-            return this.x < this.sizeX && this.y < this.sizeY
-                    && this.z < this.sizeZ;
-        }
-        
-        public Block next() {
-            Block b = this.w.getBlockAt(this.baseX + this.x,
-                    this.baseY + this.y, this.baseZ + this.z);
-            if (++x >= this.sizeX) {
-                this.x = 0;
-                if (++this.y >= this.sizeY) {
-                    this.y = 0;
-                    ++this.z;
-                }
-            }
-            return b;
-        }
-        
-        
-        public void remove() {
-        }
-    }
-    
+
     public enum CuboidDirection {
         North, East, South, West, Up, Down, Horizontal, Vertical, Both, Unknown;
-        
+
         public CuboidDirection opposite() {
             switch (this) {
                 case North:
@@ -795,7 +697,48 @@ public class Cuboid implements Iterable<Block>, Cloneable {
                     return Unknown;
             }
         }
-        
+
     }
-    
+
+    public static class CuboidIterator implements Iterator<Block> {
+        private World w;
+        private int baseX, baseY, baseZ;
+        private int x, y, z;
+        private int sizeX, sizeY, sizeZ;
+
+        public CuboidIterator(World w, int x1, int y1, int z1, int x2,
+                              int y2, int z2) {
+            this.w = w;
+            this.baseX = x1;
+            this.baseY = y1;
+            this.baseZ = z1;
+            this.sizeX = Math.abs(x2 - x1) + 1;
+            this.sizeY = Math.abs(y2 - y1) + 1;
+            this.sizeZ = Math.abs(z2 - z1) + 1;
+            this.x = this.y = this.z = 0;
+        }
+
+        public boolean hasNext() {
+            return this.x < this.sizeX && this.y < this.sizeY
+                    && this.z < this.sizeZ;
+        }
+
+        public Block next() {
+            Block b = this.w.getBlockAt(this.baseX + this.x,
+                    this.baseY + this.y, this.baseZ + this.z);
+            if (++x >= this.sizeX) {
+                this.x = 0;
+                if (++this.y >= this.sizeY) {
+                    this.y = 0;
+                    ++this.z;
+                }
+            }
+            return b;
+        }
+
+
+        public void remove() {
+        }
+    }
+
 }

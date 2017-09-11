@@ -3,14 +3,17 @@ package events.brainsynder.key;
 public class GameSettings {
     boolean pvp = false, fallDmg = false;
 
-    public GameSettings (boolean pvp, boolean fallDmg) {
+    public GameSettings(boolean pvp, boolean fallDmg) {
         this.pvp = pvp;
         this.fallDmg = fallDmg;
     }
-    public GameSettings (boolean pvp) {
+
+    public GameSettings(boolean pvp) {
         this.pvp = pvp;
     }
-    GameSettings() {}
+
+    GameSettings() {
+    }
 
     public boolean canPvp() {
         return pvp;

@@ -128,7 +128,7 @@ public class GameListener implements Listener {
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b{PLAYER} &7just won &b" + event.getGame().getName() + '!').replace("{PLAYER}", gamePlayer.getPlayer().getName()));
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
-            Bukkit.getServer ().dispatchCommand (Bukkit.getConsoleSender (), "eco give " + gamePlayer.getPlayer().getName () + " " + i);
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "eco give " + gamePlayer.getPlayer().getName() + " " + i);
         }
     }
 
@@ -139,18 +139,18 @@ public class GameListener implements Listener {
         redMem.add("§4Red Team Members:");
         List<String> blueMem = new ArrayList<>();
         blueMem.add("§9Blue Team Members:");
-        
+
         event.getGame().getRedTeam().getMembers().forEach(player -> redMem.add("§c- §7" + player.getPlayer().getName()));
         event.getGame().getBlueTeam().getMembers().forEach(player -> blueMem.add("§b- §7" + player.getPlayer().getName()));
 
         ITellraw raw = Reflection.getTellraw(team.getChatColor() + team.getName() + " Team §7just won §b" + event.getGame().getName() + "§7! Final Score of: ");
-        raw.then("§4Red(§c" + ((int)event.getGame().getRedTeam().getScore()) + "§4)").tooltip(redMem).then(' ');
-        raw.then("§9Blue(§b" + ((int)event.getGame().getBlueTeam().getScore()) + "§9)").tooltip(blueMem);
+        raw.then("§4Red(§c" + ((int) event.getGame().getRedTeam().getScore()) + "§4)").tooltip(redMem).then(' ');
+        raw.then("§9Blue(§b" + ((int) event.getGame().getBlueTeam().getScore()) + "§9)").tooltip(blueMem);
         Bukkit.getOnlinePlayers().forEach(raw::send);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
             double i = plugin.getConfig().getDouble("events.money.amount");
             for (IGamePlayer gamePlayer : team.getMembers()) {
-                Bukkit.getServer ().dispatchCommand (Bukkit.getConsoleSender (), "eco give " + gamePlayer.getPlayer().getName () + " " + i);
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "eco give " + gamePlayer.getPlayer().getName() + " " + i);
             }
         }
         event.getGame().getRedTeam().getMembers().clear();

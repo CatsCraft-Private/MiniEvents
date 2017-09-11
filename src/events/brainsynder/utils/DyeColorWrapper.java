@@ -5,17 +5,17 @@ import org.bukkit.Color;
 public enum DyeColorWrapper {
     WHITE(0, 15, Color.WHITE),
     ORANGE(1, 14, Color.ORANGE),
-    MAGENTA(2, 13, Color.fromRGB(255,0,255)),
-    LIGHT_BLUE(3, 12, Color.fromRGB(0,223,255)),
+    MAGENTA(2, 13, Color.fromRGB(255, 0, 255)),
+    LIGHT_BLUE(3, 12, Color.fromRGB(0, 223, 255)),
     YELLOW(4, 11, Color.YELLOW),
     LIME(5, 10, Color.LIME),
-    PINK(6, 9, Color.fromRGB(255,151,151)),
+    PINK(6, 9, Color.fromRGB(255, 151, 151)),
     GRAY(7, 8, Color.GRAY),
     SILVER(8, 7, Color.SILVER),
-    CYAN(9, 6, Color.fromRGB(27,165,219)),
+    CYAN(9, 6, Color.fromRGB(27, 165, 219)),
     PURPLE(10, 5, Color.PURPLE),
     BLUE(11, 4, Color.BLUE),
-    BROWN(12, 3, Color.fromRGB(165,42,42)),
+    BROWN(12, 3, Color.fromRGB(165, 42, 42)),
     GREEN(13, 2, Color.GREEN),
     RED(14, 1, Color.RED),
     BLACK(15, 0, Color.BLACK);
@@ -28,18 +28,6 @@ public enum DyeColorWrapper {
         this.woolData = (byte) woolData;
         this.dyeData = (byte) dyeData;
         this.color = color;
-    }
-
-    public byte getDyeData() {
-        return dyeData;
-    }
-
-    public byte getWoolData() {
-        return woolData;
-    }
-
-    public Color getVanilla () {
-        return color;
     }
 
     public static DyeColorWrapper getPrevious(DyeColorWrapper current) {
@@ -72,5 +60,17 @@ public enum DyeColorWrapper {
                 return wrapper;
         }
         return null;
+    }
+
+    public byte getDyeData() {
+        return dyeData;
+    }
+
+    public byte getWoolData() {
+        return woolData;
+    }
+
+    public Color getVanilla() {
+        return color;
     }
 }

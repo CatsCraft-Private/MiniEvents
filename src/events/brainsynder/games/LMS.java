@@ -20,15 +20,17 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.LinkedList;
 
 public class LMS extends GameMaker {
-    public LMS () {
+    public LMS() {
         super();
     }
-    
-    @Override public String getName() {
+
+    @Override
+    public String getName() {
         return "LMS";
     }
-    
-    @Override public void onStart() {
+
+    @Override
+    public void onStart() {
         gameSettings = new GameSettings(true);
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
@@ -42,8 +44,9 @@ public class LMS extends GameMaker {
             });
         }, 120L);
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
@@ -79,8 +82,9 @@ public class LMS extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack dsword = new ItemStack(Material.DIAMOND_SWORD, 1);
         dsword.addEnchantment(Enchantment.DAMAGE_ALL, 1);
@@ -90,18 +94,19 @@ public class LMS extends GameMaker {
         player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
         player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
         inventory.setItem(0, dsword);
-    
-        for(int i = 0; i < inventory.getSize(); ++i) {
-            if(inventory.getItem(i) == null) {
+
+        for (int i = 0; i < inventory.getSize(); ++i) {
+            if (inventory.getItem(i) == null) {
                 inventory.addItem(new ItemStack(Material.MUSHROOM_SOUP));
             }
         }
     }
-    
-    @Override public boolean allowsPVP() {
+
+    @Override
+    public boolean allowsPVP() {
         return true;
     }
-    
+
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && (!(event.getDamager() instanceof Projectile))) return;
@@ -131,9 +136,10 @@ public class LMS extends GameMaker {
             }
         }
     }
-    
-    @Override public String[] description() {
-        return new String[] {
+
+    @Override
+    public String[] description() {
+        return new String[]{
                 "§6What is LMS?",
                 "§eLMS Stands for §7Last Man Standing",
                 "§eBe the last player alive, and you win!"

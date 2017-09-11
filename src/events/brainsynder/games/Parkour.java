@@ -26,7 +26,8 @@ public class Parkour extends GameMaker {
         }.runTaskLater(plugin, 60);
     }
 
-    @Override public void perTick() {
+    @Override
+    public void perTick() {
         super.perTick();
         if (topLocation == null) return;
         for (IGamePlayer player : players) {
@@ -39,16 +40,17 @@ public class Parkour extends GameMaker {
             }
         }
     }
-    
-    @Override public void equipPlayer(Player player) {
+
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
-        
+
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
-        
+
         try {
             if (settings.getData().getSection("setup." + getName()) == null) {
                 equipDefaultPlayer(player);
@@ -60,7 +62,7 @@ public class Parkour extends GameMaker {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
-                
+
                 player.getInventory().setHelmet(settings.getData().getItemStack("setup." + getName() + ".armor.103"));
                 player.getInventory().setChestplate(settings.getData().getItemStack("setup." + getName() + ".armor.102"));
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
@@ -78,18 +80,21 @@ public class Parkour extends GameMaker {
             equipDefaultPlayer(player);
         }
     }
-    
-    @Override public void equipDefaultPlayer(Player player) {
+
+    @Override
+    public void equipDefaultPlayer(Player player) {
         player.getInventory().setArmorContents(null);
         player.getInventory().clear();
     }
-    
-    @Override public String getName() {
+
+    @Override
+    public String getName() {
         return "Parkour";
     }
-    
-    @Override public String[] description() {
-        return new String[] {
+
+    @Override
+    public String[] description() {
+        return new String[]{
                 "§7Parkour §eis a game where you jump from block",
                 "§eto block in levels, but be careful if you fall",
                 "§ethen you have to restart the level!!"

@@ -12,6 +12,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class BlockUtils {
+    public static Map<Location, String> blocksToRestore = new HashMap<>();
+    private static List<Material> blockedblocks = new ArrayList<>();
+
     public static List<Block> getBlocksInRadius(Location location, int radius, boolean hollow) {
         List<Block> blocks = new ArrayList<>();
 
@@ -33,9 +36,6 @@ public class BlockUtils {
         }
         return blocks;
     }
-
-    public static Map<Location, String> blocksToRestore = new HashMap<> ();
-    private static List<Material> blockedblocks = new ArrayList<> ();
 
     public static ArrayList<Block> getSurrounding(Block block, boolean diagonals) {
         ArrayList<Block> blocks = new ArrayList<>();

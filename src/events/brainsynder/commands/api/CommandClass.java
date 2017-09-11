@@ -12,10 +12,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface CommandClass {
 
     String name() default ""; // Default Command name. multiple names allowed.
+
     String permission() default ""; // Default permission. multiple permissions allowed.
 
     String permissionError() default "default"; // Default Insufficient Permission Error.
+
     String argumentsError() default "default"; // Default Invalid arguments Error.
+
     String playerError() default "default";  // Default Sender must be a player Error.
 
 }

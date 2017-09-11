@@ -7,9 +7,9 @@ import java.io.File;
 
 public class SettingsManager {
     private static SettingsManager instance = new SettingsManager();
+    File dfile;
     private Plugin p;
     private DataFile data;
-    File dfile;
 
     public static SettingsManager getInstance() {
         return instance;

@@ -7,10 +7,11 @@ import org.bukkit.Bukkit;
 
 public abstract class ITeamGame extends Game<Team> {
 
-    public abstract Team getRedTeam ();
-    public abstract Team getBlueTeam ();
+    public abstract Team getRedTeam();
 
-    public abstract void randomizePlayers ();
+    public abstract Team getBlueTeam();
+
+    public abstract void randomizePlayers();
 
     @Override
     public void onLeave(IGamePlayer player) {

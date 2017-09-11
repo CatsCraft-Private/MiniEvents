@@ -28,7 +28,7 @@ public class StoredData {
     private boolean storedAllowFlight;
     private boolean storedFlying;
     private boolean stored = false;
-    
+
     public StoredData(Player player) {
         this.player = player;
     }
@@ -68,13 +68,14 @@ public class StoredData {
                         player.removePotionEffect(effect.getType());
                     }
                 }
-            }catch (Exception ignored) {}
-            
+            } catch (Exception ignored) {
+            }
+
             stored = true;
         }
         return this;
     }
-    
+
     public void restoreData() {
         if (stored) {
             if (player == null) return;
@@ -119,10 +120,11 @@ public class StoredData {
                 storedFlying = false;
                 stored = false;
                 storedEffects = null;
-            }catch (Exception ignored){}
+            } catch (Exception ignored) {
+            }
         }
     }
-    
+
     public boolean isStored() {
         return this.stored;
     }

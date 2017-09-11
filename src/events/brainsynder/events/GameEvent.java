@@ -8,8 +8,12 @@ public class GameEvent<T extends Game> extends Event {
     private static final HandlerList handlers = new HandlerList();
     private T game;
 
-    public GameEvent (T game) {
+    public GameEvent(T game) {
         this.game = game;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public T getGame() {
@@ -17,10 +21,6 @@ public class GameEvent<T extends Game> extends Event {
     }
 
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }

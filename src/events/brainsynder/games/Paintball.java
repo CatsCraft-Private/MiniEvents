@@ -32,11 +32,13 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class Paintball extends GameMaker {
-    @Override public String getName() {
+    @Override
+    public String getName() {
         return "Paintball";
     }
 
-    @Override public void onStart() {
+    @Override
+    public void onStart() {
         gameSettings = new GameSettings(true);
         for (IGamePlayer gamePlayer : players) {
             Player player = gamePlayer.getPlayer();
@@ -51,7 +53,8 @@ public class Paintball extends GameMaker {
         }, 120L);
     }
 
-    @Override public void equipPlayer(Player player) {
+    @Override
+    public void equipPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
@@ -88,37 +91,37 @@ public class Paintball extends GameMaker {
         }
     }
 
-	private void runThis(final Item item, final Player player) {
-		item.setVelocity(player.getLocation().getDirection().multiply(3.0D));
-		item.setPickupDelay(2147483647);
-		SoundMaker.ENTITY_CHICKEN_EGG.playSound(item.getLocation(), 1.0F, 1.0F);
-		new BukkitRunnable() {
-			public void run() {
-				if (item.isDead() || item.isOnGround() || !item.isValid()) {
-					this.cancel();
-					return;
-				}
-				for (Entity entity : item.getNearbyEntities(0.8D, 0.8D, 0.8D)) {
-					if (entity instanceof Player) {
-						Player ent = (Player) entity;
-						if (!ent.getUniqueId().equals(player.getUniqueId())) {
-							ent.damage(plugin.getConfig().getDouble("events.paintball-damage"), player);
-							ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.SMOKE_LARGE, 20, 0.5);
-							maker.sendToLocation(entity.getLocation());
-							item.remove();
-						}
-					}
-				}
-			}
-		}.runTaskTimer(plugin, 0, 1);
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-			if (item.isValid())
-				item.remove();
-		}, 15);
-	}
+    private void runThis(final Item item, final Player player) {
+        item.setVelocity(player.getLocation().getDirection().multiply(3.0D));
+        item.setPickupDelay(2147483647);
+        SoundMaker.ENTITY_CHICKEN_EGG.playSound(item.getLocation(), 1.0F, 1.0F);
+        new BukkitRunnable() {
+            public void run() {
+                if (item.isDead() || item.isOnGround() || !item.isValid()) {
+                    this.cancel();
+                    return;
+                }
+                for (Entity entity : item.getNearbyEntities(0.8D, 0.8D, 0.8D)) {
+                    if (entity instanceof Player) {
+                        Player ent = (Player) entity;
+                        if (!ent.getUniqueId().equals(player.getUniqueId())) {
+                            ent.damage(plugin.getConfig().getDouble("events.paintball-damage"), player);
+                            ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.SMOKE_LARGE, 20, 0.5);
+                            maker.sendToLocation(entity.getLocation());
+                            item.remove();
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 0, 1);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (item.isValid())
+                item.remove();
+        }, 15);
+    }
 
-	@EventHandler
-    public void onRegen (EntityRegainHealthEvent e) {
+    @EventHandler
+    public void onRegen(EntityRegainHealthEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         IGamePlayer player = GameManager.getPlayer((Player) e.getEntity());
         if (player.isPlaying()) {
@@ -129,7 +132,8 @@ public class Paintball extends GameMaker {
         }
     }
 
-    @Override public void equipDefaultPlayer(Player player) {
+    @Override
+    public void equipDefaultPlayer(Player player) {
         Inventory inventory = player.getInventory();
         ItemStack stick = new ItemStack(Material.DIAMOND_HOE);
         ItemMeta sstick = stick.getItemMeta();
@@ -160,7 +164,8 @@ public class Paintball extends GameMaker {
         inventory.setItem(0, stick);
     }
 
-    @Override public boolean allowsPVP() {
+    @Override
+    public boolean allowsPVP() {
         return true;
     }
 
@@ -236,8 +241,9 @@ public class Paintball extends GameMaker {
         }
     }
 
-    @Override public String[] description() {
-        return new String[] {
+    @Override
+    public String[] description() {
+        return new String[]{
                 "§6What is Paintball?",
                 "§ePaintball is a game where",
                 "§eyou shoot players with 'Paint'",
