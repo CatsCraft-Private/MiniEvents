@@ -1,7 +1,6 @@
 package events.brainsynder;
 
 import events.brainsynder.key.Game;
-import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 
 public class EventsMain {
@@ -21,7 +20,5 @@ public class EventsMain {
         eventstarted = false;
         eventstarting = false;
         cancelled = true;
-
-        GameManager.gamePlayerMap.clear();
     }
 }

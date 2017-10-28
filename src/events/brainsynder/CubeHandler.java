@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import simple.brainsynder.nbt.JsonToNBT;
 import simple.brainsynder.nbt.NBTException;
 import simple.brainsynder.nbt.StorageTagCompound;
+import simple.brainsynder.utils.Base64Wrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class CubeHandler implements Listener, CommandListener {
         DataFile file = plugin.getSettings().getData();
         file.getStringList("Cubes").forEach(line -> {
             try {
-                StorageTagCompound compound = JsonToNBT.getTagFromJson(line);
+                StorageTagCompound compound = JsonToNBT.getTagFromJson(Base64Wrapper.decodeString(line));
                 BlockLocation corner1 = BlockLocation.fromString(compound.getString("corner1"));
                 BlockLocation corner2 = BlockLocation.fromString(compound.getString("corner2"));
 
@@ -44,13 +45,13 @@ public class CubeHandler implements Listener, CommandListener {
         });
     }
 
-    public void unload(GamePlugin plugin) {
+    public void save(GamePlugin plugin) {
         List<String> data = new ArrayList<>();
         cuboids.forEach(cuboid -> {
             StorageTagCompound compound = new StorageTagCompound();
             compound.setString("corner1", cuboid.getCorner1().toDataString());
             compound.setString("corner2", cuboid.getCorner2().toDataString());
-            data.add(compound.toString());
+            data.add(Base64Wrapper.encodeString(compound.toString()));
         });
         DataFile file = plugin.getSettings().getData();
         file.set("Cubes", data);
@@ -73,6 +74,7 @@ public class CubeHandler implements Listener, CommandListener {
                 cuboids.add(new Cuboid(corner1, corner2));
                 locationMap.remove(e.getPlayer().getName());
                 e.getPlayer().sendMessage("§aCuboid has been set.");
+                save(GamePlugin.instance);
             } else {
                 BlockLocation corner1 = new BlockLocation(e.getBlock().getLocation());
                 locationMap.put(e.getPlayer().getName(), corner1);

@@ -22,6 +22,11 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.LinkedList;
 
 public class KO extends GameMaker {
+    public KO(String mapID) {
+        super(mapID);
+    }
+    public KO(){}
+
 
     @Override
     public boolean allowsPVP() {
@@ -32,7 +37,8 @@ public class KO extends GameMaker {
     public void perTick() {
         super.perTick();
         if (endTask) return;
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             if (player.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER)
                     || player.getLocation().getBlock().getType().equals(Material.WATER)
@@ -41,10 +47,10 @@ public class KO extends GameMaker {
                 lost(gamePlayer);
                 if (aliveCount() < 2) {
                     endTask = true;
-                    for (IGamePlayer o : players) {
-                        if (o.getPlayer().getUniqueId().equals(player.getUniqueId())) continue;
-                        if (deadPlayers.contains(o)) continue;
-                        onWin(o);
+                    for (String pname : getPlayers ()) {
+                        if (pname.equals(player.getName())) continue;
+                        if (deadPlayers.contains(pname)) continue;
+                        onWin(GameManager.getPlayer(pname));
                         plugin.getEventMain().end();
                         break;
                     }
@@ -57,13 +63,15 @@ public class KO extends GameMaker {
     @Override
     public void onStart() {
         gameSettings = new GameSettings(true);
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             super.onStart();
-            players.forEach(gamePlayer -> {
+            getPlayers ().forEach(name -> {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 Player player = gamePlayer.getPlayer();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
             });
@@ -152,9 +160,8 @@ public class KO extends GameMaker {
             Player player = (Player) event.getEntity();
             IGamePlayer gamePlayer = GameManager.getPlayer(player);
             if (gamePlayer.isPlaying()) {
-                if (!(gamePlayer.getGame() instanceof KO))
-                    return;
-                if (players.contains(gamePlayer)) {
+                if (!(gamePlayer.getGame() instanceof KO)) return;
+                if (getPlayers ().contains(player.getName())) {
                     if (!plugin.getEventMain().eventstarted) {
                         event.setCancelled(true);
                         return;

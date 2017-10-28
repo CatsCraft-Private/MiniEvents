@@ -28,6 +28,11 @@ public class TntRun extends GameMaker {
         storage = new BlockStorage();
     }
 
+    public TntRun(String mapID) {
+        super(mapID);
+        storage = new BlockStorage();
+    }
+
     @Override
     public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
@@ -37,14 +42,16 @@ public class TntRun extends GameMaker {
 
     @Override
     public void onStart() {
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-before")));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            if (players.size() != 0) {
+            if (getPlayers ().size() != 0) {
                 super.onStart();
-                for (IGamePlayer gamePlayer : players) {
+                for (String name : getPlayers ()) {
+                    IGamePlayer gamePlayer = GameManager.getPlayer(name);
                     Player player = gamePlayer.getPlayer();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.tnt-invins-over")));
                     Location location = player.getLocation();
@@ -143,7 +150,8 @@ public class TntRun extends GameMaker {
     public void perTick() {
         super.perTick();
         if (endTask) return;
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             if (player.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) || player.getLocation().getBlock().getType().equals(Material.WATER)
                     || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.STATIONARY_WATER)
@@ -151,10 +159,10 @@ public class TntRun extends GameMaker {
                 lost(gamePlayer);
                 if (aliveCount() == 1) {
                     endTask = true;
-                    for (IGamePlayer o : players) {
-                        if (o.getPlayer().getUniqueId().equals(player.getUniqueId())) continue;
-                        if (deadPlayers.contains(o)) continue;
-                        onWin(o);
+                    for (String pname : getPlayers ()) {
+                        if (pname.equals(name)) continue;
+                        if (deadPlayers.contains(pname)) continue;
+                        onWin(GameManager.getPlayer(pname));
                         plugin.getEventMain().end();
                         break;
                     }

@@ -4,6 +4,7 @@ import events.brainsynder.events.game.PreGameStartEvent;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.IGamePlayer.State;
+import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,8 +44,8 @@ public class CountDown implements Listener {
                                 int size = game.getPlayers().size();
                                 if (size <= 1) {
                                     if (size == 1) {
-                                        IGamePlayer player = (IGamePlayer) game.players.get(0);
-                                        game.removePlayer(player);
+                                        IGamePlayer player = GameManager.getPlayer(game.players.get(0));
+                                        game.removePlayer(player.getPlayer().getName());
                                         player.setState(State.NOT_PLAYING);
                                         player.setGame(null);
                                     }

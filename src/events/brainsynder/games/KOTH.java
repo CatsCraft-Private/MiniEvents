@@ -13,31 +13,29 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import simple.brainsynder.nms.IActionMessage;
-import simple.brainsynder.utils.Reflection;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class KOTH extends GameMaker {
     private HashMap<String, Integer> points;
-    private HashMap<String, Integer> per10;
     private Location topLocation = null;
     private int per20 = 0;
-    private IActionMessage message = null;
+
+    public KOTH(String mapID) {
+        super(mapID);
+        points = new HashMap<>();
+    }
 
     public KOTH() {
         super();
         points = new HashMap<>();
-        per10 = new HashMap();
-        message = Reflection.getActionMessage();
     }
 
     @Override
     public void onEnd() {
         super.onEnd();
         points.clear();
-        per10.clear();
     }
 
     @Override
@@ -47,30 +45,11 @@ public class KOTH extends GameMaker {
 
         if (per20 == 15) {
             per20 = 0;
-            for (IGamePlayer gamePlayer : players) {
+            for (String name : getPlayers ()) {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 Player o = gamePlayer.getPlayer();
                 int point = points.getOrDefault(o.getUniqueId().toString(), 0);
                 int l = ((point * 100) / 100);
-
-                StringBuilder text = new StringBuilder();
-                text.append("Progress Bar: ");
-                text.append("| ");
-                int greenNum = per10.getOrDefault(o.getUniqueId().toString(), 0);
-                if (l % 10 == 0) {
-                    greenNum++;
-                    per10.put(o.getUniqueId().toString(), greenNum);
-                }
-                text.append(ChatColor.GREEN);
-                for (int i = 0; i < greenNum; i++) {
-                    text.append('■');
-                }
-                text.append(ChatColor.RED);
-                for (int i = 0; i < (10 - greenNum); i++) {
-                    text.append('■');
-                }
-                text.append(ChatColor.RESET).append(" | ").append(l).append('%');
-
-                //message.sendMessage(o, text.toString());
 
                 if (o.getLocation().distance(topLocation) <= 3.0) {
                     if (point < 100) {
@@ -82,7 +61,8 @@ public class KOTH extends GameMaker {
                         }
 
                         if (l >= 50 && l % 10 == 0) {
-                            for (IGamePlayer p : players) {
+                            for (String pname : getPlayers ()) {
+                                IGamePlayer p = GameManager.getPlayer(pname);
                                 Player pl = p.getPlayer();
                                 pl.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                         plugin.getConfig().getString("messages.koth-announce")
@@ -105,20 +85,23 @@ public class KOTH extends GameMaker {
     @Override
     public void onStart() {
         gameSettings = new GameSettings(true);
-        World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".top.world"));
-        double x = settings.getData().getDouble("setup." + getName() + ".top.x");
-        double y = settings.getData().getDouble("setup." + getName() + ".top.y");
-        double z = settings.getData().getDouble("setup." + getName() + ".top.z");
-        float yaw = (settings.getData().getInt("setup." + getName() + ".top.yaw"));
-        float pitch = (settings.getData().getInt("setup." + getName() + ".top.pitch"));
+        String mapID = getMapID ();
+        World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.world"));
+        double x = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.x");
+        double y = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.y");
+        double z = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.z");
+        float yaw = (settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.yaw"));
+        float pitch = (settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.pitch"));
         topLocation = new Location(world, x, y, z, yaw, pitch);
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             super.onStart();
-            players.forEach(gamePlayer -> {
+            getPlayers ().forEach(name -> {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 Player player = gamePlayer.getPlayer();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
             });
@@ -138,7 +121,7 @@ public class KOTH extends GameMaker {
             IGamePlayer gamePlayer = GameManager.getPlayer(player);
             if (gamePlayer.isPlaying()) {
                 if (!(gamePlayer.getGame() instanceof KOTH)) return;
-                if (players.contains(gamePlayer)) {
+                if (getPlayers ().contains(player.getName())) {
                     if (!plugin.getEventMain().eventstarted) {
                         event.setCancelled(true);
                         return;

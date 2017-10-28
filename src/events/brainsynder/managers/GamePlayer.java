@@ -4,10 +4,12 @@ import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.data.StoredData;
+import events.brainsynder.utils.ScoreboardHandler;
 import org.bukkit.entity.Player;
 
 class GamePlayer<T extends Game> implements IGamePlayer<T> {
     private T game = null;
+    private ScoreboardHandler handler = null;
     private Team team = null;
     private Player player;
     private State state = State.NOT_PLAYING;
@@ -56,6 +58,16 @@ class GamePlayer<T extends Game> implements IGamePlayer<T> {
     @Override
     public StoredData getPlayerData() {
         return storedData;
+    }
+
+    @Override
+    public ScoreboardHandler getScoreHandler() {
+        return handler;
+    }
+
+    @Override
+    public void setScoreHandler(ScoreboardHandler handler) {
+        this.handler = handler;
     }
 
     @Override

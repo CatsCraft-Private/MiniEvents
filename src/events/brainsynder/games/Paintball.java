@@ -32,6 +32,12 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class Paintball extends GameMaker {
+
+    public Paintball(String mapID) {
+        super(mapID);
+    }
+    public Paintball(){}
+
     @Override
     public String getName() {
         return "Paintball";
@@ -40,14 +46,15 @@ public class Paintball extends GameMaker {
     @Override
     public void onStart() {
         gameSettings = new GameSettings(true);
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             super.onStart();
-            players.forEach(gamePlayer -> {
-                Player player = gamePlayer.getPlayer();
+            getPlayers ().forEach(name -> {
+                Player player = GameManager.getPlayer(name).getPlayer();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
             });
         }, 120L);
@@ -184,10 +191,10 @@ public class Paintball extends GameMaker {
                     event.setCancelled(true);
                     lost(player);
                     if (aliveCount() == 1) {
-                        for (IGamePlayer o : players) {
-                            if (o.getPlayer().getUniqueId().equals(p.getUniqueId())) continue;
-                            if (deadPlayers.contains(o)) continue;
-                            onWin(o);
+                        for (String pname : getPlayers ()) {
+                            if (pname.equals(player.getPlayer().getName())) continue;
+                            if (deadPlayers.contains(pname)) continue;
+                            onWin(GameManager.getPlayer(pname));
                             plugin.getEventMain().end();
                             break;
                         }

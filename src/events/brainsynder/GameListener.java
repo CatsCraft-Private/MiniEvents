@@ -9,6 +9,7 @@ import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.Team;
+import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,13 +31,15 @@ public class GameListener implements Listener {
     public void onJoin(GamePlayerJoinEvent event) {
         if (plugin.getEventMain().eventstarted) return;
 
-        Game<IGamePlayer> game = event.getGame();
+        Game game = event.getGame();
         IGamePlayer gamePlayer = event.getPlayer();
-        event.getGame().players.add(gamePlayer);
+        event.getGame().players.add(gamePlayer.getPlayer().getName());
         gamePlayer.setGame(event.getGame());
         gamePlayer.setState(IGamePlayer.State.WAITING);
         gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
-        for (IGamePlayer gamer : game.players) {
+
+        for (String name : game.getPlayers ()) {
+            IGamePlayer gamer = GameManager.getPlayer(name);
             if (!gamer.getPlayer().getName().equals(gamePlayer.getPlayer().getName()))
                 gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7joined the event. Players in the event: &b{1}&7.".replace("{0}", gamePlayer.getPlayer().getName()).replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
         }
@@ -45,30 +48,33 @@ public class GameListener implements Listener {
     @EventHandler
     public void onLeave(GamePlayerLeaveEvent event) {
         IGamePlayer player = event.getPlayer();
-        Game<IGamePlayer> game = event.getGame();
+        Game game = event.getGame();
         if (player.getPlayerData().isStored())
             player.getPlayerData().restoreData();
         player.setGame(null);
         player.setState(IGamePlayer.State.NOT_PLAYING);
         if (game.aliveCount() > 2) {
             game.lost(player);
-            for (IGamePlayer gamePlayer : game.players) {
+            for (String name : game.getPlayers ()) {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 if (gamePlayer.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
-                if (game.deadPlayers.contains(gamePlayer)) continue;
+                if (game.deadPlayers.contains(name)) continue;
                 gamePlayer.getPlayer().sendMessage("§c" + player.getPlayer().getName() + " has left the event.");
             }
         } else {
             game.lost(player);
-            for (IGamePlayer o : game.players) {
+            for (String name : game.getPlayers ()) {
+                IGamePlayer o = GameManager.getPlayer(name);
                 if (o.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
-                if (game.deadPlayers.contains(o)) continue;
+                if (game.deadPlayers.contains(name)) continue;
                 game.onWin(o);
                 game.onEnd();
                 plugin.getEventMain().end();
                 break;
             }
         }
-        game.players.remove(player);
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "scoretoggle " + player.getPlayer().getName() + " true");
+        game.players.remove(player.getPlayer().getName());
     }
 
     @EventHandler
@@ -84,10 +90,11 @@ public class GameListener implements Listener {
                 player.getPlayerData().restoreData();
             player.setGame(null);
             player.setState(IGamePlayer.State.NOT_PLAYING);
-            event.getGame().deadPlayers.add(player);
-            for (IGamePlayer gamePlayer : game.players) {
+            event.getGame().deadPlayers.add(player.getPlayer().getName());
+            for (String name : game.getPlayers ()) {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 if (gamePlayer.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
-                if (game.deadPlayers.contains(gamePlayer)) continue;
+                if (game.deadPlayers.contains(name)) continue;
                 gamePlayer.getPlayer().sendMessage("§c" + player.getPlayer().getName() + " has left the event.");
             }
         } else {
@@ -95,28 +102,31 @@ public class GameListener implements Listener {
                 player.getPlayerData().restoreData();
             player.setGame(null);
             player.setState(IGamePlayer.State.NOT_PLAYING);
-            event.getGame().deadPlayers.add(player);
+            event.getGame().deadPlayers.add(player.getPlayer().getName());
 
-            for (IGamePlayer o : game.players) {
+            for (String name : game.getPlayers ()) {
+                IGamePlayer o = GameManager.getPlayer(name);
                 if (o.getPlayer().getUniqueId().equals(player.getPlayer().getUniqueId())) continue;
-                if (game.deadPlayers.contains(o)) continue;
+                if (game.deadPlayers.contains(name)) continue;
                 game.onWin(event.getTeam());
                 game.onEnd();
                 break;
             }
         }
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "scoretoggle " + player.getPlayer().getName() + " true");
         player.setTeam(null);
-        game.players.remove(player);
+        game.players.remove(player.getPlayer().getName());
     }
 
     @EventHandler
     public void onLeave(GameCountdownLeaveEvent event) {
-        Game<IGamePlayer> game = event.getGame();
+        Game game = event.getGame();
         IGamePlayer gamePlayer = event.getPlayer();
-        gamePlayer.getGame().removePlayer(gamePlayer);
+        gamePlayer.getGame().removePlayer(gamePlayer.getPlayer().getName());
         gamePlayer.setState(IGamePlayer.State.NOT_PLAYING);
         gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7left the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
-        for (IGamePlayer gamer : game.players) {
+        for (String name : game.getPlayers ()) {
+            IGamePlayer gamer = GameManager.getPlayer(name);
             gamer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b{0} &7left the event. Players in the event: &b{1}&7.".replace("{0}", gamePlayer.getPlayer().getName()).replace("{1}", Integer.toString((event.getGame().getPlayers().size())))));
         }
         gamePlayer.setGame(null);
@@ -161,26 +171,33 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onPreStart(PreGameStartEvent event) {
+        plugin.getEventMain().eventstarting = false;
+        plugin.getEventMain().eventstarted = true;
+        plugin.getEventMain().waiting = null;
         Bukkit.getServer().getPluginManager().registerEvents(event.getGame(), plugin);
         if (event.getGame() instanceof ITeamGame) {
             ITeamGame game = (ITeamGame) event.getGame();
-            for (IGamePlayer gamePlayer : game.players) {
+            for (String name : game.getPlayers ()) {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 gamePlayer.getPlayerData().storeData(true);
                 Player player = gamePlayer.getPlayer();
                 gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
                 event.getGame().equipPlayer(player);
+                event.getGame().onScoreboardLoad(gamePlayer);
             }
             return;
         }
-        Game<IGamePlayer> game = event.getGame();
+        Game game = event.getGame();
 
         Location spawn = event.getGame().getSpawn();
-        for (IGamePlayer gamePlayer : game.players) {
+        for (String name : game.getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             gamePlayer.getPlayerData().storeData(true);
             Player player = gamePlayer.getPlayer();
             player.teleport(spawn);
             gamePlayer.setState(IGamePlayer.State.IN_GAME_ARENA);
             event.getGame().equipPlayer(player);
+            event.getGame().onScoreboardLoad(gamePlayer);
         }
     }
 
@@ -190,23 +207,29 @@ public class GameListener implements Listener {
         if (player.getPlayerData().isStored())
             player.getPlayerData().restoreData();
         player.setGame(null);
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "scoretoggle " + player.getPlayer().getName() + " true");
         player.setState(IGamePlayer.State.NOT_PLAYING);
-        event.getGame().deadPlayers.add(player);
+        event.getGame().deadPlayers.add(player.getPlayer().getName());
     }
 
     @EventHandler
     public void onEnd(GameEndEvent event) {
         plugin.getEventMain().end();
-        Game<IGamePlayer> game = event.getGame();
-        for (IGamePlayer player : game.players) {
-            if (event.getGame().deadPlayers.contains(player)) continue;
+        Game game = event.getGame();
+        for (String name : game.getPlayers ()) {
+            IGamePlayer player = GameManager.getPlayer(name);
+            player.setScoreHandler(null);
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "scoretoggle " + player.getPlayer().getName() + " true");
+            if (event.getGame().deadPlayers.contains(player.getPlayer().getName())) continue;
             if (player.getPlayerData().isStored())
                 player.getPlayerData().restoreData();
             player.setGame(null);
             player.setState(IGamePlayer.State.NOT_PLAYING);
         }
+
         game.deadPlayers.clear();
         game.players.clear();
+        GameManager.gamePlayerMap.clear();
         HandlerList.unregisterAll(event.getGame());
     }
 }

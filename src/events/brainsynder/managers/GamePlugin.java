@@ -41,13 +41,13 @@ public class GamePlugin extends JavaPlugin {
         instance = this;
         settings = SettingsManager.getInstance();
         eventsmain = new EventsMain(this);
-        GameManager.initiate();
         settings.setup(this);
         saveResource("config.yml", false);
         method = new CountDown(this);
         Bukkit.getServer().getPluginManager().registerEvents(new Handle(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new GameListener(), this);
         CommandManager.register(new GameCommands());
+        GameManager.initiate();
         cubeHandler = new CubeHandler();
         cubeHandler.load(this);
         if (!setupEconomy()) {
@@ -70,7 +70,7 @@ public class GamePlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-        cubeHandler.unload(this);
+        cubeHandler.save(this);
         try {
             for (Player o : Bukkit.getOnlinePlayers()) {
                 IGamePlayer gamePlayer = GameManager.getPlayer(o);

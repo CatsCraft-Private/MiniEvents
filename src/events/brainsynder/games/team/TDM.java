@@ -7,6 +7,7 @@ import events.brainsynder.key.teams.TeamGameMaker;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.PetHandler;
 import events.brainsynder.utils.PlayerUtils;
+import events.brainsynder.utils.ScoreboardHandler;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -25,6 +26,11 @@ import java.util.LinkedList;
 
 public class TDM extends TeamGameMaker {
     private int win = 15;
+    public TDM(String mapID) {
+        super(mapID);
+    }
+
+    public TDM (){}
 
     @Override
     public String getName() {
@@ -35,25 +41,40 @@ public class TDM extends TeamGameMaker {
     public void onStart() {
         super.onStart();
         gameSettings = new GameSettings(true);
-        win = (players.size() * 2);
+        win = (getPlayers ().size() * 2);
 
-        players.forEach(player -> player.getPlayer().sendMessage("§7Get §b" + win + " §7Kills to win the game!"));
-
+        getPlayers ().forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
+            player.getPlayer().sendMessage("§7Get §b" + win + " §7Kills to win the game!");
+        });
         new BukkitRunnable() {
             @Override
             public void run() {
-                players.forEach(player -> PetHandler.removePet(player.getPlayer()));
+                getPlayers ().forEach(name -> {
+                    IGamePlayer player = GameManager.getPlayer(name);
+                    PetHandler.removePet(player.getPlayer());
+                });
             }
         }.runTaskLater(plugin, 60);
     }
-
-    @Override
-    public void perTick() {
-        super.perTick();
-        if (message == null) return;
-        if (!plugin.getEventMain().eventstarted) return;
-        if (!hasStarted()) return;
-        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + ((int) getRedTeam().getScore()) + " §8§l/ §9§lBlue Score: §b§l" + ((int) getBlueTeam().getScore())));
+    
+    @Override public void onScoreboardLoad(IGamePlayer player) {
+        if (player.getScoreHandler() == null) {
+            ScoreboardHandler handler = new ScoreboardHandler(player.getPlayer().getUniqueId());
+            handler.setTitle(0, "&3TeamDeathmatch");
+            handler.setLine(0, 14, "&bBlue Score: ", "&70/" + win);
+            handler.setLine(0, 13, "&cRed Score: ", "&70/" + win);
+            handler.toggleScoreboard();
+            player.setScoreHandler(handler);
+        }
+    }
+    
+    @Override public void onScoreboardUpdate(IGamePlayer player) {
+        if (player.getScoreHandler() != null) {
+            ScoreboardHandler handler = player.getScoreHandler();
+            handler.setLine(0, 14, "&bBlue Score: ", "&7" + ((int)getBlueTeam().getScore()) + "/" + win);
+            handler.setLine(0, 13, "&cRed Score: ", "&7" + ((int)getRedTeam().getScore()) + "/" + win);
+        }
     }
 
     @Override
@@ -65,12 +86,12 @@ public class TDM extends TeamGameMaker {
             player.removePotionEffect(effect.getType());
         }
         try {
-            if (settings.getData().getSection("setup." + getName()) == null) {
+            if (settings.getData().getSection("setup." + getName() + ".inv") == null) {
                 equipDefaultPlayer(player);
             } else {
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(null);
-                LinkedList<String> set = new LinkedList<>(settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false));
+                LinkedList<String> set = new LinkedList<>(settings.getData().getSection("setup." + getName() + ".inv").getKeys(false));
                 while (set.peekFirst() != null) {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
@@ -143,7 +164,10 @@ public class TDM extends TeamGameMaker {
                             event.setCancelled(true);
                             p.setHealth(p.getMaxHealth());
                             p.teleport(getSpawn(player.getTeam()));
-                            players.forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + p.getName() + " §7was killed by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName()));
+                            getPlayers ().forEach(name -> {
+                                IGamePlayer gamePlayer = GameManager.getPlayer(name);
+                                gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + p.getName() + " §7was killed by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName());
+                            });
                             return;
                         }
                     }

@@ -2,6 +2,7 @@ package events.brainsynder.key;
 
 import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.data.StoredData;
+import events.brainsynder.utils.ScoreboardHandler;
 import org.bukkit.entity.Player;
 
 public interface IGamePlayer<T extends Game> {
@@ -22,6 +23,10 @@ public interface IGamePlayer<T extends Game> {
     State getState();
 
     void setState(State state);
+
+    ScoreboardHandler getScoreHandler ();
+
+    void setScoreHandler (ScoreboardHandler handler);
 
     enum State {
         NOT_PLAYING,

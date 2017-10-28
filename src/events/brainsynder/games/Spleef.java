@@ -29,6 +29,11 @@ public class Spleef extends GameMaker {
         storage = new BlockStorage();
     }
 
+    public Spleef(String mapID) {
+        super(mapID);
+        storage = new BlockStorage();
+    }
+
     @Override
     public void onWin(IGamePlayer gamePlayer) {
         super.onWin(gamePlayer);
@@ -40,7 +45,8 @@ public class Spleef extends GameMaker {
     public void perTick() {
         super.perTick();
         if (endTask) return;
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             if (plugin.getEventMain().eventstarted && (player.getGameMode() != GameMode.SURVIVAL))
                 player.setGameMode(GameMode.SURVIVAL);
@@ -51,10 +57,10 @@ public class Spleef extends GameMaker {
                 lost(gamePlayer);
                 if (aliveCount() == 1) {
                     endTask = true;
-                    for (IGamePlayer o : players) {
-                        if (o.getPlayer().getUniqueId().equals(player.getUniqueId())) continue;
-                        if (deadPlayers.contains(o)) continue;
-                        onWin(o);
+                    for (String pname : getPlayers ()) {
+                        if (pname.equals(name)) continue;
+                        if (deadPlayers.contains(pname)) continue;
+                        onWin(GameManager.getPlayer(pname));
                         plugin.getEventMain().end();
                         break;
                     }
@@ -66,13 +72,15 @@ public class Spleef extends GameMaker {
 
     @Override
     public void onStart() {
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-before")));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             super.onStart();
-            players.forEach(gamePlayer -> {
+            getPlayers ().forEach(name -> {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 Player player = gamePlayer.getPlayer();
                 player.setGameMode(GameMode.SURVIVAL);
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.spleef-invins-over")));
@@ -143,7 +151,7 @@ public class Spleef extends GameMaker {
         IGamePlayer player = GameManager.getPlayer(e.getPlayer());
         if (player.isPlaying()) {
             if (!(player.getGame() instanceof Spleef)) return;
-            if (players.contains(player)) {
+            if (getPlayers ().contains(player.getPlayer().getName())) {
                 Block b = e.getBlock();
                 if (b == null) return;
                 if (b.getType() == Material.AIR) return;

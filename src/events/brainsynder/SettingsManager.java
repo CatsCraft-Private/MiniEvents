@@ -20,7 +20,7 @@ public class SettingsManager {
     }
 
     public DataFile getData() {
-        return data;
+        return new DataFile();
     }
 
     public PluginDescriptionFile getDesc() {

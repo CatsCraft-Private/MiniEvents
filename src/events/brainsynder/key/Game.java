@@ -5,26 +5,29 @@ import events.brainsynder.commands.api.CommandListener;
 import events.brainsynder.events.player.GamePlayerLeaveEvent;
 import events.brainsynder.events.team.TeamPlayerLeaveEvent;
 import events.brainsynder.key.teams.ITeamGame;
+import events.brainsynder.key.teams.Team;
+import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import events.brainsynder.utils.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import simple.brainsynder.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
-public abstract class Game<T> implements Listener, CommandListener {
-    public List<IGamePlayer> players;
-    public List<IGamePlayer> deadPlayers;
+public abstract class Game implements Listener, CommandListener {
+    public List<String> players;
+    public List<String> deadPlayers;
     public GamePlugin plugin;
     public SettingsManager settings;
     protected GameSettings gameSettings;
-    private LinkedList<UUID> waitTP;
+    private String mapID = null;
 
     public Game() {
         gameSettings = new GameSettings();
@@ -32,7 +35,15 @@ public abstract class Game<T> implements Listener, CommandListener {
         deadPlayers = new ArrayList<>();
         plugin = GamePlugin.instance;
         settings = plugin.getSettings();
-        waitTP = new LinkedList<>();
+    }
+
+    public Game(String mapID) {
+        this.mapID = mapID;
+        gameSettings = new GameSettings();
+        players = new ArrayList<>();
+        deadPlayers = new ArrayList<>();
+        plugin = GamePlugin.instance;
+        settings = plugin.getSettings();
     }
 
     public GameSettings getGameSettings() {
@@ -54,7 +65,8 @@ public abstract class Game<T> implements Listener, CommandListener {
 
     public abstract void respawnPlayer(IGamePlayer gamePlayer);
 
-    public abstract void lost(T player);
+    public void lost(Team team) {}
+    public void lost(IGamePlayer player) {}
 
     public void onLeave(IGamePlayer player) {
         if (this instanceof ITeamGame) {
@@ -68,14 +80,56 @@ public abstract class Game<T> implements Listener, CommandListener {
     }
 
     public int aliveCount() {
-        return (players.size() - deadPlayers.size());
+        return (getPlayers ().size() - deadPlayers.size());
     }
 
     public String getName() {
         return getClass().getSimpleName();
     }
 
-    public abstract void onWin(T gamePlayer);
+    public void onScoreboardLoad(IGamePlayer player) {
+        if (player.getScoreHandler() == null) {
+            ScoreboardHandler handler = new ScoreboardHandler(player.getPlayer().getUniqueId());
+            handler.setTitle(0, "&3" + getName());
+
+            LinkedList<String> listed = new LinkedList<>(getPlayers ());
+            int count = 13;
+            handler.setLine(0, 14, "&3Players ", "&3In The Event");
+            while ((listed.peekFirst() != null) && (count >= 9)) {
+                handler.setLine(0, count, "&3- ", "&b" + listed.pollFirst());
+                count--;
+            }
+            if (listed.peekFirst() != null) {
+                handler.setLineBlank(0, (count - 1));
+                handler.setLine(0, (count - 2), "&3- ", "&bAnd Some More");
+            }
+            handler.toggleScoreboard();
+            player.setScoreHandler(handler);
+        }
+    }
+
+    public void onScoreboardUpdate(IGamePlayer player) {
+        if (player.getScoreHandler() != null) {
+            ScoreboardHandler handler = player.getScoreHandler();
+            LinkedList<String> listed = new LinkedList<>(players);
+            int count = 13;
+            handler.setLine(0, 14, "&3Players ", "&3In The Event");
+            while ((listed.peekFirst() != null) && (count >= 9)) {
+                String gamePlayer = listed.pollFirst();
+                if (!deadPlayers.contains(gamePlayer)) {
+                    handler.setLine(0, count, "&3- ", "&b" + gamePlayer);
+                    count--;
+                }
+            }
+            if (listed.peekFirst() != null) {
+                handler.setLineBlank(0, (count - 1));
+                handler.setLine(0, (count - 2), "&3- ", "&bAnd Some More");
+            }
+        }
+    }
+
+    public void onWin(Team team) {}
+    public void onWin(IGamePlayer player) {}
 
     /**
      * Run on Game Start
@@ -110,7 +164,7 @@ public abstract class Game<T> implements Listener, CommandListener {
     /**
      * the Players Currently in the Game
      */
-    public List<IGamePlayer> getPlayers() {
+    public List<String> getPlayers() {
         return players;
     }
 
@@ -125,9 +179,7 @@ public abstract class Game<T> implements Listener, CommandListener {
     /**
      * Add a player to the Game
      */
-    public void addPlayer(IGamePlayer player) {
-        if (!waitTP.contains(player.getPlayer().getUniqueId()))
-            waitTP.addLast(player.getPlayer().getUniqueId());
+    public void addPlayer(String player) {
         if (!players.contains(player)) {
             players.add(player);
         }
@@ -136,16 +188,10 @@ public abstract class Game<T> implements Listener, CommandListener {
     /**
      * Remove a player to the Game
      */
-    public void removePlayer(IGamePlayer player) {
-        if (waitTP.contains(player.getPlayer().getUniqueId()))
-            waitTP.remove(player.getPlayer().getUniqueId());
+    public void removePlayer(String player) {
         if (players.contains(player)) {
             players.remove(player);
         }
-    }
-
-    public LinkedList<UUID> waitingUUIDs() {
-        return waitTP;
     }
 
     public boolean isSetup() {
@@ -160,13 +206,42 @@ public abstract class Game<T> implements Listener, CommandListener {
         return new String[0];
     }
 
+    protected String getMapID() {
+        if (mapID != null) return mapID;
+        List<String> arenaIDs = GameManager.getMapIDs(this);
+        if (!arenaIDs.isEmpty()) {
+            if (arenaIDs.size() == 1) {
+                mapID = arenaIDs.get(0);
+                return mapID;
+            }
+
+            int random = MathUtils.random(0, (arenaIDs.size() - 1));
+            try {
+                mapID = arenaIDs.get(random);
+                return mapID;
+            } catch (Throwable ignored) {
+            }
+            if (settings.getData().isSet("setup." + getName() + ".world")) {
+                return mapID;
+            } else {
+                if (settings.getData().isSet("setup." + getName() + ".maps.0.world")) {
+                    mapID = "0";
+                    return mapID;
+                }
+            }
+        }
+        mapID = "none";
+        return mapID;
+    }
+
     public Location getSpawn() {
-        World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".world"));
-        double x = settings.getData().getDouble("setup." + getName() + ".x");
-        double y = settings.getData().getDouble("setup." + getName() + ".y");
-        double z = settings.getData().getDouble("setup." + getName() + ".z");
-        float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".yaw"));
-        float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".pitch"));
+        String mapID = getMapID();
+        World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".world"));
+        double x = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".x");
+        double y = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".y");
+        double z = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".z");
+        float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".yaw"));
+        float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".pitch"));
         return new Location(w, x, y, z, yaw, pitch);
     }
 }

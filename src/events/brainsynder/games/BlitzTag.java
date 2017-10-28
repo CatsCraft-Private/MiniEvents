@@ -5,6 +5,7 @@ import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import events.brainsynder.utils.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,6 +32,11 @@ public class BlitzTag extends GameMaker {
     private int countDown = 15;
     private ParticleMaker maker;
 
+    public BlitzTag(String mapID) {
+        super(mapID);
+        maker = new ParticleMaker(ParticleMaker.Particle.LAVA, 0.1, 2, 0, 0.8, 0);
+    }
+
     public BlitzTag() {
         super();
         maker = new ParticleMaker(ParticleMaker.Particle.LAVA, 0.1, 2, 0, 0.8, 0);
@@ -40,7 +46,27 @@ public class BlitzTag extends GameMaker {
     public String getName() {
         return "BlitzTag";
     }
-
+    
+    @Override public void onScoreboardLoad(IGamePlayer player) {
+        if (player.getScoreHandler() == null) {
+            ScoreboardHandler handler = new ScoreboardHandler(player.getPlayer().getUniqueId());
+            handler.setTitle(0, "&3BlitzTag");
+            handler.setLine(0, 14, "&3Tagger: ", "&bRandomizing...");
+            handler.setLine(0, 13, "&3Blitz Timer: ", "&b?");
+            handler.toggleScoreboard();
+            player.setScoreHandler(handler);
+        }
+    }
+    
+    @Override public void onScoreboardUpdate(IGamePlayer player) {
+        if (tagged == null) return;
+        if (player.getScoreHandler() != null) {
+            ScoreboardHandler handler = player.getScoreHandler();
+            handler.setLine(0, 14, "&3Tagger: ", "&b" + tagged.getPlayer().getName());
+            handler.setLine(0, 13, "&3Blitz Timer: ", getColor(ChatColor.AQUA) + countDown);
+        }
+    }
+    
     @Override
     public void onLeave(IGamePlayer player) {
         if (tagged != null) {
@@ -79,10 +105,10 @@ public class BlitzTag extends GameMaker {
                     cancel();
                     if (lastRound) {
                         lost(target);
-                        for (IGamePlayer o : players) {
-                            if (o.getPlayer().getUniqueId().equals(target.getPlayer().getUniqueId())) continue;
-                            if (deadPlayers.contains(o)) continue;
-                            onWin(o);
+                        for (String pname : getPlayers ()) {
+                            if (pname.equals(target.getPlayer().getName())) continue;
+                            if (deadPlayers.contains(pname)) continue;
+                            onWin(GameManager.getPlayer(pname));
                             plugin.getEventMain().end();
                             break;
                         }
@@ -91,9 +117,9 @@ public class BlitzTag extends GameMaker {
                     countDown = 15;
                     target.getPlayer().sendMessage(ChatColor.AQUA + "You §7has been disqualified.");
                     lost(target);
-                    for (IGamePlayer gamePlayer : players) {
-                        if (deadPlayers.contains(gamePlayer)) continue;
-                        Player o = gamePlayer.getPlayer();
+                    for (String name : getPlayers ()) {
+                        if (deadPlayers.contains(name)) continue;
+                        Player o = GameManager.getPlayer(name).getPlayer();
                         if (!o.getName().equals(target.getPlayer().getName())) {
                             o.sendMessage(ChatColor.AQUA + target.getPlayer().getName() + " §7has been disqualified.");
                         }
@@ -110,9 +136,12 @@ public class BlitzTag extends GameMaker {
             }
         }.runTaskTimer(GamePlugin.instance, 0, 16);
     }
-
+    
     private String getColor() {
-        ChatColor color = ChatColor.WHITE;
+        return getColor(ChatColor.WHITE);
+    }
+    
+    private String getColor(ChatColor color) {
         switch (countDown) {
             case 1:
                 SoundMaker.BLOCK_NOTE_SNARE.playSound(tagged.getPlayer().getLocation(), 1.0F, 1.0F);
@@ -135,33 +164,36 @@ public class BlitzTag extends GameMaker {
 
     private void randomTagged() {
         Random r = new Random();
-        List<IGamePlayer> alive = new ArrayList<>();
-        players.stream().filter(player -> !deadPlayers.contains(player)).forEach(alive::add);
+        List<String> alive = new ArrayList<>();
+        getPlayers ().stream().filter(player -> !deadPlayers.contains(GameManager.getPlayer(player).getPlayer().getName())).forEach(alive::add);
         if (alive.size() <= 1) {
-            onWin(alive.get(0));
+            onWin(GameManager.getPlayer(alive.get(0)));
             onEnd();
             plugin.getEventMain().end();
             return;
         }
         int a = r.nextInt(alive.size());
-        IGamePlayer target = alive.get(a);
+        IGamePlayer target = GameManager.getPlayer(alive.get(a));
         this.tagged = target;
         ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.VILLAGER_HAPPY, 15, 0.5);
         maker.sendToLocation(target.getPlayer().getLocation());
         target.getPlayer().getInventory().setHelmet(new ItemMaker(MaterialWrapper.WOOL, (byte) 14).create());
         IActionMessage message = Reflection.getActionMessage();
-        players.stream().filter(player -> !deadPlayers.contains(player)).forEach(player -> message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Randomly Tagged, RUN!!!"));
+        getPlayers ().stream().filter(player -> !deadPlayers.contains(GameManager.getPlayer(player).getPlayer().getName())).forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
+            message.sendMessage(player.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Randomly Tagged, RUN!!!");
+        });
         runTagged(target, (aliveCount() == 2));
     }
 
     @Override
     public void onStart() {
         gameSettings = new GameSettings(true);
-        for (IGamePlayer gamePlayer : players) {
-            Player player = gamePlayer.getPlayer();
+        for (String name : getPlayers ()) {
+            Player player = GameManager.getPlayer(name).getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 2 seconds to spread out..."));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                if (players.size() != 0) {
+                if (getPlayers ().size() != 0) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', ChatColor.AQUA + "Selecting Tagger..."));
                 }
             }, 120L);
@@ -251,9 +283,12 @@ public class BlitzTag extends GameMaker {
                     player.getPlayer().getInventory().setHelmet(new ItemMaker(MaterialWrapper.WOOL, (byte) 14).create());
 
                     IActionMessage message = Reflection.getActionMessage();
-                    players.stream()
+                    getPlayers ().stream()
                             .filter(p -> !deadPlayers.contains(p))
-                            .forEach(p -> message.sendMessage(p.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Tagged, RUN!!!"));
+                            .forEach(name -> {
+                                IGamePlayer p = GameManager.getPlayer(name);
+                                message.sendMessage(p.getPlayer(), "§3§l" + tagged.getPlayer().getName() + " §8§lhas been Tagged, RUN!!!");
+                            });
                     ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.VILLAGER_HAPPY, 15, 0.5);
                     maker.sendToLocation(player.getPlayer().getLocation());
                     SoundMaker.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(event.getDamager().getLocation(), 1.0F, 1.0F);

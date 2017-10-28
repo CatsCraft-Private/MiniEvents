@@ -5,6 +5,7 @@ import events.brainsynder.events.game.TeamGameStart;
 import events.brainsynder.events.team.TeamPlayerLeaveEvent;
 import events.brainsynder.events.team.TeamWinEvent;
 import events.brainsynder.key.IGamePlayer;
+import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.DyeColorWrapper;
 import org.bukkit.*;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,6 +21,11 @@ public abstract class TeamGameMaker extends ITeamGame {
     private boolean endTask = false;
     private Team red;
     private Team blue;
+
+
+    public TeamGameMaker(String mapID) {
+        super(mapID);
+    }
 
     public TeamGameMaker() {
         super();
@@ -39,33 +45,35 @@ public abstract class TeamGameMaker extends ITeamGame {
 
     @Override
     public void randomizePlayers() {
-        List<IGamePlayer> redMembers = new ArrayList<>();
-        List<IGamePlayer> blueMembers = new ArrayList<>();
+        List<String> redMembers = new ArrayList<>();
+        List<String> blueMembers = new ArrayList<>();
 
-        for (IGamePlayer p : players) {
+        for (String name : getPlayers ()) {
             if (blueMembers.size() == redMembers.size()) {
                 Random rand = new Random();
                 if (rand.nextBoolean()) {
-                    redMembers.add(p);
+                    redMembers.add(name);
                 } else {
-                    blueMembers.add(p);
+                    blueMembers.add(name);
                 }
             } else {
                 if (redMembers.size() > blueMembers.size()) {
-                    blueMembers.add(p);
+                    blueMembers.add(name);
                 } else {
-                    redMembers.add(p);
+                    redMembers.add(name);
                 }
             }
         }
 
-        redMembers.forEach(player -> {
+        redMembers.forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
             getRedTeam().addMember(player);
             player.setTeam(getRedTeam());
             player.getPlayer().teleport(getSpawn(player.getTeam()));
         });
 
-        blueMembers.forEach(player -> {
+        blueMembers.forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
             getBlueTeam().addMember(player);
             player.setTeam(getBlueTeam());
             player.getPlayer().teleport(getSpawn(player.getTeam()));
@@ -77,14 +85,16 @@ public abstract class TeamGameMaker extends ITeamGame {
         if (player.getTeam() != null) player.getPlayer().teleport(getSpawn(player.getTeam()));
     }
 
+
     protected Location getSpawn(Team team) {
+        String mapID = getMapID();
         if (locationMap.containsKey(team.getName())) return locationMap.get(team.getName());
-        World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ".team." + team.getName() + ".world"));
-        double x = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".x");
-        double y = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".y");
-        double z = settings.getData().getDouble("setup." + getName() + ".team." + team.getName() + ".z");
-        float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".team." + team.getName() + ".yaw"));
-        float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ".team." + team.getName() + ".pitch"));
+        World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".world"));
+        double x = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".x");
+        double y = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".y");
+        double z = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".z");
+        float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".yaw"));
+        float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".pitch"));
         locationMap.put(team.getName(), new Location(w, x, y, z, yaw, pitch));
 
         return locationMap.get(team.getName());
@@ -101,7 +111,10 @@ public abstract class TeamGameMaker extends ITeamGame {
         endTask = false;
         getRedTeam().setScore(0);
         getBlueTeam().setScore(0);
-        players.forEach(player -> player.setTeam(null));
+        players.forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
+            player.setTeam(null);
+        });
         GameEndEvent<ITeamGame> event = new GameEndEvent<>(this);
         Bukkit.getPluginManager().callEvent(event);
     }
@@ -134,10 +147,8 @@ public abstract class TeamGameMaker extends ITeamGame {
         TeamGameStart event = new TeamGameStart(this);
         Bukkit.getPluginManager().callEvent(event);
         started = true;
-        plugin.getEventMain().eventstarting = false;
-        plugin.getEventMain().eventstarted = true;
-        plugin.getEventMain().waiting = null;
-        players.forEach(player -> {
+        players.forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
             player.setState(IGamePlayer.State.IN_GAME);
             player.getPlayer().setGameMode(GameMode.ADVENTURE);
             try {
@@ -173,12 +184,15 @@ public abstract class TeamGameMaker extends ITeamGame {
 
     @Override
     public void perTick() {
-        if (!players.isEmpty())
-            players.forEach(gamePlayer -> {
+        if (!players.isEmpty()) {
+            players.forEach(name -> {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
+                if (hasStarted()) onScoreboardUpdate(gamePlayer);
                 if (gamePlayer.getPlayer().getLocation().getBlockY() <= 10) {
                     respawnPlayer(gamePlayer);
                 }
             });
+        }
     }
 
     @Override
@@ -193,8 +207,10 @@ public abstract class TeamGameMaker extends ITeamGame {
 
     @Override
     public boolean isSetup() {
-        return settings.getData().isSet("setup." + getName() + ".team.Red.world")
-                && settings.getData().isSet("setup." + getName() + ".team.Blue.world");
+        return ((settings.getData().isSet("setup." + getName() + ".team.Red.world")
+                && settings.getData().isSet("setup." + getName() + ".team.Blue.world"))
+                || (settings.getData().isSet("setup." + getName() + ".maps.0.team.Red.world")
+                && settings.getData().isSet("setup." + getName() + ".maps.0.team.Blue.world")));
 
     }
 }

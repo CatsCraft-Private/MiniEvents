@@ -9,6 +9,7 @@ import events.brainsynder.managers.GamePlugin;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +18,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
 
 /**
@@ -111,12 +113,14 @@ public class Handle implements Listener {
     @EventHandler
     public void onChat(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        IGamePlayer gamePlayer = GameManager.getPlayer(player);
-        if (gamePlayer.isPlaying()) {
-            if (player.hasPermission("event.usecommands")) return;
-            if (event.getMessage().contains("event") || event.getMessage().contains("leave")) return;
-            event.setCancelled(true);
-        }
+        try {
+            IGamePlayer gamePlayer = GameManager.getPlayer(player);
+            if (gamePlayer.isPlaying()) {
+                if (player.hasPermission("event.usecommands")) return;
+                if (event.getMessage().contains("event") || event.getMessage().contains("leave")) return;
+                event.setCancelled(true);
+            }
+        }catch (Exception ignored){}
     }
 
     @EventHandler
@@ -134,8 +138,7 @@ public class Handle implements Listener {
     public void blockBreakEvent(final BlockPlaceEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
         if (gamePlayer.isPlaying()) {
-            if (GamePlugin.instance.getEventMain().eventstarted
-                    || GamePlugin.instance.getEventMain().eventstarting)
+            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
                 event.setCancelled(true);
         }
     }
@@ -144,8 +147,7 @@ public class Handle implements Listener {
     public void blockBreakEvent(PlayerDropItemEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
         if (gamePlayer.isPlaying()) {
-            if (GamePlugin.instance.getEventMain().eventstarted
-                    || GamePlugin.instance.getEventMain().eventstarting)
+            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
                 event.setCancelled(true);
         }
     }
@@ -154,9 +156,19 @@ public class Handle implements Listener {
     public void blockBreakEvent(PlayerPickupItemEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
         if (gamePlayer.isPlaying()) {
-            if (GamePlugin.instance.getEventMain().eventstarted
-                    || GamePlugin.instance.getEventMain().eventstarting)
+            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
                 event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHit(ProjectileHitEvent event) {
+        if (event.getEntity().getShooter() instanceof Player) {
+            IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity().getShooter());
+            if (gamePlayer.isPlaying()) {
+                if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
+                    if (event.getEntity() instanceof Arrow) event.getEntity().remove();
+            }
         }
     }
 
@@ -164,8 +176,7 @@ public class Handle implements Listener {
     public void hungerLoss(FoodLevelChangeEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer((Player) event.getEntity());
         if (gamePlayer.isPlaying()) {
-            if (GamePlugin.instance.getEventMain().eventstarted
-                    || GamePlugin.instance.getEventMain().eventstarting)
+            if (GamePlugin.instance.getEventMain().eventstarted || GamePlugin.instance.getEventMain().eventstarting)
                 event.setCancelled(true);
         }
     }

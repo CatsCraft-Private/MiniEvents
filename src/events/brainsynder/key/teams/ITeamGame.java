@@ -5,7 +5,12 @@ import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import org.bukkit.Bukkit;
 
-public abstract class ITeamGame extends Game<Team> {
+public abstract class ITeamGame extends Game {
+
+    public ITeamGame(){}
+    public ITeamGame(String mapID) {
+        super(mapID);
+    }
 
     public abstract Team getRedTeam();
 

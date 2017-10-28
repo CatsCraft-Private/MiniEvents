@@ -39,7 +39,7 @@ public class GameCommands implements CommandListener {
     @Command(name = "setgamespawn")
     public void setSpawn(Player player, String[] args) {
         if (args.length == 0) {
-            player.sendMessage("/setgamespawn <game>");
+            player.sendMessage("/setgamespawn <game> <mapID>");
         } else {
             if (!player.hasPermission("events.setSpawn")) return;
             Game game = GameManager.getGame(args[0]);
@@ -48,20 +48,30 @@ public class GameCommands implements CommandListener {
                 return;
             }
             Location l = player.getLocation();
-            settings.getData().set("setup." + game.getName() + ".world", l.getWorld().getName());
-            settings.getData().set("setup." + game.getName() + ".x", l.getX());
-            settings.getData().set("setup." + game.getName() + ".y", l.getY());
-            settings.getData().set("setup." + game.getName() + ".z", l.getZ());
-            settings.getData().set("setup." + game.getName() + ".yaw", Float.floatToIntBits(l.getYaw()));
-            settings.getData().set("setup." + game.getName() + ".pitch", Float.floatToIntBits(l.getPitch()));
-            player.sendMessage("§cSet spawn point for §7" + game.getName());
+            if (args.length == 1) {
+                player.sendMessage("/setgamespawn <game> <mapID>");
+            } else {
+                int id = 0;
+                try {
+                    id = Integer.parseInt(args[1]);
+                } catch (NumberFormatException ignored) {
+                }
+                settings.getData().set("setup." + game.getName() + ".maps." + id + ".world", l.getWorld().getName());
+                settings.getData().set("setup." + game.getName() + ".maps." + id + ".x", l.getX());
+                settings.getData().set("setup." + game.getName() + ".maps." + id + ".y", l.getY());
+                settings.getData().set("setup." + game.getName() + ".maps." + id + ".z", l.getZ());
+                settings.getData().set("setup." + game.getName() + ".maps." + id + ".yaw", Float.floatToIntBits(l.getYaw()));
+                settings.getData().set("setup." + game.getName() + ".maps." + id + ".pitch", Float.floatToIntBits(l.getPitch()));
+                player.sendMessage("§cSet spawn point for §7" + game.getName());
+
+            }
         }
     }
 
     @Command(name = "setteamspawn")
     public void setTeamSpawn(Player player, String[] args) {
         if (args.length == 0) {
-            player.sendMessage("/setteamspawn <game> <team>");
+            player.sendMessage("/setteamspawn <game> <mapID> <team>");
         } else {
             if (!player.hasPermission("events.setSpawn")) return;
             Game g = GameManager.getGame(args[0]);
@@ -77,23 +87,31 @@ public class GameCommands implements CommandListener {
             Location l = player.getLocation();
 
             if (args.length == 1) {
-                player.sendMessage("/setteamspawn <game> <team>");
+                player.sendMessage("/setteamspawn <game> <mapID> <team>");
             } else {
-                Team team = null;
-                if (game.getRedTeam().getName().equalsIgnoreCase(args[1])) team = game.getRedTeam();
-                if (game.getBlueTeam().getName().equalsIgnoreCase(args[1])) team = game.getBlueTeam();
-                if (team == null) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cNo team was found for: " + args[1]));
-                    return;
+                int id = 0;
+                try {
+                    id = Integer.parseInt(args[1]);
+                } catch (NumberFormatException ignored) {
                 }
-
-                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".world", l.getWorld().getName());
-                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".x", l.getX());
-                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".y", l.getY());
-                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".z", l.getZ());
-                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".yaw", Float.floatToIntBits(l.getYaw()));
-                settings.getData().set("setup." + game.getName() + ".team." + team.getName() + ".pitch", Float.floatToIntBits(l.getPitch()));
-                player.sendMessage("§cSet spawn point for §7" + game.getName());
+                if (args.length == 2) {
+                    player.sendMessage("/setteamspawn <game> <mapID> <team>");
+                } else {
+                    Team team = null;
+                    if (game.getRedTeam().getName().equalsIgnoreCase(args[2])) team = game.getRedTeam();
+                    if (game.getBlueTeam().getName().equalsIgnoreCase(args[2])) team = game.getBlueTeam();
+                    if (team == null) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cNo team was found for: " + args[2]));
+                        return;
+                    }
+                    settings.getData().set("setup." + game.getName() + ".maps." + id + ".team." + team.getName() + ".world", l.getWorld().getName());
+                    settings.getData().set("setup." + game.getName() + ".maps." + id + ".team." + team.getName() + ".x", l.getX());
+                    settings.getData().set("setup." + game.getName() + ".maps." + id + ".team." + team.getName() + ".y", l.getY());
+                    settings.getData().set("setup." + game.getName() + ".maps." + id + ".team." + team.getName() + ".z", l.getZ());
+                    settings.getData().set("setup." + game.getName() + ".maps." + id + ".team." + team.getName() + ".yaw", Float.floatToIntBits(l.getYaw()));
+                    settings.getData().set("setup." + game.getName() + ".maps." + id + ".team." + team.getName() + ".pitch", Float.floatToIntBits(l.getPitch()));
+                    player.sendMessage("§cSet spawn point for §7" + game.getName());
+                }
             }
         }
     }
@@ -197,13 +215,22 @@ public class GameCommands implements CommandListener {
         if (!player.hasPermission("events.setKOTH")) return;
         Location l = player.getLocation();
         Game game = GameManager.getGame(KOTH.class);
-        settings.getData().set("setup." + game.getName() + ".top.world", l.getWorld().getName());
-        settings.getData().set("setup." + game.getName() + ".top.x", l.getX());
-        settings.getData().set("setup." + game.getName() + ".top.y", l.getY());
-        settings.getData().set("setup." + game.getName() + ".top.z", l.getZ());
-        settings.getData().set("setup." + game.getName() + ".top.yaw", l.getYaw());
-        settings.getData().set("setup." + game.getName() + ".top.pitch", l.getPitch());
-        player.sendMessage("§cSet score point for §7" + game.getName());
+        if (args.length == 0) {
+            player.sendMessage("/setkothtop <mapID>");
+        } else {
+            int id = 0;
+            try {
+                id = Integer.parseInt(args[0]);
+            } catch (NumberFormatException ignored) {
+            }
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.world", l.getWorld().getName());
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.x", l.getX());
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.y", l.getY());
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.z", l.getZ());
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.yaw", l.getYaw());
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.pitch", l.getPitch());
+            player.sendMessage("§cSet score point for §7" + game.getName());
+        }
     }
 
     @Command(name = "setparkourwin")
@@ -211,8 +238,18 @@ public class GameCommands implements CommandListener {
         if (!player.hasPermission("events.setParkour")) return;
         BlockLocation l = new BlockLocation(player.getLocation());
         Game game = GameManager.getGame(Parkour.class);
-        settings.getData().set("setup." + game.getName() + ".winLocation", l.toDataString());
-        player.sendMessage("§cSet score point for §7" + game.getName());
+        if (args.length == 0) {
+            player.sendMessage("/setparkourwin <mapID>");
+        } else {
+            int id = 0;
+            try {
+                id = Integer.parseInt(args[0]);
+            } catch (NumberFormatException ignored) {
+            }
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".top.world", l.getWorld().getName());
+            settings.getData().set("setup." + game.getName() + ".maps." + id + ".winLocation", l.toDataString());
+            player.sendMessage("§cSet score point for §7" + game.getName());
+        }
     }
 
     @Command(name = "event")
@@ -250,7 +287,18 @@ public class GameCommands implements CommandListener {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThere is already an events in progress."));
                     return;
                 }
-                Game game = GameManager.getGame(args[0]);
+                Game game;
+                if (args.length == 1) {
+                    game = GameManager.getGame(args[0]);
+                }else{
+                    Game baseGame = GameManager.getGame(args[0]);
+                    if (settings.getData().isSet("setup." + baseGame.getName() + ".maps" + args[1])) {
+                        game = GameManager.getGame(args[0], args[1]);
+                    }
+                    else{
+                        game = baseGame;
+                    }
+                }
                 if (game == null) {
                     sendUssage(player);
                     return;
@@ -262,8 +310,7 @@ public class GameCommands implements CommandListener {
                 double i = plugin.getConfig().getDouble("events.money.amount");
                 plugin.getEventMain().eventstarting = true;
                 plugin.getEventMain().cancelled = false;
-                if (!game.getPlayers().isEmpty())
-                    game.getPlayers().clear();
+                if (!game.getPlayers().isEmpty()) game.getPlayers().clear();
                 plugin.getEventMain().waiting = game;
                 plugin.getMethod().start(game);
                 for (String e : GamePlugin.starting) {

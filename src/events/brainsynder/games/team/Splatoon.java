@@ -35,9 +35,11 @@ import simple.brainsynder.api.ItemMaker;
 import simple.brainsynder.api.ParticleMaker;
 import simple.brainsynder.math.MathUtils;
 import simple.brainsynder.sound.SoundMaker;
+import simple.brainsynder.storage.ExpireStorage;
+import simple.brainsynder.storage.IExpireStorage;
 
 import java.util.*;
-
+import java.util.concurrent.TimeUnit;
 
 /**
  * Ideas:
@@ -53,13 +55,20 @@ public class Splatoon extends TeamGameMaker {
      * Map.BlockSave = Original block Data.
      */
     private int time = 180, per15 = 0;
-    private boolean announced = false;
+    private boolean announced = false, equiped = false;
     private List<Integer> keyTimes = Arrays.asList(1, 2, 3, 4, 5, 10, 20, 30, 60, 120);
     private Map<String, Map<String, BlockSave>> teamBlocks = null;
     private List<String> squids = new ArrayList<>();
+    private IExpireStorage<String> scatterBlast = new ExpireStorage();
 
     public Splatoon() {
         super();
+        teamBlocks = new HashMap<>();
+        setGameSettings(new GameSettings(true));
+    }
+
+    public Splatoon(String mapID) {
+        super(mapID);
         teamBlocks = new HashMap<>();
         setGameSettings(new GameSettings(true));
     }
@@ -75,7 +84,8 @@ public class Splatoon extends TeamGameMaker {
 
     @Override
     public void onEnd() {
-        players.forEach(player -> {
+        getPlayers ().forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
             if (DisguiseHandler.getApi().isDisguised(player.getPlayer()) && squids.contains(player.getPlayer().getUniqueId().toString())) {
                 DisguiseHandler.getApi().undisguise(player.getPlayer());
                 squids.remove(player.getPlayer().getUniqueId().toString());
@@ -89,23 +99,60 @@ public class Splatoon extends TeamGameMaker {
         }
         teamBlocks.clear();
     }
+    
+    @Override public void onScoreboardLoad(IGamePlayer player) {
+        if (player.getScoreHandler() == null) {
+            ScoreboardHandler handler = new ScoreboardHandler(player.getPlayer().getUniqueId());
+            handler.setTitle(0, "&3Splatoon");
+            handler.setLine(0, 14, "&3&lTime Left: ", "&b&l" + RandomRef.formatHHMMSS(time));
+            handler.setLineBlank(0 , 13);
+            handler.setLine(0, 12, "&bBlue Score:", " &70");
+            handler.setLine(0, 11, "&cRed Score:", " &70");
+            handler.toggleScoreboard();
+            player.setScoreHandler(handler);
+        }
+    }
+    
+    @Override public void onScoreboardUpdate(IGamePlayer player) {
+        if (player.getScoreHandler() != null) {
+            Map<String, BlockSave> saved = teamBlocks.getOrDefault(getRedTeam().getName(), new HashMap<>());
+            Map<String, BlockSave> enemySaved = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>());
+    
+    
+            int redSize = saved.size();
+            int blueSize = enemySaved.size();
+            ScoreboardHandler handler = player.getScoreHandler();
+            handler.setLine(0, 14, "&3&lTime Left: ", "&b" + RandomRef.formatHHMMSS(time));
+            handler.setLine(0, 12, "&bBlue Score:", " &7" + blueSize);
+            handler.setLine(0, 11, "&cRed Score:", " &7" + redSize);
+        }
+    }
 
     @Override
     public void onStart() {
         super.onStart();
-        players.forEach(player -> player.getPlayer().sendMessage("§cEquipping Paint Cannon..."));
+        getPlayers ().forEach(name -> {
+            IGamePlayer player = GameManager.getPlayer(name);
+            player.getPlayer().sendMessage("§cEquipping Paint Cannon...");
+        });
         new BukkitRunnable() {
             @Override
             public void run() {
-                players.forEach(player -> {
+                getPlayers ().forEach(name -> {
+                    IGamePlayer player = GameManager.getPlayer(name);
                     player.getPlayer().sendMessage("§cThe arena is your canvas... COVER IT!!!");
                     equipDefaultPlayer(player.getPlayer());
                     PetHandler.removePet(player.getPlayer());
+                    equiped = true;
                 });
             }
         }.runTaskLater(plugin, 60);
     }
-
+    
+    @Override public boolean hasStarted() {
+        return super.hasStarted() && equiped;
+    }
+    
     @Override
     public String getName() {
         return "Splatoon";
@@ -124,9 +171,40 @@ public class Splatoon extends TeamGameMaker {
             announced = false;
         }
         per15++;
+        handleSquid ();
+
         Map<String, BlockSave> saved = teamBlocks.getOrDefault(getRedTeam().getName(), new HashMap<>());
         Map<String, BlockSave> enemySaved = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>());
-        players.forEach(gamePlayer -> {
+
+
+        int redSize = saved.size();
+        int blueSize = enemySaved.size();
+        getRedTeam().setScore(redSize);
+        getBlueTeam().setScore(blueSize);
+        if (time <= 0) {
+            if (redSize > blueSize) {
+                onWin(getRedTeam());
+            } else {
+                onWin(getBlueTeam());
+            }
+            return;
+        }
+        if (keyTimes.contains(time) && (!announced)) {
+            getPlayers ().forEach(name -> {
+                IGamePlayer player = GameManager.getPlayer(name);
+                player.getPlayer().sendMessage("§7Time Left: §b" +
+                        ((time == 120) ? "2 Minutes" : ((time == 60) ? "1 Minute" : time + " Second(s)"))
+                );
+            });
+            announced = true;
+        }
+    }
+
+    private void handleSquid() {
+        Map<String, BlockSave> saved = teamBlocks.getOrDefault(getRedTeam().getName(), new HashMap<>());
+        Map<String, BlockSave> enemySaved = teamBlocks.getOrDefault(getBlueTeam().getName(), new HashMap<>());
+        getPlayers ().forEach(name -> {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             Location loc = player.getLocation().subtract(0, 0.5, 0);
             if ((loc.getBlock() == null) || (loc.getBlock().getType() == Material.AIR)) return;
@@ -175,32 +253,6 @@ public class Splatoon extends TeamGameMaker {
                 player.removePotionEffect(PotionEffectType.SLOW);
 
         });
-
-
-        int redSize = saved.size();
-        int blueSize = enemySaved.size();
-        getRedTeam().setScore(redSize);
-        getBlueTeam().setScore(blueSize);
-        if (time <= 0) {
-            if (redSize > blueSize) {
-                onWin(getRedTeam());
-            } else {
-                onWin(getBlueTeam());
-            }
-            return;
-        }
-        if (keyTimes.contains(time) && (!announced)) {
-            players.forEach(player -> player.getPlayer().sendMessage("§7Time Left: §b" +
-                    ((time == 120) ? "2 Minutes" : ((time == 60) ? "1 Minute" : time + " Second(s)"))
-            ));
-            announced = true;
-        }
-
-        if (message == null) return;
-        if (!plugin.getEventMain().eventstarted) return;
-        if (!hasStarted()) return;
-
-        players.forEach(player -> message.sendMessage(player.getPlayer(), "§4§lRed Score: §c§l" + (redSize) + " §8§l/ §9§lBlue Score: §b§l" + (blueSize)));
     }
 
     private ItemStack getRedGun() {
@@ -230,6 +282,9 @@ public class Splatoon extends TeamGameMaker {
     }
 
     private void colorBlocks(Location location, IGamePlayer gamePlayer) {
+        if (!hasStarted()) return;
+        if (!plugin.getEventMain().eventstarted) return;
+
         int i = MathUtils.random(1, 2);
         SoundMaker.BLOCK_SLIME_PLACE.playSound(location, 1.5f, 1.5f);
         ParticleMaker maker = new ParticleMaker(ParticleMaker.Particle.BLOCK_CRACK, ((i == 1) ? 75 : 35), 1.0);
@@ -348,7 +403,10 @@ public class Splatoon extends TeamGameMaker {
                             }
                             event.setCancelled(true);
                             p.setHealth(p.getMaxHealth());
-                            players.forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + p.getName() + " §7was painted by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName()));
+                            getPlayers ().forEach(name -> {
+                                IGamePlayer gamePlayer = GameManager.getPlayer(name);
+                                gamePlayer.getPlayer().sendMessage(player.getTeam().getChatColor() + p.getName() + " §7was painted by " + hitter.getTeam().getChatColor() + hitter.getPlayer().getName());
+                            });
                             p.teleport(getSpawn(player.getTeam()));
                         }
                     }
@@ -357,8 +415,7 @@ public class Splatoon extends TeamGameMaker {
         }
     }
 
-    private void shootBullet(Player player) {
-        Vector direction = RandomRef.calculatePath(player);
+    private void shootBullet(Vector direction, Player player) {
         Projectile proj = player.launchProjectile(Snowball.class);
         proj.setMetadata("SPLATOON", new FixedMetadataValue(plugin, "SPLATOON"));
         proj.setShooter(player);
@@ -368,7 +425,6 @@ public class Splatoon extends TeamGameMaker {
 
     @EventHandler
     public void fire(PlayerInteractEvent e) {
-        if (!e.getAction().name().contains("RIGHT")) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getItem() == null) return;
         if (e.getItem().getType() == Material.AIR) return;
@@ -378,7 +434,18 @@ public class Splatoon extends TeamGameMaker {
             if (player.getGame() instanceof Splatoon) {
                 if ((e.getItem().isSimilar(getRedGun()))
                         || (e.getItem().isSimilar(getBlueGun()))) {
-                    shootBullet(player.getPlayer());
+                    if (e.getAction().name().contains("RIGHT")) {
+                        Vector direction = RandomRef.calculatePath(player.getPlayer());
+                        shootBullet(direction, player.getPlayer());
+                    }else{
+                        if (!scatterBlast.contains(player.getPlayer().getName())) {
+                            scatterBlast.add(player.getPlayer().getName(), 20, TimeUnit.SECONDS);
+                            for (int i = 0; i < 7; i++){
+                                Vector direction = RandomRef.calculatePath(player.getPlayer(), true);
+                                shootBullet(direction, player.getPlayer());
+                            }
+                        }
+                    }
                 }
             }
         }

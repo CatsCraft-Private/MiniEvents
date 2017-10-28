@@ -12,8 +12,10 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class RandomRef {
+    private static Random r = new Random();
     public static List<Location> getStraightLine(LivingEntity player, int length) {
         List<Location> list = new ArrayList<>();
         for (int amount = length; amount > 0; amount--)
@@ -29,12 +31,34 @@ public class RandomRef {
         return player.getLocation().clone().add(player.getLocation().getDirection().multiply(100.0));
     }
 
+    public static String formatHHMMSS(long secondsCount) {
+        int seconds = (int) (secondsCount % 60);
+        secondsCount -= seconds;
+        long minutesCount = secondsCount / 60;
+        long minutes = minutesCount % 60;
+        StringBuilder builder = new StringBuilder();
+        if (minutes > 0)
+            builder.append(minutes).append(":");
+        builder.append((seconds < 10) ? "0" + seconds : seconds);
+        return builder.toString();
+    }
+
     public static Vector calculatePath(Player player) {
+        return calculatePath(player, false);
+    }
+
+    public static Vector calculatePath(Player player, boolean spreadProj) {
         double yaw = Math.toRadians((double) (-player.getLocation().getYaw() - 90.0F));
         double pitch = Math.toRadians((double) (-player.getLocation().getPitch()));
-        double x = Math.cos(pitch) * Math.cos(yaw) + (0.0D);
-        double y = Math.sin(pitch) + (0.0D);
-        double z = -Math.sin(yaw) * Math.cos(pitch) + (0.0D);
+        double[] spread = new double[]{1.0D, 1.0D, 1.0D};
+
+        for(int x = 0; x < 3; ++x) {
+            spread[x] = (r.nextDouble() - r.nextDouble()) * 0.1D;
+        }
+
+        double x = Math.cos(pitch) * Math.cos(yaw) + (spreadProj ? spread[0] : 0.0D);
+        double y = Math.sin(pitch) + (spreadProj ? spread[1] : 0.0D);
+        double z = -Math.sin(yaw) * Math.cos(pitch) + (spreadProj ? spread[2] : 0.0D);
         return new Vector(x, y, z);
     }
 

@@ -24,6 +24,10 @@ public class LMS extends GameMaker {
         super();
     }
 
+    public LMS(String mapID) {
+        super(mapID);
+    }
+
     @Override
     public String getName() {
         return "LMS";
@@ -32,13 +36,15 @@ public class LMS extends GameMaker {
     @Override
     public void onStart() {
         gameSettings = new GameSettings(true);
-        for (IGamePlayer gamePlayer : players) {
+        for (String name : getPlayers ()) {
+            IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have 5 seconds of invincibility."));
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             super.onStart();
-            players.forEach(gamePlayer -> {
+            getPlayers ().forEach(name -> {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
                 Player player = gamePlayer.getPlayer();
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou are no longer invincible."));
             });
@@ -124,10 +130,10 @@ public class LMS extends GameMaker {
                     p.setHealth(p.getMaxHealth());
                     lost(player);
                     if (aliveCount() == 1) {
-                        for (IGamePlayer o : players) {
-                            if (o.getPlayer().getUniqueId().equals(p.getUniqueId())) continue;
-                            if (deadPlayers.contains(o)) continue;
-                            onWin(o);
+                        for (String pname : getPlayers ()) {
+                            if (pname.equals(player.getPlayer().getName())) continue;
+                            if (deadPlayers.contains(pname)) continue;
+                            onWin(GameManager.getPlayer(pname));
                             plugin.getEventMain().end();
                             break;
                         }
