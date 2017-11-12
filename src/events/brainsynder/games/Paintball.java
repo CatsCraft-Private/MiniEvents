@@ -74,7 +74,7 @@ public class Paintball extends GameMaker {
             } else {
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(null);
-                LinkedList<String> set = new LinkedList<>(settings.getData().getSection("setup." + getName() + ".inv.").getKeys(false));
+                LinkedList<String> set = new LinkedList<>(settings.getData().getSection("setup." + getName() + ".inv").getKeys(false));
                 while (set.peekFirst() != null) {
                     String slot = set.pollFirst();
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
@@ -85,7 +85,7 @@ public class Paintball extends GameMaker {
                 player.getInventory().setLeggings(settings.getData().getItemStack("setup." + getName() + ".armor.101"));
                 player.getInventory().setBoots(settings.getData().getItemStack("setup." + getName() + ".armor.100"));
                 if (settings.getData().getSection("setup." + getName() + ".potion") != null) {
-                    for (String m : settings.getData().getSection("setup." + getName() + ".potion.name.").getKeys(false)) {
+                    for (String m : settings.getData().getSection("setup." + getName() + ".potion.name").getKeys(false)) {
                         String name = settings.getData().getString("setup." + getName() + ".potion.name." + m + ".type");
                         int amplifier = settings.getData().getInt("setup." + getName() + ".potion.name." + m + ".level");
                         int duration = settings.getData().getInt("setup." + getName() + ".potion.name." + m + ".duration");

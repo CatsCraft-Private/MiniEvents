@@ -1,5 +1,6 @@
 package events.brainsynder.managers;
 
+import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.games.*;
 import events.brainsynder.games.team.Splatoon;
@@ -43,8 +44,10 @@ public class GameManager {
 
     public static List<String> getMapIDs (Game game) {
         if (!idMap.containsKey(game.getName())) {
-            List<String> list = new ArrayList(GamePlugin.instance.getSettings().getData().getSection("setup." + game.getName() + ".maps").getKeys(false));
-            return idMap.put(game.getName(), list);
+            List<String> list = new ArrayList();
+            list.addAll(SettingsManager.getInstance().getData().getSection("setup." + game.getName() + ".maps").getKeys(false));
+            idMap.put(game.getName(), list);
+            return idMap.get(game.getName());
         }
         return idMap.get(game.getName());
     }

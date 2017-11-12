@@ -439,6 +439,7 @@ public class Splatoon extends TeamGameMaker {
                         shootBullet(direction, player.getPlayer());
                     }else{
                         if (!scatterBlast.contains(player.getPlayer().getName())) {
+                            message.sendMessage(e.getPlayer(), "§a§lScatter Blast has been activated (20 Second Cooldown started)");
                             scatterBlast.add(player.getPlayer().getName(), 20, TimeUnit.SECONDS);
                             for (int i = 0; i < 7; i++){
                                 Vector direction = RandomRef.calculatePath(player.getPlayer(), true);

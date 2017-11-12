@@ -97,7 +97,7 @@ public class TDM extends TeamGameMaker {
                     player.getInventory().setItem(Integer.parseInt(slot), settings.getData().getItemStack("setup." + getName() + ".inv." + slot));
                 }
                 if (settings.getData().getSection("setup." + getName() + ".potion") != null) {
-                    for (String m : settings.getData().getSection("setup." + getName() + ".potion.name.").getKeys(false)) {
+                    for (String m : settings.getData().getSection("setup." + getName() + ".potion.name").getKeys(false)) {
                         String name = settings.getData().getString("setup." + getName() + ".potion.name." + m + ".type");
                         int amplifier = settings.getData().getInt("setup." + getName() + ".potion.name." + m + ".level");
                         int duration = settings.getData().getInt("setup." + getName() + ".potion.name." + m + ".duration");
