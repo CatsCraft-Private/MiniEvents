@@ -4,6 +4,7 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.BlockLocation;
+import events.brainsynder.utils.EntityLocation;
 import events.brainsynder.utils.PetHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -23,8 +24,11 @@ public class Parkour extends GameMaker {
     @Override
     public void onStart() {
         super.onStart();
-        String mapID = getMapID ();
-        topLocation = BlockLocation.fromString(settings.getData().getString("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".winLocation"));
+        randomizeMap();
+        if (compound.hasKey("scorePoint")) {
+            EntityLocation loc = EntityLocation.fromCompound(compound.getCompoundTag("scorePoint"));
+            topLocation = new BlockLocation(loc.toLocation());
+        }
         new BukkitRunnable() {
             @Override
             public void run() {

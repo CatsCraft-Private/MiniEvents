@@ -77,10 +77,7 @@ public class Handle implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
-        if (!gamePlayer.isPlaying() && (gamePlayer.getState() != IGamePlayer.State.WAITING)) {
-            return;
-        }
-
+        GameManager.gamePlayerMap.remove(event.getPlayer().getName());
         if (GamePlugin.instance.getEventMain().eventstarted) {
             gamePlayer.getGame().onLeave(gamePlayer);
             return;
@@ -95,10 +92,7 @@ public class Handle implements Listener {
     @EventHandler
     public void onLeave(PlayerKickEvent event) {
         IGamePlayer gamePlayer = GameManager.getPlayer(event.getPlayer());
-        if (!gamePlayer.isPlaying() && (gamePlayer.getState() != IGamePlayer.State.WAITING)) {
-            return;
-        }
-
+        GameManager.gamePlayerMap.remove(event.getPlayer().getName());
         if (GamePlugin.instance.getEventMain().eventstarted) {
             gamePlayer.getGame().onLeave(gamePlayer);
             return;

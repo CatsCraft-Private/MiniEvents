@@ -3,6 +3,7 @@ package events.brainsynder.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import simple.brainsynder.nbt.StorageTagCompound;
 import simple.brainsynder.utils.Valid;
 
 public class BlockLocation {
@@ -38,8 +39,25 @@ public class BlockLocation {
         }
     }
 
+    public static BlockLocation fromCompound(StorageTagCompound compound) {
+        World world = Bukkit.getWorld(compound.getString("world"));
+        int x = compound.getInteger("x");
+        int y = compound.getInteger("y");
+        int z = compound.getInteger("z");
+        return new BlockLocation(world, x, y, z);
+    }
+
     public String toDataString() {
         return "BlockLocation:[world=" + world.getName() + ",x=" + x + ",y=" + y + ",z=" + z + ']';
+    }
+
+    public StorageTagCompound toCompound () {
+        StorageTagCompound compound = new StorageTagCompound();
+        compound.setString("world", world.getName());
+        compound.setInteger("x", x);
+        compound.setInteger("y", y);
+        compound.setInteger("z", z);
+        return compound;
     }
 
     public Location toLocation() {

@@ -3,6 +3,7 @@ package events.brainsynder.managers;
 import events.brainsynder.SettingsManager;
 import events.brainsynder.commands.api.CommandManager;
 import events.brainsynder.games.*;
+import events.brainsynder.games.team.SnowPack;
 import events.brainsynder.games.team.Splatoon;
 import events.brainsynder.games.team.TDM;
 import events.brainsynder.key.Game;
@@ -21,12 +22,15 @@ public class GameManager {
     private static List<Game> games = new ArrayList<>();
 
     public static IGamePlayer getPlayer(Player player) {
-        return gamePlayerMap.putIfAbsent(player.getName(), new GamePlayer(player));
+        if (gamePlayerMap.containsKey(player.getName())) return gamePlayerMap.get(player.getName());
+        gamePlayerMap.put(player.getName(), new GamePlayer(player));
+        return gamePlayerMap.get(player.getName());
     }
 
     public static IGamePlayer getPlayer(String name) {
         if (gamePlayerMap.containsKey(name)) return gamePlayerMap.get(name);
-        return gamePlayerMap.putIfAbsent(name, new GamePlayer(Bukkit.getPlayerExact(name)));
+        gamePlayerMap.put(name, new GamePlayer(Bukkit.getPlayerExact(name)));
+        return gamePlayerMap.get(name);
     }
 
 
@@ -56,6 +60,9 @@ public class GameManager {
         if (!games.contains(game)) {
             games.add(game);
             CommandManager.register(game);
+            SettingsManager setting = game.settings;
+            if (!setting.getData().isSet("setup." + game.getName() + ".Enabled"))
+                setting.getData().set("setup." + game.getName() + ".Enabled", false);
         }
     }
 
@@ -72,6 +79,7 @@ public class GameManager {
         register(new Parkour(), plugin);
         register(new TDM(), plugin);
         register(new Splatoon(), plugin);
+        register(new SnowPack(), plugin);
     }
 
     public static <T extends Game> T getGame(Class<T> clazz) {
@@ -88,6 +96,7 @@ public class GameManager {
         if (clazz.isAssignableFrom(TntRun.class)) return (T) new TntRun();
         if (clazz.isAssignableFrom(TDM.class)) return (T) new TDM();
         if (clazz.isAssignableFrom(Splatoon.class)) return (T) new Splatoon();
+        if (clazz.isAssignableFrom(SnowPack.class)) return (T) new SnowPack();
         throw new NullPointerException(clazz.getSimpleName() + " is not a registered Game.");
     }
 
@@ -105,6 +114,7 @@ public class GameManager {
         if (clazz.isAssignableFrom(TntRun.class)) return (T) new TntRun(mapID);
         if (clazz.isAssignableFrom(TDM.class)) return (T) new TDM(mapID);
         if (clazz.isAssignableFrom(Splatoon.class)) return (T) new Splatoon(mapID);
+        if (clazz.isAssignableFrom(SnowPack.class)) return (T) new SnowPack(mapID);
         throw new NullPointerException(clazz.getSimpleName() + " is not a registered Game.");
     }
 

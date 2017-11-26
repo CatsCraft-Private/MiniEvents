@@ -7,7 +7,11 @@ import events.brainsynder.events.team.TeamWinEvent;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.utils.DyeColorWrapper;
-import org.bukkit.*;
+import events.brainsynder.utils.EntityLocation;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.IActionMessage;
 import simple.brainsynder.utils.Reflection;
@@ -17,10 +21,9 @@ import java.util.*;
 public abstract class TeamGameMaker extends ITeamGame {
     protected IActionMessage message = null;
     private Map<String, Location> locationMap = new HashMap<>();
-    private boolean started = false;
-    private boolean endTask = false;
-    private Team red;
-    private Team blue;
+    private boolean started = false, endTask = false;
+    protected boolean randomTeams = true;
+    private Team red, blue;
 
 
     public TeamGameMaker(String mapID) {
@@ -87,17 +90,16 @@ public abstract class TeamGameMaker extends ITeamGame {
 
 
     protected Location getSpawn(Team team) {
-        String mapID = getMapID();
-        if (locationMap.containsKey(team.getName())) return locationMap.get(team.getName());
-        World w = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".world"));
-        double x = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".x");
-        double y = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".y");
-        double z = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".z");
-        float yaw = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".yaw"));
-        float pitch = Float.intBitsToFloat(settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".team." + team.getName() + ".pitch"));
-        locationMap.put(team.getName(), new Location(w, x, y, z, yaw, pitch));
-
-        return locationMap.get(team.getName());
+        this.mapID = randomizeMap();
+        if (compound.hasKey(team.getName())) {
+            EntityLocation loc = EntityLocation.fromCompound(compound.getCompoundTag(team.getName()));
+            return loc.toLocation();
+        }
+        if (compound.hasKey("spawn")) {
+            EntityLocation loc = EntityLocation.fromCompound(compound.getCompoundTag("spawn"));
+            return loc.toLocation();
+        }
+        return null;
     }
 
     protected Team getOppositeTeam(Team team) {
@@ -118,7 +120,6 @@ public abstract class TeamGameMaker extends ITeamGame {
         GameEndEvent<ITeamGame> event = new GameEndEvent<>(this);
         Bukkit.getPluginManager().callEvent(event);
     }
-
 
     @Override
     public void onLeave(IGamePlayer player) {
@@ -143,7 +144,7 @@ public abstract class TeamGameMaker extends ITeamGame {
     @Override
     public void onStart() {
         message = Reflection.getActionMessage();
-        randomizePlayers();
+        if (randomTeams) randomizePlayers();
         TeamGameStart event = new TeamGameStart(this);
         Bukkit.getPluginManager().callEvent(event);
         started = true;
@@ -203,14 +204,5 @@ public abstract class TeamGameMaker extends ITeamGame {
     @Override
     public void setStarted(boolean started) {
         this.started = started;
-    }
-
-    @Override
-    public boolean isSetup() {
-        return ((settings.getData().isSet("setup." + getName() + ".team.Red.world")
-                && settings.getData().isSet("setup." + getName() + ".team.Blue.world"))
-                || (settings.getData().isSet("setup." + getName() + ".maps.0.team.Red.world")
-                && settings.getData().isSet("setup." + getName() + ".maps.0.team.Blue.world")));
-
     }
 }

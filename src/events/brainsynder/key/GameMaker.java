@@ -10,6 +10,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class GameMaker extends Game {
     protected boolean endTask = false;
     private boolean started = false;
@@ -107,6 +111,7 @@ public abstract class GameMaker extends Game {
 
     @Override
     public boolean isSetup() {
-        return (settings.getData().isSet("setup." + getName() + ".world")) || (settings.getData().isSet("setup." + getName() + ".maps.0.world"));
+        List<File> files = Arrays.asList(getFolder().listFiles());
+        return !files.isEmpty();
     }
 }

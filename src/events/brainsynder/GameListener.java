@@ -5,12 +5,14 @@ import events.brainsynder.events.game.PreGameStartEvent;
 import events.brainsynder.events.player.*;
 import events.brainsynder.events.team.TeamPlayerLeaveEvent;
 import events.brainsynder.events.team.TeamWinEvent;
+import events.brainsynder.games.team.SnowPack;
 import events.brainsynder.key.Game;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.key.teams.ITeamGame;
 import events.brainsynder.key.teams.Team;
 import events.brainsynder.managers.GameManager;
 import events.brainsynder.managers.GamePlugin;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 import simple.brainsynder.nms.ITellraw;
 import simple.brainsynder.utils.Reflection;
 
@@ -33,9 +36,9 @@ public class GameListener implements Listener {
 
         Game game = event.getGame();
         IGamePlayer gamePlayer = event.getPlayer();
-        event.getGame().players.add(gamePlayer.getPlayer().getName());
         gamePlayer.setGame(event.getGame());
         gamePlayer.setState(IGamePlayer.State.WAITING);
+        event.getGame().players.add(gamePlayer.getPlayer().getName());
         gamePlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou &7joined the event. Players in the event: &b{1}&7.".replace("{1}", Integer.toString(event.getGame().getPlayers().size()))));
 
         for (String name : game.getPlayers ()) {
@@ -145,23 +148,64 @@ public class GameListener implements Listener {
     @EventHandler
     public void onWin(TeamWinEvent event) {
         Team team = event.getTeam();
+
+        if (event.getGame() instanceof SnowPack) {
+            String winning;
+
+            switch (team.getName()) {
+                case "Red":
+                    winning = team.getChatColor() + "Runners";
+                    break;
+                default:
+                    winning = team.getChatColor() + "Snowmen";
+                    break;
+            }
+
+            ITellraw raw = Reflection.getTellraw("§7The " + winning + " §7just won §b" + event.getGame().getName() + "§7!");
+            Bukkit.getOnlinePlayers().forEach(raw::send);
+            if (plugin.getConfig().getBoolean("events.money.enabled")) {
+                double amount = plugin.getConfig().getDouble("events.money.amount");
+                int c = 0;
+                for (String name : team.getMembers()) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            IGamePlayer gamePlayer = GameManager.getPlayer(name);
+                            EconomyResponse response = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), amount);
+                            if (response.type == EconomyResponse.ResponseType.SUCCESS) {
+                                gamePlayer.getPlayer().sendMessage("§aYou have been awarded $" + amount);
+                            }
+                        }
+                    }.runTaskLater(GamePlugin.instance, c+20);
+                    c++;
+                }
+            }
+            event.getGame().getRedTeam().getMembers().clear();
+            event.getGame().getBlueTeam().getMembers().clear();
+            return;
+        }
+
         List<String> redMem = new ArrayList<>();
         redMem.add("§4Red Team Members:");
         List<String> blueMem = new ArrayList<>();
         blueMem.add("§9Blue Team Members:");
 
-        event.getGame().getRedTeam().getMembers().forEach(player -> redMem.add("§c- §7" + player.getPlayer().getName()));
-        event.getGame().getBlueTeam().getMembers().forEach(player -> blueMem.add("§b- §7" + player.getPlayer().getName()));
+        event.getGame().getRedTeam().getMembers().forEach(name -> redMem.add("§c- §7" + GameManager.getPlayer(name).getPlayer().getName()));
+        event.getGame().getBlueTeam().getMembers().forEach(name -> blueMem.add("§b- §7" + GameManager.getPlayer(name).getPlayer().getName()));
 
         ITellraw raw = Reflection.getTellraw(team.getChatColor() + team.getName() + " Team §7just won §b" + event.getGame().getName() + "§7! Final Score of: ");
         raw.then("§4Red(§c" + ((int) event.getGame().getRedTeam().getScore()) + "§4)").tooltip(redMem).then(' ');
         raw.then("§9Blue(§b" + ((int) event.getGame().getBlueTeam().getScore()) + "§9)").tooltip(blueMem);
         Bukkit.getOnlinePlayers().forEach(raw::send);
         if (plugin.getConfig().getBoolean("events.money.enabled")) {
-            double i = plugin.getConfig().getDouble("events.money.amount");
-            for (IGamePlayer gamePlayer : team.getMembers()) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "eco give " + gamePlayer.getPlayer().getName() + " " + i);
-            }
+            double amount = plugin.getConfig().getDouble("events.money.amount");
+            team.getMembers().forEach(name -> {
+                IGamePlayer gamePlayer = GameManager.getPlayer(name);
+                EconomyResponse response = GamePlugin.econ.depositPlayer(gamePlayer.getPlayer(), amount);
+                if (response.type == EconomyResponse.ResponseType.SUCCESS) {
+                    gamePlayer.getPlayer().sendMessage("§aYou have been awarded $" + amount);
+                }
+            });
         }
         event.getGame().getRedTeam().getMembers().clear();
         event.getGame().getBlueTeam().getMembers().clear();

@@ -4,7 +4,11 @@ import events.brainsynder.key.GameMaker;
 import events.brainsynder.key.GameSettings;
 import events.brainsynder.key.IGamePlayer;
 import events.brainsynder.managers.GameManager;
-import org.bukkit.*;
+import events.brainsynder.utils.EntityLocation;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -85,14 +89,11 @@ public class KOTH extends GameMaker {
     @Override
     public void onStart() {
         gameSettings = new GameSettings(true);
-        String mapID = getMapID ();
-        World world = Bukkit.getServer().getWorld(settings.getData().getString("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.world"));
-        double x = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.x");
-        double y = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.y");
-        double z = settings.getData().getDouble("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.z");
-        float yaw = (settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.yaw"));
-        float pitch = (settings.getData().getInt("setup." + getName() + ((!mapID.equals("none")) ? (".maps." + mapID) : "") + ".top.pitch"));
-        topLocation = new Location(world, x, y, z, yaw, pitch);
+        randomizeMap();
+        if (compound.hasKey("scorePoint")) {
+            EntityLocation loc = EntityLocation.fromCompound(compound.getCompoundTag("scorePoint"));
+            topLocation = loc.toLocation();
+        }
         for (String name : getPlayers ()) {
             IGamePlayer gamePlayer = GameManager.getPlayer(name);
             Player player = gamePlayer.getPlayer();

@@ -298,22 +298,27 @@ public class CommandManager {
 
         @Override
         public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-            if (!alias.equalsIgnoreCase("event")) return super.tabComplete(sender, alias, args);
-
-            if (args.length == 0) {
-                return ImmutableList.of();
-            } else {
-                List<String> complete = new ArrayList<>();
-                String lastWord = args[args.length - 1];
-                for (Game g : GameManager.getGames()) {
-                    if (g.isSetup()) {
-                        if (StringUtil.startsWithIgnoreCase(g.getName(), lastWord)) {
-                            complete.add(g.getName());
+            if (alias.equalsIgnoreCase("event")
+                    || alias.equalsIgnoreCase("setgamespawn")
+                    || alias.equalsIgnoreCase("setteamspawn")
+                    || alias.equalsIgnoreCase("registermap")) {
+                if (args.length == 0) {
+                    return ImmutableList.of();
+                } else {
+                    List<String> complete = new ArrayList<>();
+                    String lastWord = args[args.length - 1];
+                    for (Game g : GameManager.getGames()) {
+                        if (g.isSetup()) {
+                            if (StringUtil.startsWithIgnoreCase(g.getName(), lastWord)) {
+                                complete.add(g.getName());
+                            }
                         }
                     }
+                    complete.sort(String.CASE_INSENSITIVE_ORDER);
+                    return complete;
                 }
-                complete.sort(String.CASE_INSENSITIVE_ORDER);
-                return complete;
+            }else{
+                return super.tabComplete(sender, alias, args);
             }
         }
     }

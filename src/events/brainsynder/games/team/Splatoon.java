@@ -17,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -316,6 +317,7 @@ public class Splatoon extends TeamGameMaker {
                     && (!allowChange(block.getRelative(BlockFace.SOUTH)))
                     && (!allowChange(block.getRelative(BlockFace.WEST)))
                     && (!allowChange(block.getRelative(BlockFace.NORTH)))) return;
+            if (!getCuboid().contains(block)) return;
 
 
             BlockLocation blockLocation = new BlockLocation(block.getLocation());
@@ -434,6 +436,12 @@ public class Splatoon extends TeamGameMaker {
             if (player.getGame() instanceof Splatoon) {
                 if ((e.getItem().isSimilar(getRedGun()))
                         || (e.getItem().isSimilar(getBlueGun()))) {
+                    if (!getCuboid(mapID).contains(new BlockLocation(e.getPlayer().getLocation()))) {
+                        e.setCancelled(true);
+                        e.setUseItemInHand(Event.Result.DENY);
+                        e.setUseInteractedBlock(Event.Result.DENY);
+                        return;
+                    }
                     if (e.getAction().name().contains("RIGHT")) {
                         Vector direction = RandomRef.calculatePath(player.getPlayer());
                         shootBullet(direction, player.getPlayer());

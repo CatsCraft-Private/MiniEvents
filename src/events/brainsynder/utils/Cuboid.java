@@ -2,7 +2,9 @@ package events.brainsynder.utils;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.json.simple.JSONObject;
+import simple.brainsynder.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -413,6 +415,11 @@ public class Cuboid implements Iterable<Block>, Cloneable {
             return false;
         return this.contains(l.getX(), l.getY(), l.getZ());
     }
+    public boolean contains(EntityLocation l) {
+        if (!this.worldName.equals(l.getWorld().getName()))
+            return false;
+        return this.contains((int)l.getX(), (int)l.getY(), (int)l.getZ());
+    }
 
     /**
      * Get the volume of this Cuboid.
@@ -598,6 +605,65 @@ public class Cuboid implements Iterable<Block>, Cloneable {
     public Block getRelativeBlock(int x, int y, int z) {
         return this.getWorld().getBlockAt(this.x1 + x, this.y1 + y,
                 this.z1 + z);
+    }
+
+    public BlockLocation getRandomBlockLocation() {
+        int x = MathUtils.random(x1, x2);
+        int y = MathUtils.random(y1, y2);
+        int z = MathUtils.random(z1, z2);
+        if (contains(x, y, z)) {
+            BlockLocation blockLocation = new BlockLocation(getWorld(), x, y, z);
+            while (blockLocation.toLocation().getBlock().getType() != Material.AIR) {
+                blockLocation.setY(blockLocation.getY() + 1);
+            }
+            while (!isOnGround(blockLocation.toLocation())) {
+                blockLocation.setY(blockLocation.getY() - 1);
+            }
+
+            Block feet = getRelativeBlock(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ());
+            Block head = getRelativeBlock(blockLocation.getX(), blockLocation.getY()+1, blockLocation.getZ());
+            if ((!contains(blockLocation))
+                    || ((feet.getType() != Material.AIR) && (head.getType() != Material.AIR))
+                    || ((feet.getType().isSolid()) && (head.getType().isSolid()))) {
+                return getRandomBlockLocation();
+            }
+
+            return blockLocation;
+        }
+        return null;
+    }
+
+    public EntityLocation getRandomEntityLocation() {
+        int x = MathUtils.random(x1, x2);
+        int y = MathUtils.random(y1, y2);
+        int z = MathUtils.random(z1, z2);
+        if (contains(x, y, z)) {
+            EntityLocation location = new EntityLocation(getWorld(), (x + 0.5), y, (z + 0.5));
+            while (location.toLocation().getBlock().getType() != Material.AIR) {
+                location.setY(location.getY() + 1);
+            }
+            while (!isOnGround(location.toLocation())) {
+                location.setY(location.getY() - 1);
+            }
+
+            Block feet = getRelativeBlock((int)location.getX(), (int)location.getY(), (int)location.getZ());
+            Block head = getRelativeBlock((int)location.getX(), (int)location.getY()+1, (int)location.getZ());
+            if ((!contains(location))
+                    || ((feet.getType() != Material.AIR) && (head.getType() != Material.AIR))
+                    || ((feet.getType().isSolid()) && (head.getType().isSolid()))) {
+                return getRandomEntityLocation();
+            }
+            Location lookAt = LocationUtils.lookAt(location.toLocation(), getCenter());
+            location.setPitch(lookAt.getPitch());
+            location.setYaw(lookAt.getYaw());
+            return location;
+        }
+        return null;
+    }
+
+    private boolean isOnGround(Location blockLocation) {
+        Block block = blockLocation.getBlock().getRelative(BlockFace.DOWN);
+        return block.getType().isSolid() || block.isLiquid();
     }
 
     /**

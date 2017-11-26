@@ -36,6 +36,7 @@ public class GamePlugin extends JavaPlugin {
     private EventsMain eventsmain;
     private CountDown method;
     private CubeHandler cubeHandler;
+    public List<String> needsTP;
 
     public void onEnable() {
         instance = this;
